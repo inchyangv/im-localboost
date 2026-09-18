@@ -11,6 +11,9 @@ ENGINE_URL := $(if $(ENGINE_URL),$(ENGINE_URL),http://127.0.0.1:8000)
 # Engine port: taken from the env file's PORT when present (default 8000).
 PORT ?= $(shell grep -E '^PORT=' $(ENV_FILE) 2>/dev/null | head -1 | cut -d= -f2)
 PORT := $(if $(PORT),$(PORT),8000)
+# Web dev port: derived from WEB_ORIGIN in the env file (default 3000) so engine CORS and the dev server agree.
+WEB_PORT ?= $(shell grep -E '^WEB_ORIGIN=' $(ENV_FILE) 2>/dev/null | head -1 | sed -E 's/.*:([0-9]+).*/\1/')
+WEB_PORT := $(if $(WEB_PORT),$(WEB_PORT),3000)
 
 .PHONY: help setup venv node test test-integration deploy-local kairos-keys deploy-kairos \
         train engine web web-prod-env deploy-web sim docker-engine
@@ -68,7 +71,7 @@ engine: ## Run the FastAPI engine with reload
 	ENV_FILE=$(ENV_FILE) $(VENV)/bin/uvicorn engine.main:app --reload --host 127.0.0.1 --port $(PORT)
 
 web: ## Run the Next.js dev server
-	cd web && npm run dev
+	cd web && npm run dev -- -p $(WEB_PORT)
 
 web-prod-env: ## Write web/.env.production.local from .env.kairos (ENGINE_URL=...)
 	@echo "TODO"

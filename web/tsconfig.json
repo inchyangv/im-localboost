@@ -28,7 +28,8 @@
       "@shared/*": [
         "../shared/*"
       ]
-    }
+    },
+    "target": "ES2020"
   },
   "include": [
     "next-env.d.ts",
