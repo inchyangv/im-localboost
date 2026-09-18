@@ -49,5 +49,5 @@ export const ROLE_LABELS: Record<Role, string> = { payer: "소비자", merchant:
 
 /** Page each role works on. Selecting a persona moves the user there. */
 export function roleHome(role: Role): string {
-  return role === "payer" ? "/admin" : role === "merchant" ? "/admin/merchant" : "/admin/city";
+  return role === "payer" ? "/admin" : role === "merchant" ? "/admin/merchant" : role === "bank" ? "/admin/bank" : "/admin/city";
 }

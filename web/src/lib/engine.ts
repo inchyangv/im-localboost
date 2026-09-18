@@ -130,6 +130,24 @@ export const payments = (params: { merchant?: string; payer?: string; limit?: nu
   return call<PaymentRow[]>(`/payments?${q.toString()}`);
 };
 export const health = () => call<HealthResponse>("/health", undefined, 5_000);
+
+export interface TransferRow {
+  ts: number;
+  txHash: string;
+  blockNumber: number;
+  from: string;
+  to: string;
+  amount: number;
+}
+
+/** iMKRW Transfer logs the poller stored (settlement requests/payouts are plain transfers). */
+export const transfers = (params: { from?: string; to?: string; limit?: number } = {}) => {
+  const q = new URLSearchParams();
+  if (params.from) q.set("from", params.from);
+  if (params.to) q.set("to", params.to);
+  if (params.limit) q.set("limit", String(params.limit));
+  return call<TransferRow[]>(`/transfers?${q.toString()}`);
+};
 /** Bank-side onboarding for a browser wallet: personId link, starter iMKRW, gas top-up (three txs, allow time). */
 export const onboard = (wallet: string) => call<OnboardResponse>("/onboard", json({ wallet }), 180_000);
 export const onboardStatus = (wallet: string) => call<OnboardStatus>(`/onboard/status?wallet=${encodeURIComponent(wallet)}`);

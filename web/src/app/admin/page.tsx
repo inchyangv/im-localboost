@@ -128,7 +128,7 @@ export default function AdminDashboard() {
 
         <div className="space-y-6">
           <Card>
-            <CardHeader title="위험 판정 로그" desc="엔진 /attest 결과 최근 50건" right={<Link href="/admin/city" className="text-[12px] text-brand-600 underline underline-offset-2">보류·환수 관리</Link>} />
+            <CardHeader title="위험 판정 로그" desc="엔진 /attest 결과 최근 50건" right={<Link href="/admin/bank" className="text-[12px] text-brand-600 underline underline-offset-2">보류·환수 관리</Link>} />
             {risk.length === 0 ? (
               <p className="mt-4 text-[13px] text-gray-500">판정이 없어요.</p>
             ) : (
@@ -159,7 +159,10 @@ export default function AdminDashboard() {
                 가맹점 화면 (수취·QR)
               </Link>
               <Link href="/admin/city" className="rounded-full bg-gray-100 px-3 py-1.5 text-[13px] font-medium text-gray-800 hover:bg-gray-200">
-                대구시·은행 운영
+                대구시 운영 (예산·율·상한)
+              </Link>
+              <Link href="/admin/bank" className="rounded-full bg-gray-100 px-3 py-1.5 text-[13px] font-medium text-gray-800 hover:bg-gray-200">
+                은행·정산 (원화 지급·환수)
               </Link>
               <Link href="/" className="rounded-full bg-gray-100 px-3 py-1.5 text-[13px] font-medium text-gray-800 hover:bg-gray-200">
                 소비자 앱

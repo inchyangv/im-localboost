@@ -7,7 +7,6 @@ import { BudgetForm, RatesPanel } from "@/components/city/BudgetAndRates";
 import { CapsPanel } from "@/components/city/CapsPanel";
 import { DemoPanel } from "@/components/city/DemoPanel";
 import { SimPanel } from "@/components/city/SimPanel";
-import { PendingTable, RiskLogTable } from "@/components/city/RiskAndPending";
 import { ZoneCards } from "@/components/city/ZoneCards";
 import { Badge, PageHeader, cx } from "@/components/ui";
 import { readZoneCards, type ZoneCard } from "@/lib/city";
@@ -18,7 +17,6 @@ const CARDS_REFRESH_MS = 10_000;
 const SECTIONS = [
   { id: "zones", label: "상권 현황" },
   { id: "budget", label: "예산·율" },
-  { id: "risk", label: "위험·보류" },
   { id: "caps", label: "상한" },
   { id: "demo", label: "데모" },
   { id: "sim", label: "시뮬레이션" },
@@ -50,8 +48,7 @@ export default function CityPage() {
   const [refreshKey, setRefreshKey] = useState(0);
 
   const isCity = persona?.role === "city";
-  const isBank = persona?.role === "bank";
-  const actor = persona && (isCity || isBank) ? persona.account : null;
+  const actor = isCity ? persona!.account : null;
 
   const refreshCards = useCallback(async () => {
     try {
@@ -75,20 +72,14 @@ export default function CityPage() {
   };
 
   if (!persona || !actor) {
-    return (
-      <PersonaGate
-        roles={["city", "bank"]}
-        title="운영 화면이에요"
-        desc="대구시는 예산·보너스율·상한을 관리하고, 은행은 보류된 보너스를 환수해요."
-      />
-    );
+    return <PersonaGate roles={["city"]} title="대구시 운영 화면이에요" desc="대구시 데모 계정을 고르면 상권 예산·보너스율·상한을 관리할 수 있어요." />;
   }
 
   return (
     <>
       <PageHeader
-        title={isCity ? "대구시 운영" : "은행 운영"}
-        desc={isCity ? "상권별 예산을 예치하고 보너스율과 상한을 관리해요." : "위험 판정으로 보류된 보너스를 확인하고 환수해요."}
+        title="대구시 운영"
+        desc="상권별 예산을 예치하고 보너스율과 상한을 관리해요. 보류 환수와 정산은 은행 화면에서 해요."
         right={<Badge tone="gray">{epoch !== null ? `현재 시간대 ${kstHourLabel(epoch)}` : "읽는 중"}</Badge>}
       />
       <SectionNav />
@@ -98,10 +89,6 @@ export default function CityPage() {
         <div id="budget" className="grid scroll-mt-32 gap-6 lg:grid-cols-2 lg:items-start">
           <BudgetForm city={isCity ? actor : null} onDone={bump} />
           <RatesPanel enabled={isCity} onPublished={bump} />
-        </div>
-        <div id="risk" className="grid scroll-mt-32 gap-6">
-          <RiskLogTable />
-          <PendingTable actor={actor} isBank={isBank} onChanged={bump} refreshKey={refreshKey} />
         </div>
         <CapsPanel actor={actor} isCity={isCity} />
         <DemoPanel onChanged={bump} />

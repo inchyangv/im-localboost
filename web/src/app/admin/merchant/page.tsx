@@ -5,6 +5,8 @@ import { PersonaGate } from "@/components/PersonaGate";
 import { usePersona } from "@/components/PersonaProvider";
 import { RoleAvatar } from "@/components/PersonaSwitcher";
 import { QrPanel } from "@/components/merchant/QrPanel";
+import { SettlementCard } from "@/components/merchant/SettlementCard";
+import { personaSigner } from "@/lib/signer";
 import { Badge, Card, CardHeader, Mono, Notice, PageHeader, Progress, Stat, Table, TierBadge, TxLink, cx, td, tdRight, th, thRight } from "@/components/ui";
 import { publicClient } from "@/lib/chain";
 import { CATEGORY_NAMES, caps, merchantByAddress, zoneName } from "@/lib/config";
@@ -33,6 +35,8 @@ export default function MerchantPage() {
   const walletMerchant = mode === "wallet" && wallet.address && merchantByAddress(wallet.address) ? wallet.address : null;
   const address = walletMerchant ?? (persona?.role === "merchant" ? persona.account.address : null);
   const info = address ? merchantByAddress(address) : undefined;
+  const { walletSigner } = usePersona();
+  const signer = walletMerchant ? walletSigner() : persona?.role === "merchant" ? personaSigner(persona.account) : null;
 
   const refresh = useCallback(async () => {
     if (!address) return;
@@ -124,6 +128,10 @@ export default function MerchantPage() {
 
       <div className="mt-6">
         <QrPanel merchant={address} />
+      </div>
+
+      <div className="mt-6">
+        <SettlementCard merchant={address} signer={signer} balance={balance} onDone={refresh} />
       </div>
 
       <Card className="mt-6">
