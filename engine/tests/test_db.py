@@ -88,3 +88,56 @@ def test_api_payments_and_risk_log(app_client):
     health = app_client.get("/health").json()
     assert health["lastBlock"] is None
     assert health["model"] is False
+
+
+def _transfer(tx: str, idx: int = 0, **kw):
+    row = {
+        "tx_hash": tx,
+        "log_index": idx,
+        "block": 10,
+        "ts": 1_000_000,
+        "from_addr": PAYER1,
+        "to_addr": MERCHANT1,
+        "amount": 10000,
+    }
+    row.update(kw)
+    return row
+
+
+def test_list_transfers_filters_and_order(tmp_path):
+    conn = db.connect(tmp_path / "t.db")
+    bank = "0x" + "bb" * 20
+    sink = "0x000000000000000000000000000000000000dEaD"
+    db.insert_transfer(conn, _transfer("0x01", block=1))  # payer -> merchant (payment)
+    db.insert_transfer(conn, _transfer("0x02", block=2, from_addr=MERCHANT1, to_addr=bank))  # settlement request
+    db.insert_transfer(conn, _transfer("0x03", block=3, from_addr=bank, to_addr=sink))  # payout
+    db.insert_transfer(conn, _transfer("0x03", idx=1, block=3, from_addr=bank, to_addr=sink, amount=5))
+    conn.commit()
+
+    rows = db.list_transfers(conn)
+    assert [(r["txHash"], r["amount"]) for r in rows] == [("0x03", 5), ("0x03", 10000), ("0x02", 10000), ("0x01", 10000)]
+    assert set(rows[0]) == {"ts", "txHash", "blockNumber", "from", "to", "amount"}
+    assert rows[0]["from"] == bank and rows[0]["to"] == sink.lower() and rows[0]["blockNumber"] == 3
+    assert [r["txHash"] for r in db.list_transfers(conn, to_addr=bank.upper().replace("0X", "0x"))] == ["0x02"]
+    assert [r["txHash"] for r in db.list_transfers(conn, from_addr=bank, to_addr=sink)] == ["0x03", "0x03"]
+    assert db.list_transfers(conn, from_addr=bank, to_addr=MERCHANT1) == []
+    assert len(db.list_transfers(conn, limit=1)) == 1
+
+
+def test_api_transfers(app_client):
+    from engine import main
+
+    sink = "0x000000000000000000000000000000000000dEaD"
+    assert app_client.get("/transfers").json() == []
+    db.insert_transfer(main.state.conn, _transfer("0x0a", block=1, from_addr=MERCHANT1, to_addr=sink))
+    db.insert_transfer(main.state.conn, _transfer("0x0b", block=2))
+    main.state.conn.commit()
+
+    rows = app_client.get("/transfers?limit=5").json()
+    assert [r["txHash"] for r in rows] == ["0x0b", "0x0a"]
+    assert rows[1] == {"ts": 1_000_000, "txHash": "0x0a", "blockNumber": 1, "from": MERCHANT1.lower(), "to": sink.lower(), "amount": 10000}
+    assert [r["txHash"] for r in app_client.get(f"/transfers?to={sink.upper().replace('0X', '0x')}").json()] == ["0x0a"]
+    assert [r["txHash"] for r in app_client.get(f"/transfers?from={PAYER1}").json()] == ["0x0b"]
+    assert app_client.get(f"/transfers?from={PAYER1}&to={sink}").json() == []
+    assert app_client.get("/transfers?limit=0").status_code == 422
+    assert app_client.get("/transfers?limit=501").status_code == 422

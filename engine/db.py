@@ -210,6 +210,34 @@ def list_payments(
     ]
 
 
+def list_transfers(
+    conn: sqlite3.Connection, from_addr: str | None = None, to_addr: str | None = None, limit: int = 50
+) -> list[dict[str, Any]]:
+    """iMKRW Transfer rows (every token transfer the poller saw, not only payments), newest first."""
+    clauses: list[str] = []
+    params: list[Any] = []
+    if from_addr:
+        clauses.append("from_addr = ?")
+        params.append(from_addr.lower())
+    if to_addr:
+        clauses.append("to_addr = ?")
+        params.append(to_addr.lower())
+    where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
+    rows = conn.execute(
+        f"SELECT * FROM transfers {where} ORDER BY block DESC, log_index DESC LIMIT ?", (*params, int(limit))
+    ).fetchall()
+    return [
+        {
+            "ts": r["ts"],
+            "txHash": r["tx_hash"],
+            "blockNumber": r["block"],
+            "from": r["from_addr"],
+            "to": r["to_addr"],
+            "amount": r["amount"],
+        }
+        for r in rows
+    ]
+
 def list_risk_log(conn: sqlite3.Connection, limit: int = 50) -> list[dict[str, Any]]:
     rows = conn.execute("SELECT * FROM risk_log ORDER BY id DESC LIMIT ?", (int(limit),)).fetchall()
     return [

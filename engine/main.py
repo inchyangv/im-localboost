@@ -212,6 +212,15 @@ async def payments(
     return db.list_payments(_conn(), merchant=merchant, payer=payer, limit=limit)
 
 
+@app.get("/transfers")
+async def transfers(
+    from_: str | None = Query(None, alias="from"), to: str | None = None, limit: int = Query(50, ge=1, le=500)
+) -> list[dict[str, Any]]:
+    """Every iMKRW Transfer the poller stored, newest first. The admin settlement view reads
+    merchant -> bank rows as settlement requests and bank -> 0x...dEaD rows as KRW payouts."""
+    return db.list_transfers(_conn(), from_addr=from_, to_addr=to, limit=limit)
+
+
 def _strip_explore(rates: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return [{k: v for k, v in r.items() if k != "explore"} for r in rates]
 
