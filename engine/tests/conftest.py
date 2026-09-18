@@ -75,6 +75,11 @@ def app_client(fake_settings, monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(chain, "block_number", lambda: 42)
     monkeypatch.setattr(chain, "chain_id", lambda: 31337)
 
+    # The poller must not touch the RPC in unit tests.
+    from engine import poller
+
+    monkeypatch.setattr(poller, "sync_once", lambda conn, times: 0)
+
     sys.modules.pop("engine.main", None)
     main = importlib.import_module("engine.main")
     from fastapi.testclient import TestClient

@@ -14,7 +14,7 @@ def test_health(app_client, fake_settings):
     assert body["ok"] is True
     assert body["chainId"] == 31337
     assert body["contract"] == fake_settings.deployment.contracts["LocalBoost"]
-    assert body["lastBlock"] == 42
+    assert body["lastBlock"] is None  # poller stubbed: nothing ingested yet
     assert body["dbPath"].endswith("engine.db")
 
 
