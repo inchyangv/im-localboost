@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { usePersona } from "./PersonaProvider";
 import { Badge, Button, ChevronDown, CloseIcon, Spinner, cx } from "./ui";
 import { FAUCET_URL, LOW_GAS_WEI, chainId, chainLabel, isTestnet } from "@/lib/config";
@@ -94,7 +95,9 @@ export function WalletPicker({ onClose }: { onClose: () => void }) {
     setChoosing(null);
   }
 
-  return (
+  // Portal: the sticky header uses backdrop-filter, which would otherwise become the containing block of this fixed overlay.
+  if (typeof document === "undefined") return null;
+  return createPortal(
     <div role="dialog" aria-modal="true" aria-label="지갑 연결" className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-4 sm:items-center" onClick={onClose}>
       <div className="w-full max-w-sm rounded-3xl bg-white p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between">
@@ -158,7 +161,8 @@ export function WalletPicker({ onClose }: { onClose: () => void }) {
         )}
         <p className="mt-4 text-[11px] leading-relaxed text-gray-400">데모용 계정으로 둘러보려면 상단의 데모 계정 메뉴를 쓰세요.</p>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
