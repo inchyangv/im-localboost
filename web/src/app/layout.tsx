@@ -37,8 +37,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             )}
           </main>
           <footer className="mx-auto w-full max-w-[1120px] px-5 pb-10 text-[12px] text-gray-500">
-            <p>
-              달구벌페이 프로토타입 · {chainLabel(chainId)} (chainId {chainId}) · 하루 경계 KST · 브라우저 서명은 데모 전용이에요
+            <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span>달구벌페이 프로토타입 · {chainLabel(chainId)} (chainId {chainId}) · 하루 경계 KST</span>
+              <a href="/admin" className="underline underline-offset-2 hover:text-gray-700">
+                관리자 도구
+              </a>
+              <a href="/" className="underline underline-offset-2 hover:text-gray-700">
+                소비자 앱
+              </a>
             </p>
           </footer>
         </PersonaProvider>

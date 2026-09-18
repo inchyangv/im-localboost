@@ -26,6 +26,9 @@ async function main() {
       categoryId: m.categoryId,
       slotBaseline: m.slotBaseline,
       keyIndex: m.keyIndex,
+      roadAddress: m.roadAddress,
+      lat: m.lat,
+      lng: m.lng,
     })),
     caps: {
       ...CAPS,

@@ -288,17 +288,21 @@ export interface Actor {
   chainOk: boolean;
 }
 
-export function useConsumerActor(): Actor | null {
+/**
+ * `walletOnly` (consumer app) ignores demo personas: end users always pay with their own wallet.
+ * The admin area passes false so demo scenarios can still drive persona payers.
+ */
+export function useConsumerActor(walletOnly = false): Actor | null {
   const ctx = usePersona();
   return useMemo(() => {
-    if (ctx.mode === "wallet" && ctx.wallet.address) {
+    if (ctx.wallet.address && (ctx.mode === "wallet" || walletOnly)) {
       const s = ctx.walletSigner();
       if (!s) return null;
       return { kind: "wallet", address: ctx.wallet.address, label: ctx.wallet.name || "내 지갑", signer: s, persona: null, chainOk: ctx.wallet.chainId === chainId };
     }
-    if (ctx.persona?.role === "payer") {
+    if (!walletOnly && ctx.persona?.role === "payer") {
       return { kind: "persona", address: ctx.persona.account.address, label: ctx.persona.label, signer: personaSigner(ctx.persona.account), persona: ctx.persona, chainOk: true };
     }
     return null;
-  }, [ctx]);
+  }, [ctx, walletOnly]);
 }

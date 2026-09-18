@@ -40,7 +40,7 @@ function RateBadge({ bps }: { bps: number }) {
 }
 
 export default function ConsumerPage() {
-  const actor = useConsumerActor();
+  const actor = useConsumerActor(true);
   const { switchChain, wallet } = usePersona();
   const { rates } = useZoneRates();
   const [zone, setZone] = useState<number | null>(null);
@@ -167,10 +167,10 @@ export default function ConsumerPage() {
   if (!actor || !address) {
     return (
       <PersonaGate
-        roles={["payer"]}
+        roles={[]}
         wallet
         title="내 지갑으로 결제해 보세요"
-        desc="Kaia Wallet을 연결하면 은행에서 iMKRW를 받아 바로 결제할 수 있어요. 지갑이 없으면 데모 계정으로 둘러볼 수 있어요."
+        desc="Kaia Wallet을 연결하면 은행에서 iMKRW를 받아 바로 결제할 수 있어요."
       />
     );
   }

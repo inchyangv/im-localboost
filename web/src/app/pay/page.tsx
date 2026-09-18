@@ -39,7 +39,7 @@ export default function PayPage() {
 function PayScreen() {
   const params = useSearchParams();
   const parsed = useMemo(() => parsePayParams(new URLSearchParams(params.toString())), [params]);
-  const actor = useConsumerActor();
+  const actor = useConsumerActor(true);
   const { switchChain, wallet } = usePersona();
   const address = actor?.address ?? null;
   const isWallet = actor?.kind === "wallet";
@@ -151,7 +151,7 @@ function PayScreen() {
     return (
       <>
         <PageHeader title="QR 결제" desc={`${merchantInfo!.name}에 ${won(amount)}을 결제해요.`} />
-        <PersonaGate roles={["payer"]} wallet title="결제할 지갑을 골라 주세요" desc="내 지갑을 연결하거나 데모 소비자 계정으로 결제할 수 있어요." />
+        <PersonaGate roles={[]} wallet title="지갑을 연결하면 결제할 수 있어요" desc="Kaia Wallet을 연결하면 이 가맹점에 바로 결제할 수 있어요." />
       </>
     );
   }

@@ -4,6 +4,8 @@ export interface Zone {
   id: number;
   name: string;
   vulnerability: number;
+  lat?: number;
+  lng?: number;
 }
 
 export interface Merchant {
@@ -13,6 +15,10 @@ export interface Merchant {
   categoryId: number;
   slotBaseline: number;
   keyIndex: number | null;
+  /** Display data for the partner map (demo data modelled on real Daegu places). */
+  roadAddress?: string;
+  lat?: number;
+  lng?: number;
 }
 
 export interface Caps {

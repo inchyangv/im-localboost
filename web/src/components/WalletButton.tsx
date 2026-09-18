@@ -159,7 +159,6 @@ export function WalletPicker({ onClose }: { onClose: () => void }) {
             {wallet.error}
           </p>
         )}
-        <p className="mt-4 text-[11px] leading-relaxed text-gray-400">데모용 계정으로 둘러보려면 상단의 데모 계정 메뉴를 쓰세요.</p>
       </div>
     </div>,
     document.body,
