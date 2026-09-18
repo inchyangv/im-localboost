@@ -1,0 +1,83 @@
+{
+  "meta": {
+    "seed": 7,
+    "days": 28,
+    "consumers": 5000,
+    "generated_at": "2026-09-18T08:24:36+00:00"
+  },
+  "definitions": {
+    "vulnerable_slot_sales_uplift": "per zone, bottom-25% (day,slot) cells by `none` sales: (scenario - none) / none",
+    "net_sales_per_won": "(total_sales - none.total_sales) / total_boost",
+    "deadweight_ratio": "boost paid to consumers who bought in the same zone and (day,slot) under `none` / total_boost",
+    "farming_leakage": "boost paid to ring payments and not recovered / total_boost (C scenarios)",
+    "detection_precision": "C_on: precision of (rule tier >= 1) against the ring label, all payments",
+    "detection_recall": "C_on: recall of (rule tier >= 1) against the ring label, all payments"
+  },
+  "scenarios": {
+    "none": {
+      "vulnerable_slot_sales_uplift": 0.0,
+      "net_sales_per_won": null,
+      "deadweight_ratio": null,
+      "farming_leakage": null,
+      "detection_precision": null,
+      "detection_recall": null,
+      "total_sales": 3636417000,
+      "total_boost": 0,
+      "k": null,
+      "n_payments": 303106,
+      "n_ring_payments": 0
+    },
+    "A": {
+      "vulnerable_slot_sales_uplift": 0.17339547036629002,
+      "net_sales_per_won": 1.5468476249221834,
+      "deadweight_ratio": 0.8687109001032687,
+      "farming_leakage": null,
+      "detection_precision": null,
+      "detection_recall": null,
+      "total_sales": 4178929000,
+      "total_boost": 350721035,
+      "k": null,
+      "n_payments": 348287,
+      "n_ring_payments": 0
+    },
+    "B": {
+      "vulnerable_slot_sales_uplift": 0.1846450403421808,
+      "net_sales_per_won": 1.5781506116155473,
+      "deadweight_ratio": 0.8518617141841899,
+      "farming_leakage": null,
+      "detection_precision": null,
+      "detection_recall": null,
+      "total_sales": 4170723000,
+      "total_boost": 338564644,
+      "k": 1.5,
+      "n_payments": 347684,
+      "n_ring_payments": 0
+    },
+    "C_on": {
+      "vulnerable_slot_sales_uplift": 0.1846450403421808,
+      "net_sales_per_won": 1.6181129434544752,
+      "deadweight_ratio": 0.8510386879589145,
+      "farming_leakage": 0.0007119763698518772,
+      "detection_precision": 0.03981363828886065,
+      "detection_recall": 0.6351351351351351,
+      "total_sales": 4179446000,
+      "total_boost": 335594003,
+      "k": 1.5,
+      "n_payments": 348276,
+      "n_ring_payments": 592
+    },
+    "C_off": {
+      "vulnerable_slot_sales_uplift": 0.1846450403421808,
+      "net_sales_per_won": 1.6019595137123657,
+      "deadweight_ratio": 0.8507127572121351,
+      "farming_leakage": 0.0013423143296800576,
+      "detection_precision": null,
+      "detection_recall": null,
+      "total_sales": 4179446000,
+      "total_boost": 338977980,
+      "k": 1.5,
+      "n_payments": 348276,
+      "n_ring_payments": 592
+    }
+  }
+}

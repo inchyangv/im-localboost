@@ -80,7 +80,8 @@ deploy-web: ## Build locally and deploy prebuilt output to Vercel
 	@echo "TODO"
 
 sim: ## Run the simulation and copy results into web/public/sim
-	@echo "TODO"
+	$(PY) -m sim.run --seed 7 --days 28 --consumers 5000
+	mkdir -p web/public/sim && cp sim/out/results.json sim/out/compare.png web/public/sim/
 
 docker-engine: ## Build and run the engine Docker image
 	@echo "TODO"

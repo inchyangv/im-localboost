@@ -92,6 +92,7 @@ def merchant_recent_payers(conn: sqlite3.Connection, merchant: str, ts: int, win
 
 
 def transfer_graph(conn: sqlite3.Connection, ts: int, window: int = DAY) -> nx.DiGraph:
+    """Full transfer graph of the last `window` seconds (kept for inspection/tests)."""
     g = nx.DiGraph()
     for frm, to in conn.execute(
         "SELECT from_addr, to_addr FROM transfers WHERE ts >= ? AND ts <= ?", (ts - window, ts)
@@ -100,11 +101,34 @@ def transfer_graph(conn: sqlite3.Connection, ts: int, window: int = DAY) -> nx.D
     return g
 
 
+def reachable_subgraph(conn: sqlite3.Connection, source: str, ts: int, hops: int = BACKFLOW_HOPS, window: int = DAY) -> nx.DiGraph:
+    """Edges reachable from `source` within `hops` hops over transfers in (ts - window, ts].
+    Expanding hop by hop in SQL keeps the graph tiny compared with the full 24h edge set."""
+    g = nx.DiGraph()
+    frontier = {source}
+    seen = {source}
+    lo, hi = ts - window, ts
+    for _ in range(hops):
+        if not frontier:
+            break
+        nxt: set[str] = set()
+        for frm in frontier:
+            for (to,) in conn.execute(
+                "SELECT DISTINCT to_addr FROM transfers WHERE from_addr = ? AND ts >= ? AND ts <= ?", (frm, lo, hi)
+            ):
+                g.add_edge(frm, to)
+                if to not in seen:
+                    seen.add(to)
+                    nxt.add(to)
+        frontier = nxt
+    return g
+
+
 def has_backflow(conn: sqlite3.Connection, payer: str, merchant: str, ts: int) -> bool:
     """True when merchant -> ... -> payer exists within BACKFLOW_HOPS hops in the last 24h of transfers."""
     if payer == merchant:
         return False
-    g = transfer_graph(conn, ts)
+    g = reachable_subgraph(conn, merchant, ts)
     if merchant not in g:
         return False
     reach = nx.single_source_shortest_path_length(g, merchant, cutoff=BACKFLOW_HOPS)
