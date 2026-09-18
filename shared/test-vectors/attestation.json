@@ -1,0 +1,48 @@
+{
+  "domain": {
+    "name": "LocalBoost",
+    "version": "1",
+    "chainId": 31337,
+    "verifyingContract": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+  },
+  "types": {
+    "Attestation": [
+      {
+        "name": "payer",
+        "type": "address"
+      },
+      {
+        "name": "merchant",
+        "type": "address"
+      },
+      {
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "name": "tier",
+        "type": "uint8"
+      },
+      {
+        "name": "nonce",
+        "type": "uint256"
+      },
+      {
+        "name": "deadline",
+        "type": "uint256"
+      }
+    ]
+  },
+  "primaryType": "Attestation",
+  "message": {
+    "payer": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+    "merchant": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+    "amount": 10000,
+    "tier": 0,
+    "nonce": 12345,
+    "deadline": 1900000000
+  },
+  "signerKey": "0x47e179ec197488593b187f80a00eb0da91f1b9d0b13f8733639f19c30a34926a",
+  "signer": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+  "signature": "0x457bbb92a20e85309091b62a01992bcc3e5b52072ac8cadf0fb8686e292238257d440810874372bc81cce042ffce764a6204c5ec89c4d0fac393c6f4a05008911c"
+}

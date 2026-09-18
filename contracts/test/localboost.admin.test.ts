@@ -253,11 +253,4 @@ describe("LocalBoost admin surface", () => {
     });
   });
 
-  describe("unimplemented payment surface", () => {
-    it("payWithBoost/release/clawback/quoteBoost revert with TODO until T-05", async () => {
-      const { acc, boost } = await deploy();
-      await expect(boost.connect(acc.bank).clawback(1)).to.be.revertedWith("TODO");
-      await expect(boost.release(1)).to.be.revertedWith("TODO");
-    });
-  });
 });

@@ -165,6 +165,8 @@ contract LocalBoost is AccessControl, EIP712 {
     }
 
     // ---------------------------------------------------------------- anyone
+    /// @notice Pays `amount` to `merchant` (part of it optionally from credit) and grants a bonus
+    ///         computed on-chain. Never reverts because of caps or the risk tier: only the bonus shrinks.
     function payWithBoost(
         address merchant,
         uint256 amount,
@@ -172,19 +174,91 @@ contract LocalBoost is AccessControl, EIP712 {
         Attestation calldata att,
         bytes calldata sig
     ) external {
-        (merchant, amount, useCredit, att, sig);
-        revert("TODO");
+        // 1. payer must be linked to a person
+        bytes32 personId = registry.personOf(msg.sender);
+        if (personId == bytes32(0)) revert UnregisteredPayer();
+
+        // 2. attestation: signer, binding, expiry, replay
+        _verify(att, sig);
+        if (att.payer != msg.sender || att.merchant != merchant || att.amount != amount) revert AttestationMismatch();
+        if (block.timestamp > att.deadline) revert AttestationExpired();
+        if (usedNonce[att.nonce]) revert NonceUsed();
+
+        // 3. merchant must be active
+        MerchantRegistry.Merchant memory m = registry.get(merchant);
+        if (!m.active) revert MerchantInactive();
+
+        // 4. settle the payment (cash part via allowance, credit part from the pool)
+        if (useCredit > _credit[personId]) revert InsufficientCredit();
+        if (useCredit > amount) revert CreditExceedsAmount();
+        usedNonce[att.nonce] = true;
+        uint256 cash = amount - useCredit;
+        if (cash > 0) token.safeTransferFrom(msg.sender, merchant, cash);
+        if (useCredit > 0) {
+            _credit[personId] -= useCredit;
+            token.safeTransfer(merchant, useCredit);
+        }
+
+        // 5-6. bonus from the cash part, clamped in SPEC order, then tier handling and counters
+        (uint256 boost, uint256 pendingId) = _grantBoost(personId, merchant, m, cash, att.tier);
+
+        // 7.
+        emit Paid(msg.sender, personId, merchant, m.zoneId, amount, useCredit, boost, att.tier, pendingId);
     }
 
+    /// @dev Steps 5 and 6 of payWithBoost. Tier 2 and above: no bonus and no counter updates.
+    function _grantBoost(
+        bytes32 personId,
+        address merchant,
+        MerchantRegistry.Merchant memory m,
+        uint256 cash,
+        uint8 tier
+    ) private returns (uint256 boost, uint256 pendingId) {
+        if (tier >= 2) return (0, 0);
+
+        uint64 epoch = _hourEpoch();
+        uint64 day = _day();
+        boost = _computeBoost(personId, merchant, m, cash, epoch, day);
+
+        slotVolume[merchant][epoch] += cash;
+        if (boost == 0) return (0, 0);
+
+        zoneBudget[m.zoneId] -= boost;
+        personDay[personId][day] += boost;
+        zoneHourSpent[m.zoneId][epoch] += boost;
+        pairDay[personId][merchant] = day;
+        if (tier == 0) {
+            _credit[personId] += boost;
+        } else {
+            pendingId = nextPendingId++;
+            pendings[pendingId] = Pending({
+                personId: personId,
+                zoneId: m.zoneId,
+                amount: boost,
+                releaseAt: uint64(block.timestamp + caps.pendingDelay),
+                status: 0
+            });
+        }
+    }
+
+    /// @notice Credits a pending bonus once its hold period has elapsed. Callable by anyone.
     function release(uint256 pendingId) external {
-        (pendingId);
-        revert("TODO");
+        Pending storage p = pendings[pendingId];
+        if (p.status != 0 || p.amount == 0) revert NotPending();
+        if (block.timestamp < p.releaseAt) revert NotReleasable();
+        p.status = 1;
+        _credit[p.personId] += p.amount;
+        emit PendingReleased(pendingId, p.personId, p.amount);
     }
 
     // ---------------------------------------------------------------- BANK
+    /// @notice Returns a pending bonus to its zone budget. Allowed at any time while still pending.
     function clawback(uint256 pendingId) external onlyRole(BANK_ROLE) {
-        (pendingId);
-        revert("TODO");
+        Pending storage p = pendings[pendingId];
+        if (p.status != 0 || p.amount == 0) revert NotPending();
+        p.status = 2;
+        zoneBudget[p.zoneId] += p.amount;
+        emit PendingClawedBack(pendingId, p.zoneId, p.amount);
     }
 
     function setAttester(address a, bool ok) external onlyRole(BANK_ROLE) {
@@ -202,16 +276,51 @@ contract LocalBoost is AccessControl, EIP712 {
         return _credit[personId];
     }
 
+    /// @notice Bonus a tier-0 payment would earn right now. Mirrors step 5 of payWithBoost.
     function quoteBoost(address payer, address merchant, uint256 amount, uint256 useCredit)
         external
         view
         returns (uint256 boost)
     {
-        (payer, merchant, amount, useCredit, boost);
-        revert("TODO");
+        bytes32 personId = registry.personOf(payer);
+        if (personId == bytes32(0) || useCredit > amount) return 0;
+        MerchantRegistry.Merchant memory m = registry.get(merchant);
+        return _computeBoost(personId, merchant, m, amount - useCredit, _hourEpoch(), _day());
     }
 
     // ---------------------------------------------------------------- internals
+    /// @dev Step 5: bonus-eligible base is clamped in this order: pair/day, slot cap, rate,
+    ///      per-tx cap, person daily cap, zone hourly cap, zone budget. Never reverts.
+    function _computeBoost(
+        bytes32 personId,
+        address merchant,
+        MerchantRegistry.Merchant memory m,
+        uint256 base,
+        uint64 epoch,
+        uint64 day
+    ) internal view returns (uint256 boost) {
+        if (pairDay[personId][merchant] == day) return 0;
+
+        uint256 slotCap = (m.slotBaseline * caps.slotCapBps) / 10000;
+        uint256 volume = slotVolume[merchant][epoch];
+        uint256 remainSlot = volume >= slotCap ? 0 : slotCap - volume;
+        if (base > remainSlot) base = remainSlot;
+
+        boost = (base * rates[m.zoneId][epoch]) / 10000;
+        boost = _min(boost, caps.perTxBoost);
+        boost = _min(boost, _remaining(caps.personDailyBoost, personDay[personId][day]));
+        boost = _min(boost, _remaining(zoneHourlyCap[m.zoneId], zoneHourSpent[m.zoneId][epoch]));
+        boost = _min(boost, zoneBudget[m.zoneId]);
+    }
+
+    function _remaining(uint256 cap, uint256 used) private pure returns (uint256) {
+        return used >= cap ? 0 : cap - used;
+    }
+
+    function _min(uint256 a, uint256 b) private pure returns (uint256) {
+        return a < b ? a : b;
+    }
+
     function _hourEpoch() internal view returns (uint64) {
         return uint64(block.timestamp / 3600);
     }
