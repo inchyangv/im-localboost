@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 from contextlib import asynccontextmanager
 from typing import Any
@@ -48,6 +49,8 @@ async def lifespan(_: FastAPI):
     state.stop = asyncio.Event()
     if _daily_k_hook not in poller.tick_hooks:
         poller.tick_hooks.append(_daily_k_hook)
+    if _auto_republish_hook not in poller.tick_hooks:
+        poller.tick_hooks.append(_auto_republish_hook)
     state.task = asyncio.create_task(poller.run(state.conn, state.stop))
     try:
         yield
@@ -200,6 +203,64 @@ async def rates_current() -> list[dict[str, Any]]:
     return _strip_explore(preview)
 
 
+LAST_OVERRIDES_KEY = "last_overrides"
+AUTO_PUBLISH_FAILED_KEY = "auto_publish_failed_epoch"
+
+
+def _chain_max_bps() -> int:
+    """On-chain caps().maxRateBps; falls back to the seeded value when the RPC is unreachable."""
+    try:
+        return int(chain.local_boost().functions.caps().call()[0])
+    except Exception as exc:  # noqa: BLE001
+        log.warning("caps() read failed, using seeded maxRateBps: %s", exc)
+        return int(_settings.deployment.caps.get("maxRateBps", boost.MAX_BPS))
+
+
+def publish_rates(conn, overrides: dict[int, int]) -> dict[str, Any]:
+    """Computes rates for the current and the next hour and publishes both via setRates (sync).
+    Remembers `overrides` so the poller can re-publish them at the next hour boundary."""
+    now = chain.now_ts()
+    epoch = chain.hour_epoch(now)
+    k = boost.get_k(conn)
+    max_bps = _chain_max_bps()
+    current = boost.rates_for(now, k, True, overrides, max_bps=max_bps)
+    nxt = boost.rates_for((epoch + 1) * 3600, k, False, overrides, max_bps=max_bps)
+
+    def publish(hour_epoch: int, rates: list[dict[str, Any]]) -> str:
+        fn = chain.local_boost().functions.setRates(hour_epoch, [r["zoneId"] for r in rates], [r["bps"] for r in rates])
+        return chain.send_tx(fn, _settings.oracle_key)
+
+    tx_hash = publish(epoch, current)
+    next_tx_hash = publish(epoch + 1, nxt)
+    boost.store_published(conn, epoch, current, tx_hash)
+    boost.store_published(conn, epoch + 1, nxt, next_tx_hash)
+    db.kv_set(conn, LAST_OVERRIDES_KEY, json.dumps({str(z): b for z, b in overrides.items()}))
+    log.info("published rates epoch=%d %s explore=%s", epoch, [(r["zoneId"], r["bps"]) for r in current], [r["zoneId"] for r in current if r["explore"]])
+    return {"txHash": tx_hash, "nextTxHash": next_tx_hash, "rates": _strip_explore(current)}
+
+
+def _auto_republish_hook(conn) -> None:
+    """Demo guard: once rates have been published manually, keep the current and next hour covered
+    after every hour boundary, reusing the last overrides (e.g. the fixed 북성로 10%). Retries at most
+    once per hour epoch so a failing RPC does not spam setRates."""
+    raw = db.kv_get(conn, LAST_OVERRIDES_KEY)
+    if raw is None:
+        return
+    epoch = chain.hour_epoch(chain.now_ts())
+    if boost.published_rates(conn, epoch + 1):
+        return
+    failed = db.kv_get(conn, AUTO_PUBLISH_FAILED_KEY)
+    if failed is not None and int(failed) == epoch:
+        return
+    overrides = {int(z): int(b) for z, b in json.loads(raw).items()}
+    try:
+        publish_rates(conn, overrides)
+        log.info("auto re-published rates for epoch %d and %d", epoch, epoch + 1)
+    except Exception as exc:  # noqa: BLE001
+        db.kv_set(conn, AUTO_PUBLISH_FAILED_KEY, str(epoch))
+        log.warning("auto re-publish failed for epoch %d: %s", epoch, exc)
+
+
 @app.post("/rates/publish")
 async def rates_publish(req: PublishRequest | None = None) -> dict[str, Any]:
     """Computes rates for the current and the next hour and publishes both via setRates."""
@@ -209,27 +270,10 @@ async def rates_publish(req: PublishRequest | None = None) -> dict[str, Any]:
         if not (0 <= int(bps) <= boost.MAX_BPS):
             raise HTTPException(status_code=422, detail=f"bps for zone {zid} must be within 0..{boost.MAX_BPS}")
         overrides[int(zid)] = int(bps)
-
-    now = await asyncio.to_thread(chain.now_ts)
-    epoch = chain.hour_epoch(now)
-    k = boost.get_k(conn)
     try:
-        current = await asyncio.to_thread(boost.rates_for, now, k, True, overrides)
-        nxt = await asyncio.to_thread(boost.rates_for, (epoch + 1) * 3600, k, False, overrides)
+        return await asyncio.to_thread(publish_rates, conn, overrides)
     except FileNotFoundError as exc:
         raise HTTPException(status_code=503, detail=str(exc))
-
-    def publish(hour_epoch: int, rates: list[dict[str, Any]]) -> str:
-        fn = chain.local_boost().functions.setRates(hour_epoch, [r["zoneId"] for r in rates], [r["bps"] for r in rates])
-        return chain.send_tx(fn, _settings.oracle_key)
-
-    try:
-        tx_hash = await asyncio.to_thread(publish, epoch, current)
-        next_tx_hash = await asyncio.to_thread(publish, epoch + 1, nxt)
     except Exception as exc:  # noqa: BLE001
         log.exception("rates publish failed")
         raise HTTPException(status_code=502, detail=f"setRates failed: {exc}")
-    boost.store_published(conn, epoch, current, tx_hash)
-    boost.store_published(conn, epoch + 1, nxt, next_tx_hash)
-    log.info("published rates epoch=%d %s explore=%s", epoch, [(r["zoneId"], r["bps"]) for r in current], [r["zoneId"] for r in current if r["explore"]])
-    return {"txHash": tx_hash, "nextTxHash": next_tx_hash, "rates": _strip_explore(current)}

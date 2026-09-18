@@ -42,7 +42,7 @@ export function DemoPanel({ onChanged }: { onChanged: () => void }) {
       </h2>
       <p className="mt-1 text-xs text-gray-500">
         담합 링: 가맹점 2가 소비자 2~5에게 9,000원을 되돌려 준 뒤(환류) 각 소비자가 결제합니다. 판정은 나온 그대로 표시됩니다
-        (tier 1 → 보류, tier 2 → 즉시 차단). 서명 재사용: 소비자 화면의 직전 서명을 같은 인자로 다시 제출합니다.
+        (tier 1 → 보류, tier 2 → 즉시 차단). 서명 재사용: 소비자 화면의 직전 서명을 같은 인자로 다시 제출합니다 (보관된 서명이 없거나 곧 만료되면 소비자 1이 1,000원 결제를 먼저 합니다).
       </p>
       <div className="mt-3 flex flex-wrap gap-3">
         <button onClick={ring} disabled={busy !== null} className="rounded bg-purple-700 px-4 py-2 text-sm text-white disabled:opacity-50">

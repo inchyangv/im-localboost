@@ -101,3 +101,25 @@ def test_k_daily_update(tmp_path, fake_settings):
     conn.commit()
     assert boost.update_k_if_new_day(conn, later + 2 * 86400) is True
     assert boost.get_k(conn) == pytest.approx(0.5625)
+
+
+def test_compute_bps_respects_chain_max_bps():
+    # A lowered on-chain maxRateBps must clip computed, override and explore values alike.
+    assert boost.compute_bps(1.0, 1.0, 0.5, max_bps=800) == 800
+    assert boost.compute_bps(0.1, 1.0, 0.5, max_bps=800) == 500
+
+
+def test_rates_for_clips_to_max_bps(fake_settings, monkeypatch):
+    monkeypatch.setattr(boost, "predict", lambda zid, ts: 0)
+    monkeypatch.setattr(boost, "baseline", lambda zid, dow, hour: 100)
+
+    class AlwaysExplore(random.Random):
+        def random(self):
+            return 0.0
+
+        def choice(self, seq):
+            return 1500
+
+    out = boost.rates_for(1_789_700_000, 0.5, explore=True, overrides={4: 1000}, rng=AlwaysExplore(), max_bps=800)
+    assert all(r["bps"] <= 800 for r in out)
+    assert {r["zoneId"]: r["bps"] for r in out}[4] == 800

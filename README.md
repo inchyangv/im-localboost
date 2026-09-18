@@ -63,7 +63,7 @@ make web            # [터미널 3] next dev (기본 3000)
 알아 둘 점:
 
 - 4단계는 프로덕션 실행에서 소비자 2~5가 전부 **tier 2**(환류 규칙 + 모델 점수 0.947~0.989)로 즉시 차단되었고 보류는 생기지 않았습니다. 최종 등급은 규칙과 모델 중 큰 값이며, 학습된 모델이 "신규 지갑 + 환류 + 직후 결제"를 0.9 이상으로 평가하기 때문입니다. 보류(tier 1) → 환수 흐름만 따로 보려면 attester 키로 tier 1 서명을 만들어 결제하는 스크립트를 씁니다: `cd contracts && PAYER=2 MERCHANT=1 AMOUNT=10000 TIER=1 npx hardhat run scripts/demo-pay.ts --network localhost`.
-- 5단계는 직전 서명의 유효 시간(120초)이 지나면 `AttestationExpired`가 먼저 걸립니다. 결제 직후에 누르세요.
+- 5단계는 보관된 서명이 없거나 유효 시간(120초)이 30초 미만 남았으면 소비자 1이 1,000원 결제를 먼저 한 뒤 그 서명을 재제출하므로 언제 눌러도 `NonceUsed`가 나옵니다.
 - 데모는 시드 직후 상태(북성로 예산 0, 오늘 결제 없음)를 전제합니다. 하루 경계는 KST입니다. 다시 하려면 `make deploy-local`(로컬) 또는 `make deploy-kairos` 후 엔진·웹 재배포(Kairos)를 합니다.
 - 브라우저 없이 같은 순서를 검증: `cd web && npx tsx --env-file=.env.local scripts/demo-e2e.ts` (Kairos: `ENV_FILE=.env.kairos ENGINE_URL=<엔진 URL> npx tsx scripts/demo-e2e.ts`). `make test-integration`도 소비자 1의 결제를 남기므로, 통합 테스트와 데모(브라우저·e2e)는 각각 새 시드에서 시작하세요.
 
@@ -135,7 +135,7 @@ make sim   # sim/run.py --seed 7 --days 28 --consumers 5000 → sim/out/, web/pu
 
 모델 계층은 LightGBM 이진 분류기(피처 11개, 학습·서빙이 같은 `engine/features.py`)이며 `score < 0.5 → 0`, `0.5~0.8 → 1`, `≥ 0.8 → 2`입니다.
 
-**율 계산** (엔진 `/rates/publish`, zone × 1시간): LightGBM 회귀로 `predictedSales`, `baseline` = 같은 슬롯 최근 8주 상위 25% 평균, `slack = max(0, 1 - predictedSales / baseline)`, `bps = clip(round_to_50(k × slack × vulnerability[zone] × 10000), 0, 1500)`. `k`는 하루 한 번 `clamp(planned_spend / actual_spend, 0.5, 1.5)`로 보정하고, 슬롯의 10%는 `{0, 500, 1000, 1500}` 탐색값을 씁니다(overrides가 있는 상권 제외).
+**율 계산** (엔진 `/rates/publish`, zone × 1시간): LightGBM 회귀로 `predictedSales`, `baseline` = 같은 슬롯 최근 8주 상위 25% 평균, `slack = max(0, 1 - predictedSales / baseline)`, `bps = clip(round_to_50(k × slack × vulnerability[zone] × 10000), 0, 1500)`. `k`는 하루 한 번 `clamp(planned_spend / actual_spend, 0.5, 1.5)`로 보정하고, 슬롯의 10%는 `{0, 500, 1000, 1500}` 탐색값을 씁니다(overrides가 있는 상권 제외). 상한은 온체인 `caps().maxRateBps`를 읽어 적용하므로 대구시가 최대 율을 낮춰도 게시가 `RateTooHigh`로 막히지 않습니다. 한 번 게시한 뒤에는 엔진 폴러가 정시마다 마지막 overrides로 현재·다음 시간을 자동 재게시합니다.
 
 금액은 전부 원 단위 정수(토큰 소수점 0)이고, 하루 경계는 KST(`(timestamp + 9h) / 1 day`)입니다.
 
@@ -153,5 +153,5 @@ make sim   # sim/run.py --seed 7 --days 28 --consumers 5000 → sim/out/, web/pu
 
 - 시드 직후에는 모든 지갑이 "신규"라서 담합 링의 다섯 번째 결제는 신규 지갑 군집 규칙만으로도 tier 2가 됩니다. 프로덕션 실행에서는 모델 점수 때문에 2~5번째 전부 tier 2였습니다.
 - Kairos 공개 RPC는 트랜잭션 확인이 수 초씩 걸리고 엔진 폴러가 새 배포를 따라잡는 데 시간이 걸릴 수 있습니다. `/health`의 `lastBlock`이 오르는지 확인하세요.
-- 서명 유효 시간은 120초입니다. 데모 5단계는 결제 직후에 실행해야 `NonceUsed`가 보입니다.
+- 서명 유효 시간은 120초입니다. 소비자 화면에서 만료된 서명으로 결제하면 `AttestationExpired`가 납니다 (데모 5단계 버튼은 새 결제를 먼저 만들어 이를 피합니다).
 - 위험 모델·수요 모델은 합성 데이터로 학습했으므로 지표가 실데이터를 대표하지 않습니다.

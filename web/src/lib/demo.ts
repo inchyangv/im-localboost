@@ -110,15 +110,50 @@ export interface ReplayResult {
   message: string;
 }
 
-/** Re-submits the last stored attestation with identical arguments. Must revert with NonceUsed. */
+/** Seconds of validity the stored signature must still have; below this a fresh payment is made first. */
+const REPLAY_MIN_REMAINING_SECS = 30;
+const REPLAY_FRESH_AMOUNT = 1000;
+
+/**
+ * Re-submits the last stored attestation with identical arguments. Must revert with NonceUsed.
+ * Demo guard: when no signature is stored, or the stored one is about to expire (deadline check runs
+ * before the nonce check on-chain, which would show AttestationExpired instead), consumer 1 first makes
+ * a small fresh payment so the replay always demonstrates the nonce guard.
+ */
 export async function replayLastSignature(log: DemoLog): Promise<ReplayResult> {
-  const last = loadLastSignature();
-  if (!last) {
-    const message = "먼저 소비자 화면에서 결제하세요 (보관된 서명이 없습니다)";
-    log(message);
-    return { ok: false, errorName: null, message };
+  let last = loadLastSignature();
+  const now = await chainNow();
+  const remaining = last ? Number(last.attestation.deadline) - now : -1;
+  if (!last || remaining < REPLAY_MIN_REMAINING_SECS) {
+    const consumer = personas.find((p) => p.role === "payer" && p.index === 0);
+    const merchant = merchants[0];
+    if (!consumer || !merchant) {
+      const message = "새 서명을 만들 소비자 1 페르소나 또는 가맹점 1이 없습니다";
+      log(message);
+      return { ok: false, errorName: null, message };
+    }
+    log(
+      last
+        ? `보관된 서명이 ${Math.max(0, remaining)}초 뒤 만료되어 재사용 전에 새 결제를 만듭니다`
+        : "보관된 서명이 없어 재사용 전에 새 결제를 만듭니다",
+    );
+    try {
+      const r = await runPayFlow(consumer.account, merchant.address, REPLAY_FRESH_AMOUNT, 0, (s) => log(`${consumer.label}: ${s}`));
+      log(`${consumer.label}: ${merchant.name}에 ${REPLAY_FRESH_AMOUNT.toLocaleString("ko-KR")}원 결제 완료 (tx ${r.hash.slice(0, 10)}…)`);
+    } catch (e) {
+      const p = parseChainError(e);
+      const message = `새 결제에 실패해 재사용을 시연할 수 없습니다: ${p.message}`;
+      log(message);
+      return { ok: false, errorName: p.name, message };
+    }
+    last = loadLastSignature();
+    if (!last) {
+      const message = "새 결제 뒤에도 보관된 서명이 없습니다";
+      log(message);
+      return { ok: false, errorName: null, message };
+    }
   }
-  const persona = personas.find((p) => p.account.address.toLowerCase() === last.payerId.toLowerCase());
+  const persona = personas.find((p) => p.account.address.toLowerCase() === last!.payerId.toLowerCase());
   if (!persona) {
     const message = "보관된 서명의 결제자 페르소나를 찾을 수 없습니다";
     log(message);

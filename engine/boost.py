@@ -37,10 +37,11 @@ def round_to_50(x: float) -> int:
     return int(round(x / 50.0)) * 50
 
 
-def compute_bps(slack: float, vulnerability: float, k: float) -> int:
-    """clip(round_to_50(k * slack * vulnerability * 10000), 0, MAX_BPS)."""
+def compute_bps(slack: float, vulnerability: float, k: float, max_bps: int = MAX_BPS) -> int:
+    """clip(round_to_50(k * slack * vulnerability * 10000), 0, max_bps). `max_bps` follows the on-chain
+    caps().maxRateBps so a lowered cap never makes setRates revert with RateTooHigh."""
     raw = k * max(0.0, slack) * vulnerability * 10000.0
-    return int(min(MAX_BPS, max(0, round_to_50(raw))))
+    return int(min(int(max_bps), max(0, round_to_50(raw))))
 
 
 def slack_of(predicted: int, baseline: int) -> float:
@@ -150,9 +151,17 @@ def update_k_if_new_day(conn: sqlite3.Connection, now_ts: int) -> bool:
 
 
 # ------------------------------------------------------------------ rates
-def rates_for(ts: int, k: float, explore: bool, overrides: dict[int, int] | None = None, rng: random.Random | None = None) -> list[dict[str, Any]]:
+def rates_for(
+    ts: int,
+    k: float,
+    explore: bool,
+    overrides: dict[int, int] | None = None,
+    rng: random.Random | None = None,
+    max_bps: int = MAX_BPS,
+) -> list[dict[str, Any]]:
     overrides = overrides or {}
     rng = rng or random.Random()
+    max_bps = int(max_bps)
     dow, hour = kst_dow_hour(ts)
     out = []
     for z in get_settings().deployment.zones:
@@ -160,12 +169,12 @@ def rates_for(ts: int, k: float, explore: bool, overrides: dict[int, int] | None
         pred = predict(zid, ts)
         base = baseline(zid, dow, hour)
         slack = slack_of(pred, base)
-        bps = compute_bps(slack, float(z["vulnerability"]), k)
+        bps = compute_bps(slack, float(z["vulnerability"]), k, max_bps)
         explored = False
         if zid in overrides:
-            bps = int(overrides[zid])
+            bps = min(int(overrides[zid]), max_bps)
         elif explore and rng.random() < EXPLORE_PROB:
-            bps = rng.choice(EXPLORE_CHOICES)
+            bps = min(rng.choice(EXPLORE_CHOICES), max_bps)
             explored = True
         out.append({
             "zoneId": zid,
