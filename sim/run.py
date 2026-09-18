@@ -383,7 +383,7 @@ def plot(scenarios: dict[str, dict[str, Any]], path: Path) -> None:
                 b.set_alpha(0.3)
         ax.set_title(m)
         ax.tick_params(axis="x", labelsize=8)
-    fig.suptitle("iM-LocalBoost simulation (hatched = not applicable)")
+    fig.suptitle("달구벌페이 simulation (hatched = not applicable)")
     fig.tight_layout()
     fig.savefig(path, dpi=110)
 

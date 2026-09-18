@@ -34,7 +34,7 @@ make deploy-web   ENGINE_URL=https://engine-production-1edd.up.railway.app ENV_F
 
 ## 검증 (2026-09-18, Vercel + Railway + Kairos)
 
-- `/`, `/city`, `/merchant` 모두 200. 번들 청크에 엔진 URL·탐색기 URL·chainId 1001·LocalBoost 주소가 포함됨
+- `/`, `/city`, `/merchant` 모두 200. 번들 청크에 엔진 URL·탐색기 URL·chainId 1001·DalgubeolPay 주소가 포함됨
 - SPEC 11절 1~5단계를 브라우저에서 통과. 스크린샷 `docs/demo/prod-step1.png` ~ `prod-step5.png`
   1. 북성로 500,000원 예치 → 율 게시 → 북성로 10.0%
   2. 소비자 1 → 북성로 한식당 10,000원: 보너스 1,000원, 크레딧 1,000원, tier 0

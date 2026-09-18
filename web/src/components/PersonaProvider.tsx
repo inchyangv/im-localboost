@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { personas, type Persona } from "@/lib/personas";
 
-const STORAGE_KEY = "localboost.persona";
+const STORAGE_KEY = "dalgubeolpay.persona";
 
 interface PersonaContextValue {
   persona: Persona | null;

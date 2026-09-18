@@ -74,7 +74,7 @@ def env():
 
 
 def _ensure_budget_and_rate(env: dict) -> None:
-    w3, boost, token = env["w3"], chain.local_boost(), chain.token()
+    w3, boost, token = env["w3"], chain.dalgubeol_pay(), chain.token()
     zone = env["zone_id"]
     if boost.functions.zoneBudget(zone).call() == 0:
         city = Account.from_key(env["city_key"]).address
@@ -88,7 +88,7 @@ def _ensure_budget_and_rate(env: dict) -> None:
 
 
 def test_attest_pay_and_replay(env: dict, capsys):
-    w3, boost = env["w3"], chain.local_boost()
+    w3, boost = env["w3"], chain.dalgubeol_pay()
     payer = Account.from_key(env["payer_key"]).address
     merchant = env["merchant"]
     amount = 10_000

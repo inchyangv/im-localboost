@@ -25,7 +25,7 @@ const mem = new Map<string, string>();
 
 async function main() {
   const { publicClient } = await import("../src/lib/chain");
-  const { addresses, localBoostAbi, readBoostState, tokenAbi } = await import("../src/lib/contracts");
+  const { addresses, dalgubeolPayAbi, readBoostState, tokenAbi } = await import("../src/lib/contracts");
   const { merchants, zoneName } = await import("../src/lib/config");
   const city = await import("../src/lib/city");
   const { ratesPublish, riskLog } = await import("../src/lib/engine");
@@ -46,8 +46,8 @@ async function main() {
   const m1 = merchants[0];
   const m2 = merchants[1];
   const bal = async (a: `0x${string}`) => (await publicClient.readContract({ address: addresses.MockIMKRW, abi: tokenAbi, functionName: "balanceOf", args: [a] })) as bigint;
-  const rate = async (z: number) => Number(await publicClient.readContract({ address: addresses.LocalBoost, abi: localBoostAbi, functionName: "currentRate", args: [z] }));
-  const budget = async (z: number) => (await publicClient.readContract({ address: addresses.LocalBoost, abi: localBoostAbi, functionName: "zoneBudget", args: [z] })) as bigint;
+  const rate = async (z: number) => Number(await publicClient.readContract({ address: addresses.DalgubeolPay, abi: dalgubeolPayAbi, functionName: "currentRate", args: [z] }));
+  const budget = async (z: number) => (await publicClient.readContract({ address: addresses.DalgubeolPay, abi: dalgubeolPayAbi, functionName: "zoneBudget", args: [z] })) as bigint;
 
   console.log("step 1: /city deposit into 북성로 and publish rates (북성로 10% fixed)");
   const b0 = await budget(4);

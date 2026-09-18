@@ -2,7 +2,7 @@ import type { Hex } from "viem";
 import type { PrivateKeyAccount } from "viem/accounts";
 import { publicClient, walletFor } from "./chain";
 import { caps as defaultCaps, zones, type Caps } from "./config";
-import { addresses, chainNow, hourEpoch, localBoostAbi, tokenAbi } from "./contracts";
+import { addresses, chainNow, hourEpoch, dalgubeolPayAbi, tokenAbi } from "./contracts";
 import { ensureAllowance } from "./pay";
 
 export interface ZoneCard {
@@ -24,11 +24,11 @@ export interface PendingRow {
 }
 
 async function readLB<T>(functionName: string, args: unknown[] = []): Promise<T> {
-  return (await publicClient.readContract({ address: addresses.LocalBoost, abi: localBoostAbi, functionName, args })) as T;
+  return (await publicClient.readContract({ address: addresses.DalgubeolPay, abi: dalgubeolPayAbi, functionName, args })) as T;
 }
 
 async function writeLB(account: PrivateKeyAccount, functionName: string, args: unknown[]): Promise<Hex> {
-  const { request } = await publicClient.simulateContract({ account, address: addresses.LocalBoost, abi: localBoostAbi, functionName, args });
+  const { request } = await publicClient.simulateContract({ account, address: addresses.DalgubeolPay, abi: dalgubeolPayAbi, functionName, args });
   const hash = await walletFor(account).writeContract(request);
   await publicClient.waitForTransactionReceipt({ hash });
   return hash;

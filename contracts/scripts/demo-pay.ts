@@ -12,7 +12,7 @@ import { signAttestation } from "../test/eip712";
 async function main() {
   const w = roleWallets();
   const rec = await readDeployRecord();
-  const boost = await ethers.getContractAt("LocalBoost", rec.contracts.LocalBoost);
+  const boost = await ethers.getContractAt("DalgubeolPay", rec.contracts.DalgubeolPay);
   const registry = await ethers.getContractAt("MerchantRegistry", rec.contracts.MerchantRegistry);
   const { chainId } = await ethers.provider.getNetwork();
 
@@ -38,7 +38,7 @@ async function main() {
 
   const latest = await ethers.provider.getBlock("latest");
   const att = { payer: payer.address, merchant, amount, tier, nonce: BigInt(Date.now()), deadline: latest!.timestamp + 600 };
-  const sig = await signAttestation(w.attester, rec.contracts.LocalBoost, chainId, att);
+  const sig = await signAttestation(w.attester, rec.contracts.DalgubeolPay, chainId, att);
   const quote = await boost.quoteBoost(payer.address, merchant, amount, useCredit);
   const tx = await boost.connect(payer).payWithBoost(merchant, amount, useCredit, att, sig);
   const receipt = await tx.wait();

@@ -3,7 +3,7 @@ import type { Hex } from "viem";
 import type { PrivateKeyAccount } from "viem/accounts";
 import { publicClient, walletFor } from "./chain";
 import { merchants } from "./config";
-import { addresses, kstDay, localBoostAbi, registryAbi, tokenAbi, chainNow } from "./contracts";
+import { addresses, kstDay, dalgubeolPayAbi, registryAbi, tokenAbi, chainNow } from "./contracts";
 import { parseChainError, reasonLabel } from "./errors";
 import { attestationTuple, loadLastSignature, runPayFlow } from "./pay";
 import { personas, type Persona } from "./personas";
@@ -34,7 +34,7 @@ async function personIdOf(addr: `0x${string}`): Promise<`0x${string}`> {
 
 async function alreadyBoostedToday(payer: `0x${string}`, merchant: `0x${string}`): Promise<boolean> {
   const [pid, now] = await Promise.all([personIdOf(payer), chainNow()]);
-  const pairDay = (await publicClient.readContract({ address: addresses.LocalBoost, abi: localBoostAbi, functionName: "pairDay", args: [pid, merchant] })) as bigint;
+  const pairDay = (await publicClient.readContract({ address: addresses.DalgubeolPay, abi: dalgubeolPayAbi, functionName: "pairDay", args: [pid, merchant] })) as bigint;
   return Number(pairDay) === kstDay(now);
 }
 
@@ -163,8 +163,8 @@ export async function replayLastSignature(log: DemoLog): Promise<ReplayResult> {
   try {
     await publicClient.simulateContract({
       account: persona.account as PrivateKeyAccount,
-      address: addresses.LocalBoost,
-      abi: localBoostAbi,
+      address: addresses.DalgubeolPay,
+      abi: dalgubeolPayAbi,
       functionName: "payWithBoost",
       args: [last.merchant, BigInt(last.amount), BigInt(last.useCredit), attestationTuple(last.attestation), last.signature],
     });

@@ -2,10 +2,10 @@ import { expect } from "chai";
 import { ethers, network } from "hardhat";
 import { time } from "@nomicfoundation/hardhat-network-helpers";
 import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
-import type { LocalBoost, MerchantRegistry, MockIMKRW } from "../typechain-types";
+import type { DalgubeolPay, MerchantRegistry, MockIMKRW } from "../typechain-types";
 import { getAccounts, personId, type Accounts } from "./fixtures";
 import { signAttestation, type AttestationStruct } from "./eip712";
-import { DEMO_CAPS } from "./localboost.admin.test";
+import { DEMO_CAPS } from "./dalgubeolpay.admin.test";
 
 const PENDING_DELAY = DEMO_CAPS.pendingDelay;
 const ZONES = [1, 2, 3, 4, 5];
@@ -15,7 +15,7 @@ interface Ctx {
   acc: Accounts;
   token: MockIMKRW;
   registry: MerchantRegistry;
-  boost: LocalBoost;
+  boost: DalgubeolPay;
   boostAddr: string;
   chainId: bigint;
   /** merchants[0]=zone 4 (Bukseongro), [1]=zone 2 (Deuranngil), [2]=zone 5 (Seomun) */
@@ -31,10 +31,10 @@ async function deployFixture(): Promise<Ctx> {
   const token = (await ethers.deployContract("MockIMKRW", [], acc.deployer)) as unknown as MockIMKRW;
   const registry = (await ethers.deployContract("MerchantRegistry", [], acc.deployer)) as unknown as MerchantRegistry;
   const boost = (await ethers.deployContract(
-    "LocalBoost",
+    "DalgubeolPay",
     [await token.getAddress(), await registry.getAddress(), DEMO_CAPS],
     acc.deployer,
-  )) as unknown as LocalBoost;
+  )) as unknown as DalgubeolPay;
   const boostAddr = await boost.getAddress();
 
   await registry.grantRole(await registry.BANK_ROLE(), acc.bank.address);
@@ -125,7 +125,7 @@ async function pay(payer: HardhatEthersSigner, merchant: string, amount: number,
   };
 }
 
-/** Invariant 5: token.balanceOf(LocalBoost) == Σ zoneBudget + Σ credit + Σ pending(status 0). */
+/** Invariant 5: token.balanceOf(DalgubeolPay) == Σ zoneBudget + Σ credit + Σ pending(status 0). */
 async function expectInvariant() {
   let sum = 0n;
   for (const z of ZONES) sum += await ctx.boost.zoneBudget(z);
@@ -138,7 +138,7 @@ async function expectInvariant() {
   expect(await ctx.token.balanceOf(ctx.boostAddr), "invariant 5 (case 17)").to.equal(sum);
 }
 
-describe("LocalBoost payWithBoost", () => {
+describe("DalgubeolPay payWithBoost", () => {
   beforeEach(async () => {
     ctx = await deployFixture();
   });

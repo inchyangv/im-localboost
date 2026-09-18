@@ -16,7 +16,7 @@ loadEnv({ path: path.resolve(__dirname, "..", "..", ".env"), override: false, qu
 
 async function main() {
   const { publicClient, walletFor } = await import("../src/lib/chain");
-  const { addresses, localBoostAbi, readBoostState, tokenAbi } = await import("../src/lib/contracts");
+  const { addresses, dalgubeolPayAbi, readBoostState, tokenAbi } = await import("../src/lib/contracts");
   const { merchants } = await import("../src/lib/config");
   const { runPayFlow } = await import("../src/lib/pay");
   const { zeroBoostReason } = await import("../src/lib/reasons");
@@ -39,7 +39,7 @@ async function main() {
   const bal = async (addr: `0x${string}`) =>
     (await publicClient.readContract({ address: addresses.MockIMKRW, abi: tokenAbi, functionName: "balanceOf", args: [addr] })) as bigint;
   const quote = async (payer: `0x${string}`, merchant: `0x${string}`, amount: number, useCredit: number) =>
-    (await publicClient.readContract({ address: addresses.LocalBoost, abi: localBoostAbi, functionName: "quoteBoost", args: [payer, merchant, BigInt(amount), BigInt(useCredit)] })) as bigint;
+    (await publicClient.readContract({ address: addresses.DalgubeolPay, abi: dalgubeolPayAbi, functionName: "quoteBoost", args: [payer, merchant, BigInt(amount), BigInt(useCredit)] })) as bigint;
 
   if (mode === "engine-down") {
     const nonceBefore = await publicClient.getTransactionCount({ address: payer1.address });
@@ -60,10 +60,10 @@ async function main() {
   const oracleWallet = walletFor(oracle);
   const block = await publicClient.getBlock({ blockTag: "latest" });
   const epoch = block.timestamp / 3600n;
-  const h1 = await cityWallet.writeContract({ address: addresses.LocalBoost, abi: localBoostAbi, functionName: "depositBudget", args: [4, 500_000n] });
+  const h1 = await cityWallet.writeContract({ address: addresses.DalgubeolPay, abi: dalgubeolPayAbi, functionName: "depositBudget", args: [4, 500_000n] });
   await publicClient.waitForTransactionReceipt({ hash: h1 });
   for (const e of [epoch, epoch + 1n]) {
-    const h = await oracleWallet.writeContract({ address: addresses.LocalBoost, abi: localBoostAbi, functionName: "setRates", args: [e, [4, 2], [1000, 1000]] });
+    const h = await oracleWallet.writeContract({ address: addresses.DalgubeolPay, abi: dalgubeolPayAbi, functionName: "setRates", args: [e, [4, 2], [1000, 1000]] });
     await publicClient.waitForTransactionReceipt({ hash: h });
   }
   console.log("setup: zone 4 funded 500,000; rates 10% for zones 4, 2");
@@ -97,10 +97,10 @@ async function main() {
 
   // Step 5: consumer 5 with allowance 0 -> approve first, then pay
   const w5 = walletFor(payer5);
-  const h0 = await w5.writeContract({ address: addresses.MockIMKRW, abi: tokenAbi, functionName: "approve", args: [addresses.LocalBoost, 0n] });
+  const h0 = await w5.writeContract({ address: addresses.MockIMKRW, abi: tokenAbi, functionName: "approve", args: [addresses.DalgubeolPay, 0n] });
   await publicClient.waitForTransactionReceipt({ hash: h0 });
   const r5 = await runPayFlow(payer5, m1.address, 10_000, 0, (s) => console.log("   step:", s));
-  const allowance = (await publicClient.readContract({ address: addresses.MockIMKRW, abi: tokenAbi, functionName: "allowance", args: [payer5.address, addresses.LocalBoost] })) as bigint;
+  const allowance = (await publicClient.readContract({ address: addresses.MockIMKRW, abi: tokenAbi, functionName: "allowance", args: [payer5.address, addresses.DalgubeolPay] })) as bigint;
   check("allowance 0 -> approve tx then payment", r5.approveHash !== null && r5.paid !== null && allowance === maxUint256, `approve=${r5.approveHash} pay=${r5.hash}`);
 
   console.log(failures ? `${failures} check(s) failed` : "verify-consumer passed");

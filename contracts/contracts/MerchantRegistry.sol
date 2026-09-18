@@ -5,7 +5,7 @@ import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
 /// @title Merchant and person registry
 /// @notice Bank-maintained registry of merchants (zone, category, hourly baseline) and the
-///         wallet -> personId mapping that all per-person caps in LocalBoost key on.
+///         wallet -> personId mapping that all per-person caps in DalgubeolPay key on.
 contract MerchantRegistry is AccessControl {
     bytes32 public constant BANK_ROLE = keccak256("BANK_ROLE");
 

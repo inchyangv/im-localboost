@@ -46,7 +46,7 @@ export function roleWallets(): RoleWallets {
 export interface DeployRecord {
   chainId: number;
   startBlock: number;
-  contracts: { MockIMKRW: string; MerchantRegistry: string; LocalBoost: string };
+  contracts: { MockIMKRW: string; MerchantRegistry: string; DalgubeolPay: string };
 }
 
 export function deployRecordPath(chainId: number | bigint): string {

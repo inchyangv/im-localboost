@@ -29,7 +29,7 @@ def _load_main(monkeypatch, sent: list[tuple[int, list[int]]], now: list[int]):
     class _Contract:
         functions = _Functions()
 
-    monkeypatch.setattr(chain, "local_boost", lambda: _Contract())
+    monkeypatch.setattr(chain, "dalgubeol_pay", lambda: _Contract())
 
     def send_tx(fn, key, timeout=120):
         sent.append((fn.args[0], fn.args[2]))

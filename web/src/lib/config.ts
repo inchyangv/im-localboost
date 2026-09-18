@@ -28,7 +28,7 @@ export interface Deployment {
   chainId: number;
   explorer: string | null;
   startBlock: number;
-  contracts: { MockIMKRW: `0x${string}`; MerchantRegistry: `0x${string}`; LocalBoost: `0x${string}` };
+  contracts: { MockIMKRW: `0x${string}`; MerchantRegistry: `0x${string}`; DalgubeolPay: `0x${string}` };
   zones: Zone[];
   merchants: Merchant[];
   caps: Caps;

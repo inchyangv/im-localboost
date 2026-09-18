@@ -1,4 +1,4 @@
-"""Background poller: copies Paid (LocalBoost) and Transfer (MockIMKRW) logs into SQLite.
+"""Background poller: copies Paid (DalgubeolPay) and Transfer (MockIMKRW) logs into SQLite.
 
 Runs every POLL_INTERVAL seconds from kv.last_block + 1 to the latest block in chunks of
 CHUNK_BLOCKS. Errors are logged and retried on the next tick. Block timestamps are cached."""
@@ -54,7 +54,7 @@ def sync_once(conn: sqlite3.Connection, times: BlockTimeCache) -> int:
     if start > latest:
         return latest if start_raw is None else int(start_raw)
 
-    boost = chain.local_boost()
+    boost = chain.dalgubeol_pay()
     token = chain.token()
     last_done = start - 1
     while last_done < latest:

@@ -1,26 +1,30 @@
 import { getContract, type Abi } from "viem";
 import type { PrivateKeyAccount } from "viem/accounts";
-import localBoostAbiJson from "@shared/abi/LocalBoost.json";
+import dalgubeolPayAbiJson from "@shared/abi/DalgubeolPay.json";
 import registryAbiJson from "@shared/abi/MerchantRegistry.json";
 import tokenAbiJson from "@shared/abi/MockIMKRW.json";
 import { publicClient, walletFor } from "./chain";
 import { caps, deployment } from "./config";
 
-export const localBoostAbi = localBoostAbiJson as Abi;
+export const dalgubeolPayAbi = dalgubeolPayAbiJson as Abi;
+/** @deprecated transitional alias while pages migrate to `dalgubeolPayAbi`. */
+export const localBoostAbi = dalgubeolPayAbi;
 export const registryAbi = registryAbiJson as Abi;
 export const tokenAbi = tokenAbiJson as Abi;
 
 const ZERO = "0x0000000000000000000000000000000000000000" as const;
 export const addresses = {
-  LocalBoost: deployment?.contracts.LocalBoost ?? ZERO,
+  DalgubeolPay: deployment?.contracts.DalgubeolPay ?? ZERO,
+  /** @deprecated transitional alias while pages migrate to `addresses.DalgubeolPay`. */
+  LocalBoost: deployment?.contracts.DalgubeolPay ?? ZERO,
   MerchantRegistry: deployment?.contracts.MerchantRegistry ?? ZERO,
   MockIMKRW: deployment?.contracts.MockIMKRW ?? ZERO,
 };
 
-export function localBoost(account?: PrivateKeyAccount) {
+export function dalgubeolPay(account?: PrivateKeyAccount) {
   return getContract({
-    address: addresses.LocalBoost,
-    abi: localBoostAbi,
+    address: addresses.DalgubeolPay,
+    abi: dalgubeolPayAbi,
     client: account ? { public: publicClient, wallet: walletFor(account) } : publicClient,
   });
 }
@@ -82,7 +86,7 @@ export async function readBoostState(
   const now = await chainNow();
   const epoch = hourEpoch(now);
   const day = kstDay(now);
-  const lb = addresses.LocalBoost;
+  const lb = addresses.DalgubeolPay;
   const personId = await read<`0x${string}`>(addresses.MerchantRegistry, registryAbi, "personOf", [payer]);
   const m = await read<{ zoneId: number; categoryId: number; active: boolean; slotBaseline: bigint }>(
     addresses.MerchantRegistry,
@@ -92,14 +96,14 @@ export async function readBoostState(
   );
   const [pairDay, currentRate, slotVolume, personDay, zoneHourSpent, zoneHourlyCap, zoneBudget, credit] =
     await Promise.all([
-      read<bigint>(lb, localBoostAbi, "pairDay", [personId, merchant]),
-      read<number>(lb, localBoostAbi, "currentRate", [zoneId]),
-      read<bigint>(lb, localBoostAbi, "slotVolume", [merchant, BigInt(epoch)]),
-      read<bigint>(lb, localBoostAbi, "personDay", [personId, BigInt(day)]),
-      read<bigint>(lb, localBoostAbi, "zoneHourSpent", [zoneId, BigInt(epoch)]),
-      read<bigint>(lb, localBoostAbi, "zoneHourlyCap", [zoneId]),
-      read<bigint>(lb, localBoostAbi, "zoneBudget", [zoneId]),
-      read<bigint>(lb, localBoostAbi, "creditOf", [personId]),
+      read<bigint>(lb, dalgubeolPayAbi, "pairDay", [personId, merchant]),
+      read<number>(lb, dalgubeolPayAbi, "currentRate", [zoneId]),
+      read<bigint>(lb, dalgubeolPayAbi, "slotVolume", [merchant, BigInt(epoch)]),
+      read<bigint>(lb, dalgubeolPayAbi, "personDay", [personId, BigInt(day)]),
+      read<bigint>(lb, dalgubeolPayAbi, "zoneHourSpent", [zoneId, BigInt(epoch)]),
+      read<bigint>(lb, dalgubeolPayAbi, "zoneHourlyCap", [zoneId]),
+      read<bigint>(lb, dalgubeolPayAbi, "zoneBudget", [zoneId]),
+      read<bigint>(lb, dalgubeolPayAbi, "creditOf", [personId]),
     ]);
   const slotBaseline = BigInt(m.slotBaseline);
   return {

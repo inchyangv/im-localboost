@@ -44,7 +44,7 @@
             "type": "uint32"
           }
         ],
-        "internalType": "struct LocalBoost.Caps",
+        "internalType": "struct DalgubeolPay.Caps",
         "name": "initialCaps",
         "type": "tuple"
       }
@@ -310,7 +310,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct LocalBoost.Caps",
+        "internalType": "struct DalgubeolPay.Caps",
         "name": "caps",
         "type": "tuple"
       }
@@ -355,7 +355,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct LocalBoost.Caps",
+        "internalType": "struct DalgubeolPay.Caps",
         "name": "caps",
         "type": "tuple"
       }
@@ -982,7 +982,7 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct LocalBoost.Attestation",
+        "internalType": "struct DalgubeolPay.Attestation",
         "name": "att",
         "type": "tuple"
       },
@@ -1133,7 +1133,7 @@
             "type": "uint32"
           }
         ],
-        "internalType": "struct LocalBoost.Caps",
+        "internalType": "struct DalgubeolPay.Caps",
         "name": "c",
         "type": "tuple"
       }

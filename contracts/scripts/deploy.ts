@@ -2,7 +2,7 @@ import { ethers } from "hardhat";
 import { CAPS } from "./demo-config";
 import { intEnv, roleWallets, writeDeployRecord } from "./accounts";
 
-/** Deploys MockIMKRW, MerchantRegistry and LocalBoost, wires roles, and records addresses
+/** Deploys MockIMKRW, MerchantRegistry and DalgubeolPay, wires roles, and records addresses
  *  in contracts/.deploy-<chainId>.json for seed.ts / write-shared.ts. Network-agnostic. */
 async function main() {
   const w = roleWallets();
@@ -24,7 +24,7 @@ async function main() {
   await registry.waitForDeployment();
 
   const boost = await ethers.deployContract(
-    "LocalBoost",
+    "DalgubeolPay",
     [await token.getAddress(), await registry.getAddress(), caps],
     w.deployer,
   );
@@ -43,7 +43,7 @@ async function main() {
     contracts: {
       MockIMKRW: await token.getAddress(),
       MerchantRegistry: await registry.getAddress(),
-      LocalBoost: await boost.getAddress(),
+      DalgubeolPay: await boost.getAddress(),
     },
   };
   writeDeployRecord(rec);

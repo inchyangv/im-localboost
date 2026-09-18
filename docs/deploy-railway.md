@@ -33,7 +33,7 @@ echo -n "<value>" | railway variable set KEY --stdin --service engine --skip-dep
 
 ## 검증 (2026-09-18)
 
-- `/health`: `ok: true`, `chainId: 1001`, `model: true`, `contract`가 `shared/deployments.json["1001"].contracts.LocalBoost`와 일치, 30초 간격 두 번 호출에서 `lastBlock` 228092357 → 228092388 증가
+- `/health`: `ok: true`, `chainId: 1001`, `model: true`, `contract`가 `shared/deployments.json["1001"].contracts.DalgubeolPay`와 일치, 30초 간격 두 번 호출에서 `lastBlock` 228092357 → 228092388 증가
 - `/payments?limit=5`: Kairos 첫 결제 `0xc7d8bf8b…b94f` 표시, `railway redeploy` 이후에도 유지
 - `POST /rates/publish {"overrides":{"4":1000}}`: txHash 반환, Kairos에서 `currentRate(4) == 1000`
 - `OPTIONS /attest` (Origin `https://anything.vercel.app`): `access-control-allow-origin` 헤더 있음

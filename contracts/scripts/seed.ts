@@ -9,8 +9,8 @@ async function main() {
   const rec = await readDeployRecord();
   const token = await ethers.getContractAt("MockIMKRW", rec.contracts.MockIMKRW, w.deployer);
   const registry = await ethers.getContractAt("MerchantRegistry", rec.contracts.MerchantRegistry, w.bank);
-  const boost = await ethers.getContractAt("LocalBoost", rec.contracts.LocalBoost, w.city);
-  const boostAddr = rec.contracts.LocalBoost;
+  const boost = await ethers.getContractAt("DalgubeolPay", rec.contracts.DalgubeolPay, w.city);
+  const boostAddr = rec.contracts.DalgubeolPay;
 
   // Guard against a second run: payer 1 already linked means the seed has been applied.
   const existing = await registry.personOf(w.payers[0].address);

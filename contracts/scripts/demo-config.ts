@@ -65,7 +65,7 @@ export function personId(n: number): string {
 
 /** Receive-only demo merchant address, deterministic across networks. */
 export function derivedMerchantAddress(n: number): string {
-  const key = ethers.keccak256(ethers.toUtf8Bytes(`iM-LocalBoost/demo-merchant/${n}`));
+  const key = ethers.keccak256(ethers.toUtf8Bytes(`달구벌페이/demo-merchant/${n}`));
   return new ethers.Wallet(key).address;
 }
 

@@ -24,7 +24,7 @@ async function main() {
 
   // 1. deposit 500,000 into zone 4 with allowance reset to 0 -> approve then deposit
   const w = walletFor(cityAcc);
-  const h0 = await w.writeContract({ address: addresses.MockIMKRW, abi: tokenAbi, functionName: "approve", args: [addresses.LocalBoost, 0n] });
+  const h0 = await w.writeContract({ address: addresses.MockIMKRW, abi: tokenAbi, functionName: "approve", args: [addresses.DalgubeolPay, 0n] });
   await publicClient.waitForTransactionReceipt({ hash: h0 });
   const before = (await card(4)).budget;
   const steps: string[] = [];

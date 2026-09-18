@@ -13,7 +13,7 @@ def test_health(app_client, fake_settings):
     body = r.json()
     assert body["ok"] is True
     assert body["chainId"] == 31337
-    assert body["contract"] == fake_settings.deployment.contracts["LocalBoost"]
+    assert body["contract"] == fake_settings.deployment.contracts["DalgubeolPay"]
     assert body["lastBlock"] is None  # poller stubbed: nothing ingested yet
     assert body["dbPath"].endswith("engine.db")
 
@@ -37,7 +37,7 @@ def test_attest_returns_valid_signature(app_client, fake_settings):
     assert sig.startswith("0x") and len(sig) == 132
 
     recovered = Account.recover_message(
-        encode_typed_data(domain_data=domain(31337, fake_settings.deployment.contracts["LocalBoost"]), message_types=ATTESTATION_TYPES, message_data={**att, "nonce": nonce}),
+        encode_typed_data(domain_data=domain(31337, fake_settings.deployment.contracts["DalgubeolPay"]), message_types=ATTESTATION_TYPES, message_data={**att, "nonce": nonce}),
         signature=sig,
     )
     assert recovered == Account.from_key(fake_settings.attester_key).address

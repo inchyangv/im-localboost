@@ -21,10 +21,10 @@ export const ATTESTATION_TYPES: Record<string, TypedDataField[]> = {
 };
 
 export function attestationDomain(contractAddress: string, chainId: bigint | number): TypedDataDomain {
-  return { name: "LocalBoost", version: "1", chainId, verifyingContract: contractAddress };
+  return { name: "DalgubeolPay", version: "1", chainId, verifyingContract: contractAddress };
 }
 
-/** Sign an Attestation with the EIP-712 domain LocalBoost/1 bound to the given contract. */
+/** Sign an Attestation with the EIP-712 domain DalgubeolPay/1 bound to the given contract. */
 export async function signAttestation(
   signer: Signer,
   contractAddress: string,

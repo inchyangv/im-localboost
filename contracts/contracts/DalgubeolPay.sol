@@ -8,11 +8,11 @@ import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {MerchantRegistry} from "./MerchantRegistry.sol";
 
-/// @title LocalBoost
+/// @title DalgubeolPay
 /// @notice Zone/hour dynamic bonus pool for a local currency. The contract alone computes bonus
 ///         amounts from on-chain rates and enforces every cap; the off-chain engine only publishes
 ///         rates and signs a risk tier. Payments never revert because of a tier or a cap.
-contract LocalBoost is AccessControl, EIP712 {
+contract DalgubeolPay is AccessControl, EIP712 {
     using SafeERC20 for IERC20;
 
     // ---------------------------------------------------------------- roles
@@ -114,7 +114,7 @@ contract LocalBoost is AccessControl, EIP712 {
     uint256 public nextPendingId = 1;
     mapping(uint256 => Pending) public pendings;
 
-    constructor(address token_, address registry_, Caps memory initialCaps) EIP712("LocalBoost", "1") {
+    constructor(address token_, address registry_, Caps memory initialCaps) EIP712("DalgubeolPay", "1") {
         if (token_ == address(0) || registry_ == address(0)) revert ZeroAddress();
         token = IERC20(token_);
         registry = MerchantRegistry(registry_);

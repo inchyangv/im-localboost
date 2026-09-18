@@ -43,13 +43,13 @@ async function main() {
 
   const abiDir = path.join(SHARED, "abi");
   fs.mkdirSync(abiDir, { recursive: true });
-  for (const name of ["MockIMKRW", "MerchantRegistry", "LocalBoost"]) {
+  for (const name of ["MockIMKRW", "MerchantRegistry", "DalgubeolPay"]) {
     const art = await artifacts.readArtifact(name);
     fs.writeFileSync(path.join(abiDir, `${name}.json`), JSON.stringify(art.abi, null, 2) + "\n");
   }
 
   const { chainId } = await ethers.provider.getNetwork();
-  console.log(`wrote ${file} [${chainId}] and ${abiDir}/{MockIMKRW,MerchantRegistry,LocalBoost}.json`);
+  console.log(`wrote ${file} [${chainId}] and ${abiDir}/{MockIMKRW,MerchantRegistry,DalgubeolPay}.json`);
 }
 
 main().catch((e) => {

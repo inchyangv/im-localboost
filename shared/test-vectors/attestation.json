@@ -1,6 +1,6 @@
 {
   "domain": {
-    "name": "LocalBoost",
+    "name": "DalgubeolPay",
     "version": "1",
     "chainId": 31337,
     "verifyingContract": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
@@ -44,5 +44,5 @@
   },
   "signerKey": "0x47e179ec197488593b187f80a00eb0da91f1b9d0b13f8733639f19c30a34926a",
   "signer": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
-  "signature": "0x457bbb92a20e85309091b62a01992bcc3e5b52072ac8cadf0fb8686e292238257d440810874372bc81cce042ffce764a6204c5ec89c4d0fac393c6f4a05008911c"
+  "signature": "0x8a57713317f7518bb5d0a65d6197d2a001e9934fe4ebbd887b4641b4a744685a44d819e9d0e59db418bed0771e01a159333201740de0256d49b1a615b765ee1a1c"
 }

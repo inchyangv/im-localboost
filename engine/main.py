@@ -1,4 +1,4 @@
-"""FastAPI entrypoint for the iM-LocalBoost engine."""
+"""FastAPI entrypoint for the 달구벌페이 engine."""
 
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ log = logging.getLogger("engine.main")
 
 _settings = get_settings()
 _signer = AttestationSigner(
-    _settings.attester_key, _settings.chain_id, _settings.deployment.contracts["LocalBoost"]
+    _settings.attester_key, _settings.chain_id, _settings.deployment.contracts["DalgubeolPay"]
 )
 _model = risk_model.load()
 
@@ -64,7 +64,7 @@ async def lifespan(_: FastAPI):
         state.conn.close()
 
 
-app = FastAPI(title="iM-LocalBoost engine", lifespan=lifespan)
+app = FastAPI(title="달구벌페이 engine", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[_settings.web_origin, "http://localhost:3000"],
@@ -108,7 +108,7 @@ async def health() -> dict[str, Any]:
     return {
         "ok": ok,
         "chainId": s.chain_id,
-        "contract": s.deployment.contracts["LocalBoost"],
+        "contract": s.deployment.contracts["DalgubeolPay"],
         "lastBlock": int(last_block) if last_block is not None else None,
         "dbPath": str(s.db_path),
         "model": _model is not None,
@@ -123,8 +123,8 @@ def _risk_context(merchant: str) -> Ctx:
         m = chain.registry().functions.get(merchant).call()
         zone_id = int(m[0])
         slot_baseline = int(m[3])
-        rate = int(chain.local_boost().functions.currentRate(zone_id).call())
-        per_tx = int(chain.local_boost().functions.caps().call()[1])
+        rate = int(chain.dalgubeol_pay().functions.currentRate(zone_id).call())
+        per_tx = int(chain.dalgubeol_pay().functions.caps().call()[1])
     except Exception as exc:  # noqa: BLE001
         log.warning("risk context from chain failed, using fallback: %s", exc)
         fallback = next((x for x in s.deployment.merchants if x["address"].lower() == merchant.lower()), None)
@@ -210,7 +210,7 @@ AUTO_PUBLISH_FAILED_KEY = "auto_publish_failed_epoch"
 def _chain_max_bps() -> int:
     """On-chain caps().maxRateBps; falls back to the seeded value when the RPC is unreachable."""
     try:
-        return int(chain.local_boost().functions.caps().call()[0])
+        return int(chain.dalgubeol_pay().functions.caps().call()[0])
     except Exception as exc:  # noqa: BLE001
         log.warning("caps() read failed, using seeded maxRateBps: %s", exc)
         return int(_settings.deployment.caps.get("maxRateBps", boost.MAX_BPS))
@@ -227,7 +227,7 @@ def publish_rates(conn, overrides: dict[int, int]) -> dict[str, Any]:
     nxt = boost.rates_for((epoch + 1) * 3600, k, False, overrides, max_bps=max_bps)
 
     def publish(hour_epoch: int, rates: list[dict[str, Any]]) -> str:
-        fn = chain.local_boost().functions.setRates(hour_epoch, [r["zoneId"] for r in rates], [r["bps"] for r in rates])
+        fn = chain.dalgubeol_pay().functions.setRates(hour_epoch, [r["zoneId"] for r in rates], [r["bps"] for r in rates])
         return chain.send_tx(fn, _settings.oracle_key)
 
     tx_hash = publish(epoch, current)

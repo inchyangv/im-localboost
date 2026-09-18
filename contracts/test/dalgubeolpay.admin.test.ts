@@ -16,13 +16,13 @@ export const DEMO_CAPS = {
   capsDelay: CAPS_DELAY,
 };
 
-describe("LocalBoost admin surface", () => {
+describe("DalgubeolPay admin surface", () => {
   async function deploy() {
     const acc = await getAccounts();
     const token = await ethers.deployContract("MockIMKRW", [], acc.deployer);
     const registry = await ethers.deployContract("MerchantRegistry", [], acc.deployer);
     const boost = await ethers.deployContract(
-      "LocalBoost",
+      "DalgubeolPay",
       [await token.getAddress(), await registry.getAddress(), DEMO_CAPS],
       acc.deployer,
     );
@@ -53,7 +53,7 @@ describe("LocalBoost admin surface", () => {
 
     it("rejects zero token or registry address", async () => {
       const { acc, token, registry } = await deploy();
-      const factory = await ethers.getContractFactory("LocalBoost", acc.deployer);
+      const factory = await ethers.getContractFactory("DalgubeolPay", acc.deployer);
       await expect(factory.deploy(ethers.ZeroAddress, await registry.getAddress(), DEMO_CAPS))
         .to.be.revertedWithCustomError(factory, "ZeroAddress");
       await expect(factory.deploy(await token.getAddress(), ethers.ZeroAddress, DEMO_CAPS))
@@ -190,7 +190,7 @@ describe("LocalBoost admin surface", () => {
     async function deployHarness() {
       const { acc, token, registry } = await deploy();
       const harness = await ethers.deployContract(
-        "LocalBoostHarness",
+        "DalgubeolPayHarness",
         [await token.getAddress(), await registry.getAddress(), DEMO_CAPS],
         acc.deployer,
       );
@@ -236,7 +236,7 @@ describe("LocalBoost admin surface", () => {
       const { acc, harness, chainId } = await deployHarness();
       const att = baseAtt(acc.payers[0].address, acc.merchants[0].address);
       const expected = ethers.TypedDataEncoder.hash(
-        { name: "LocalBoost", version: "1", chainId, verifyingContract: await harness.getAddress() },
+        { name: "DalgubeolPay", version: "1", chainId, verifyingContract: await harness.getAddress() },
         {
           Attestation: [
             { name: "payer", type: "address" },

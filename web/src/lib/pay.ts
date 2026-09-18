@@ -1,7 +1,7 @@
 import { maxUint256, parseEventLogs, type Hex } from "viem";
 import type { PrivateKeyAccount } from "viem/accounts";
 import { publicClient, walletFor } from "./chain";
-import { addresses, localBoostAbi, tokenAbi } from "./contracts";
+import { addresses, dalgubeolPayAbi, tokenAbi } from "./contracts";
 import { attest, type AttestResponse } from "./engine";
 
 export interface PaidEvent {
@@ -25,7 +25,7 @@ export interface StoredSignature {
   payerId: string;
 }
 
-export const LAST_SIGNATURE_KEY = "localboost.lastSignature";
+export const LAST_SIGNATURE_KEY = "dalgubeolpay.lastSignature";
 
 export function saveLastSignature(s: StoredSignature): void {
   try {
@@ -60,7 +60,7 @@ export async function ensureAllowance(account: PrivateKeyAccount, needed: bigint
     address: addresses.MockIMKRW,
     abi: tokenAbi,
     functionName: "allowance",
-    args: [account.address, addresses.LocalBoost],
+    args: [account.address, addresses.DalgubeolPay],
   })) as bigint;
   if (allowance >= needed) return null;
   onStep?.("iMKRW 사용 승인(approve) 트랜잭션 전송 중…");
@@ -70,7 +70,7 @@ export async function ensureAllowance(account: PrivateKeyAccount, needed: bigint
     address: addresses.MockIMKRW,
     abi: tokenAbi,
     functionName: "approve",
-    args: [addresses.LocalBoost, maxUint256],
+    args: [addresses.DalgubeolPay, maxUint256],
   });
   const hash = await wallet.writeContract(request);
   await publicClient.waitForTransactionReceipt({ hash });
@@ -89,14 +89,14 @@ export async function payWithBoost(
   const wallet = walletFor(account);
   const { request } = await publicClient.simulateContract({
     account,
-    address: addresses.LocalBoost,
-    abi: localBoostAbi,
+    address: addresses.DalgubeolPay,
+    abi: dalgubeolPayAbi,
     functionName: "payWithBoost",
     args: [merchant, amount, useCredit, attestationTuple(att), signature],
   });
   const hash = await wallet.writeContract(request);
   const receipt = await publicClient.waitForTransactionReceipt({ hash });
-  const logs = parseEventLogs({ abi: localBoostAbi, logs: receipt.logs, eventName: "Paid" });
+  const logs = parseEventLogs({ abi: dalgubeolPayAbi, logs: receipt.logs, eventName: "Paid" });
   const first = logs[0] as unknown as { args: PaidEvent } | undefined;
   const paid = first ? { ...first.args, zoneId: Number(first.args.zoneId), tier: Number(first.args.tier) } : null;
   return { hash, paid, blockNumber: receipt.blockNumber };

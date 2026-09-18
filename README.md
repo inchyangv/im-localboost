@@ -1,4 +1,4 @@
-# iM-LocalBoost
+# 달구벌페이
 
 상권·시간대별로 보너스율이 달라지는 지역화폐 결제 프로토타입입니다. 소비자가 가맹점에 mock iMKRW로 결제하면 컨트랙트가 온체인에 게시된 보너스율로 보너스 크레딧을 계산해 지급하고, 오프체인 엔진이 수요 예측으로 시간대별 율을 정하며 담합(파밍) 위험 등급을 EIP-712 서명으로 발급합니다. 위험 등급과 상한은 보너스만 줄이고 결제 자체는 막지 않습니다.
 
@@ -12,7 +12,7 @@
    ┌──────────────────────────┐   ┌──────────────────────────────────────┐
    │ engine (FastAPI, Railway) │   │ Kaia Kairos (chainId 1001)            │
    │ · 이벤트 폴러 → SQLite    │◄──│ MockIMKRW · MerchantRegistry ·        │
-   │ · 규칙 4종 + LightGBM 위험 │   │ LocalBoost (율·예산·상한·보류·환수)   │
+   │ · 규칙 4종 + LightGBM 위험 │   │ DalgubeolPay (율·예산·상한·보류·환수)   │
    │ · 수요 예측 → 율 게시     │──►│ 보너스 금액은 컨트랙트만 계산          │
    │ · EIP-712 Attestation 서명│   └──────────────────────────────────────┘
    └──────────────────────────┘
@@ -28,7 +28,7 @@
 | 엔진 | https://engine-production-1edd.up.railway.app/health |
 | MockIMKRW | https://kairos.kaiascan.io/address/0xCE53923831A766a03419c36ef6F08eAF33Cd9A6D |
 | MerchantRegistry | https://kairos.kaiascan.io/address/0x8bAfE729E4f16FC54F26E3E412E83BF008eFF1aD |
-| LocalBoost | https://kairos.kaiascan.io/address/0x70c55cb306cc42aA5b48f5936Ac7F7FE9d3419Bd |
+| DalgubeolPay | https://kairos.kaiascan.io/address/0x70c55cb306cc42aA5b48f5936Ac7F7FE9d3419Bd |
 
 배포 절차와 검증 기록은 `docs/deploy-kairos.md`, `docs/deploy-railway.md`, `docs/deploy-vercel.md`에 있습니다. Kairos 배포에서는 보류 지연 60초가 실제 시간이고, 공개 RPC라 트랜잭션 확인에 몇 초씩 걸립니다.
 
@@ -114,7 +114,7 @@ make sim   # sim/run.py --seed 7 --days 28 --consumers 5000 → sim/out/, web/pu
 2. 보너스 금액은 컨트랙트만 계산한다. 서명에는 등급만 있고 금액·율이 없다.
 3. 모든 개인 상한은 주소가 아니라 `personId` 단위다.
 4. 크레딧으로 낸 금액에는 보너스가 붙지 않는다.
-5. 회계 등식 `iMKRW.balanceOf(LocalBoost) == Σ zoneBudget + Σ credit + Σ pending(미처리)`가 모든 상태 변경 뒤에 성립한다.
+5. 회계 등식 `iMKRW.balanceOf(DalgubeolPay) == Σ zoneBudget + Σ credit + Σ pending(미처리)`가 모든 상태 변경 뒤에 성립한다.
 
 **보너스 계산 순서** (`payWithBoost`, 어느 단계에서 0이 되어도 revert하지 않음):
 

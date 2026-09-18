@@ -33,7 +33,7 @@ describe("EIP-712 attestation test vector", () => {
     expect(recovered).to.equal(wallet.address);
 
     const vector = {
-      domain: { name: "LocalBoost", version: "1", chainId: CHAIN_ID, verifyingContract: VERIFYING_CONTRACT },
+      domain: { name: "DalgubeolPay", version: "1", chainId: CHAIN_ID, verifyingContract: VERIFYING_CONTRACT },
       types: ATTESTATION_TYPES,
       primaryType: "Attestation",
       message,

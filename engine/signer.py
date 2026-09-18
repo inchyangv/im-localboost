@@ -1,4 +1,4 @@
-"""EIP-712 attestation signing (domain LocalBoost/1, type string from SPEC 4.3)."""
+"""EIP-712 attestation signing (domain DalgubeolPay/1, type string from SPEC 4.3)."""
 
 from __future__ import annotations
 
@@ -24,7 +24,7 @@ DEADLINE_SECONDS = 120
 
 
 def domain(chain_id: int, verifying_contract: str) -> dict[str, Any]:
-    return {"name": "LocalBoost", "version": "1", "chainId": chain_id, "verifyingContract": verifying_contract}
+    return {"name": "DalgubeolPay", "version": "1", "chainId": chain_id, "verifyingContract": verifying_contract}
 
 
 def new_nonce() -> int:

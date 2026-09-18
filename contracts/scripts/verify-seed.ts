@@ -14,7 +14,7 @@ async function main() {
 
   const token = await ethers.getContractAt("MockIMKRW", dep.contracts.MockIMKRW);
   const registry = await ethers.getContractAt("MerchantRegistry", dep.contracts.MerchantRegistry);
-  const boost = await ethers.getContractAt("LocalBoost", dep.contracts.LocalBoost);
+  const boost = await ethers.getContractAt("DalgubeolPay", dep.contracts.DalgubeolPay);
   const merchant1 = dep.merchants[0].address;
 
   const checks: Array<[string, bigint | boolean | string, bigint | boolean | string]> = [];
@@ -28,7 +28,7 @@ async function main() {
   checks.push(["merchant1 slotBaseline", (await registry.get(merchant1)).slotBaseline, 100_000n]);
   checks.push(["merchant1 == MERCHANT_KEYS[0]", merchant1.toLowerCase(), w.merchants[0].address.toLowerCase()]);
   checks.push(["personOf(payer1)", await registry.personOf(w.payers[0].address), personId(1)]);
-  checks.push(["allowance(payer1)", await token.allowance(w.payers[0].address, dep.contracts.LocalBoost), ethers.MaxUint256]);
+  checks.push(["allowance(payer1)", await token.allowance(w.payers[0].address, dep.contracts.DalgubeolPay), ethers.MaxUint256]);
   checks.push(["attesters(attester)", await boost.attesters(w.attester.address), true]);
   checks.push(["merchants count", BigInt(dep.merchants.length), 8n]);
   checks.push(["zones count", BigInt(dep.zones.length), 5n]);

@@ -88,5 +88,5 @@ sim: ## Run the simulation and copy results into web/public/sim
 	mkdir -p web/public/sim && cp sim/out/results.json sim/out/compare.png web/public/sim/
 
 docker-engine: ## Build and run the engine Docker image
-	docker build -f engine/Dockerfile -t localboost-engine . && \
-	docker run --rm -p 8000:8000 --env-file .env.kairos -e DB_PATH=/tmp/engine.db localboost-engine
+	docker build -f engine/Dockerfile -t dalgubeolpay-engine . && \
+	docker run --rm -p 8000:8000 --env-file .env.kairos -e DB_PATH=/tmp/engine.db dalgubeolpay-engine

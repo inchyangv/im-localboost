@@ -45,8 +45,8 @@ def registry() -> Contract:
 
 
 @lru_cache(maxsize=1)
-def local_boost() -> Contract:
-    return _contract("LocalBoost")
+def dalgubeol_pay() -> Contract:
+    return _contract("DalgubeolPay")
 
 
 def block_number() -> int:
