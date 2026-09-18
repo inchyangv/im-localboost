@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DemoBadge } from "./DemoBadge";
+import { Button, Card, CardHeader, DemoBadge, Mono, Notice } from "@/components/ui";
 import { replayLastSignature, runCollusionRing } from "@/lib/demo";
 
 export function DemoPanel({ onChanged }: { onChanged: () => void }) {
@@ -13,6 +13,7 @@ export function DemoPanel({ onChanged }: { onChanged: () => void }) {
   async function ring() {
     setBusy("ring");
     setLines([]);
+    setReplay(null);
     try {
       await runCollusionRing(log);
     } catch (e) {
@@ -35,33 +36,49 @@ export function DemoPanel({ onChanged }: { onChanged: () => void }) {
   }
 
   return (
-    <section className="rounded border border-dashed border-purple-300 bg-white p-4">
-      <h2 className="text-base font-semibold">
-        데모 보조
-        <DemoBadge />
-      </h2>
-      <p className="mt-1 text-xs text-gray-500">
-        담합 링: 가맹점 2가 소비자 2~5에게 9,000원을 되돌려 준 뒤(환류) 각 소비자가 결제합니다. 판정은 나온 그대로 표시됩니다
-        (tier 1 → 보류, tier 2 → 즉시 차단). 서명 재사용: 소비자 화면의 직전 서명을 같은 인자로 다시 제출합니다 (보관된 서명이 없거나 곧 만료되면 소비자 1이 1,000원 결제를 먼저 합니다).
-      </p>
-      <div className="mt-3 flex flex-wrap gap-3">
-        <button onClick={ring} disabled={busy !== null} className="rounded bg-purple-700 px-4 py-2 text-sm text-white disabled:opacity-50">
-          {busy === "ring" ? "실행 중…" : "담합 링 실행"}
-        </button>
-        <button onClick={attack} disabled={busy !== null} className="rounded border border-purple-700 px-4 py-2 text-sm text-purple-800 disabled:opacity-50">
-          {busy === "replay" ? "제출 중…" : "서명 재사용 공격"}
-        </button>
+    <Card id="demo" className="scroll-mt-32 border border-dashed border-gray-300 shadow-none">
+      <CardHeader
+        title={
+          <>
+            데모 보조
+            <DemoBadge />
+          </>
+        }
+        desc="프로덕트 설계의 일부가 아니라 발표용 장치예요. 판정 결과는 나온 그대로 보여줘요."
+      />
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-gray-200 p-4">
+          <p className="text-[14px] font-semibold text-gray-900">담합 링</p>
+          <p className="mt-1 text-[12px] leading-relaxed text-gray-500">
+            가맹점 2가 소비자 2~5에게 9,000원을 되돌려 준 뒤(환류) 각 소비자가 결제해요. tier 1이면 보류, tier 2면 즉시 차단돼요.
+          </p>
+          <Button variant="dark" onClick={ring} disabled={busy !== null} loading={busy === "ring"} className="mt-3" full>
+            {busy === "ring" ? "실행 중" : "담합 링 실행"}
+          </Button>
+        </div>
+        <div className="rounded-xl border border-gray-200 p-4">
+          <p className="text-[14px] font-semibold text-gray-900">서명 재사용 공격</p>
+          <p className="mt-1 text-[12px] leading-relaxed text-gray-500">
+            소비자 화면의 직전 서명을 같은 인자로 다시 제출해요. 컨트랙트가 nonce 재사용을 거부해야 해요.
+          </p>
+          <Button variant="outline" onClick={attack} disabled={busy !== null} loading={busy === "replay"} className="mt-3" full>
+            {busy === "replay" ? "제출 중" : "서명 재사용 공격"}
+          </Button>
+        </div>
       </div>
       {replay && (
-        <p className={`mt-3 rounded p-2 text-sm ${replay.ok ? "border border-green-300 bg-green-50 text-green-800" : "border border-red-300 bg-red-50 text-red-800"}`}>
-          {replay.ok ? "재사용이 차단되었습니다: " : ""}
+        <Notice tone={replay.ok ? "success" : "error"} className="mt-3" title={replay.ok ? "재사용이 차단됐어요" : "예상과 다른 결과예요"}>
           {replay.message}
-          {replay.errorName && <code className="ml-1 text-xs">({replay.errorName})</code>}
-        </p>
+          {replay.errorName && (
+            <Mono className="ml-1.5" title={replay.errorName}>
+              {replay.errorName}
+            </Mono>
+          )}
+        </Notice>
       )}
       {lines.length > 0 && (
-        <pre className="mt-3 max-h-64 overflow-auto rounded bg-gray-900 p-3 text-[11px] leading-relaxed text-gray-100">{lines.join("\n")}</pre>
+        <pre className="scroll-thin mt-3 max-h-64 overflow-auto rounded-xl bg-gray-900 p-4 font-mono text-[11.5px] leading-relaxed text-gray-100">{lines.join("\n")}</pre>
       )}
-    </section>
+    </Card>
   );
 }

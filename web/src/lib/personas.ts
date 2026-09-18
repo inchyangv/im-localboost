@@ -46,3 +46,8 @@ function build(): Persona[] {
 export const personas: Persona[] = build();
 
 export const ROLE_LABELS: Record<Role, string> = { payer: "소비자", merchant: "가맹점", city: "대구시", bank: "은행" };
+
+/** Page each role works on. Selecting a persona moves the user there. */
+export function roleHome(role: Role): string {
+  return role === "payer" ? "/" : role === "merchant" ? "/merchant" : "/city";
+}

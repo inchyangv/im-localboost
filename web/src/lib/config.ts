@@ -66,3 +66,10 @@ export function merchantByAddress(address: string): Merchant | undefined {
   const a = address.toLowerCase();
   return merchants.find((m) => m.address.toLowerCase() === a);
 }
+
+/** Human label for the configured chain, shown in the top bar and footer. */
+export function chainLabel(id: number): string {
+  if (id === 31337) return "로컬 체인";
+  if (id === 1001) return "Kaia Kairos";
+  return `chain ${id}`;
+}

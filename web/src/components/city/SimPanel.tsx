@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { DemoBadge } from "./DemoBadge";
+import { Card, CardHeader, Table, cx, td, tdRight, th, thRight } from "@/components/ui";
 
 interface Scenario {
   vulnerable_slot_sales_uplift: number | null;
@@ -21,45 +21,57 @@ interface Results {
   scenarios: Record<string, Scenario>;
 }
 
-const METRICS: Array<keyof Scenario> = [
-  "vulnerable_slot_sales_uplift",
-  "net_sales_per_won",
-  "deadweight_ratio",
-  "farming_leakage",
-  "detection_precision",
-  "detection_recall",
+const METRICS: Array<{ key: keyof Scenario; label: string }> = [
+  { key: "vulnerable_slot_sales_uplift", label: "취약 슬롯 매출 증가율" },
+  { key: "net_sales_per_won", label: "예산 1원당 순증 매출" },
+  { key: "deadweight_ratio", label: "사중 손실 비율" },
+  { key: "farming_leakage", label: "파밍 누수율" },
+  { key: "detection_precision", label: "탐지 정밀도" },
+  { key: "detection_recall", label: "탐지 재현율" },
 ];
-const ORDER = ["none", "A", "B", "C_on", "C_off"];
 
-function Bars({ metric, scenarios }: { metric: keyof Scenario; scenarios: Record<string, Scenario> }) {
-  const names = ORDER.filter((n) => n in scenarios);
-  const values = names.map((n) => scenarios[n][metric] as number | null);
+const SCENARIOS: Array<{ key: string; label: string }> = [
+  { key: "none", label: "혜택 없음" },
+  { key: "A", label: "일률 10%" },
+  { key: "B", label: "동적 율" },
+  { key: "C_on", label: "담합·방어 켬" },
+  { key: "C_off", label: "담합·방어 끔" },
+];
+
+function Bars({ metric, label, scenarios }: { metric: keyof Scenario; label: string; scenarios: Record<string, Scenario> }) {
+  const items = SCENARIOS.filter((s) => s.key in scenarios);
+  const values = items.map((s) => scenarios[s.key][metric] as number | null);
   const max = Math.max(1e-9, ...values.map((v) => (v === null ? 0 : Math.abs(v))));
-  const W = 260;
-  const H = 120;
-  const pad = 22;
-  const bw = (W - pad * 2) / names.length;
+  const W = 300;
+  const H = 110;
+  const padX = 8;
+  const bw = (W - padX * 2) / items.length;
   return (
-    <div className="rounded border border-gray-200 p-2">
-      <p className="text-xs font-medium">{metric}</p>
-      <svg viewBox={`0 0 ${W} ${H + 24}`} className="mt-1 w-full" role="img" aria-label={metric}>
-        <line x1={pad} y1={H} x2={W - pad} y2={H} stroke="#9ca3af" />
-        {names.map((n, i) => {
+    <div className="rounded-xl border border-gray-200 p-3">
+      <p className="text-[13px] font-semibold text-gray-800">{label}</p>
+      <p className="font-mono text-[10px] text-gray-400">{metric}</p>
+      <svg viewBox={`0 0 ${W} ${H + 34}`} className="mt-2 w-full" role="img" aria-label={label}>
+        <line x1={padX} y1={H} x2={W - padX} y2={H} stroke="#e5e8eb" />
+        {items.map((s, i) => {
           const v = values[i];
-          const h = v === null ? 0 : (Math.abs(v) / max) * (H - 20);
-          const x = pad + i * bw + bw * 0.15;
+          const h = v === null ? 0 : (Math.abs(v) / max) * (H - 22);
+          const x = padX + i * bw + bw * 0.18;
+          const w = bw * 0.64;
           return (
-            <g key={n}>
+            <g key={s.key}>
               {v === null ? (
-                <rect x={x} y={H - 6} width={bw * 0.7} height={6} fill="none" stroke="#d1d5db" strokeDasharray="2 2" />
+                <rect x={x} y={H - 6} width={w} height={6} rx="2" fill="none" stroke="#d1d6db" strokeDasharray="3 2" />
               ) : (
-                <rect x={x} y={H - h} width={bw * 0.7} height={h} fill={v < 0 ? "#dc2626" : "#2563eb"} />
+                <rect x={x} y={H - h} width={w} height={h} rx="3" fill={v < 0 ? "#e5484d" : "#00a18e"} />
               )}
-              <text x={x + bw * 0.35} y={H + 12} textAnchor="middle" fontSize="9" fill="#374151">
-                {n}
-              </text>
-              <text x={x + bw * 0.35} y={v === null ? H - 10 : Math.max(10, H - h - 3)} textAnchor="middle" fontSize="8" fill="#111827">
+              <text x={x + w / 2} y={v === null ? H - 10 : Math.max(10, H - h - 4)} textAnchor="middle" fontSize="9.5" fontWeight="600" fill="#333d4b">
                 {v === null ? "해당 없음" : v.toFixed(3)}
+              </text>
+              <text x={x + w / 2} y={H + 13} textAnchor="middle" fontSize="9.5" fill="#4e5968">
+                {s.label}
+              </text>
+              <text x={x + w / 2} y={H + 25} textAnchor="middle" fontSize="8.5" fill="#b0b8c1" fontFamily="ui-monospace, monospace">
+                {s.key}
               </text>
             </g>
           );
@@ -83,67 +95,76 @@ export function SimPanel() {
   }, []);
 
   return (
-    <section className="rounded border border-dashed border-purple-300 bg-white p-4">
-      <h2 className="text-base font-semibold">
-        시뮬레이션
-        <DemoBadge />
-      </h2>
+    <Card id="sim" className="scroll-mt-32">
+      <CardHeader
+        title="시뮬레이션 결과"
+        desc="다항 로짓 소비자 모형으로 다섯 시나리오를 비교했어요. 수치는 나온 그대로예요."
+        right={
+          data && (
+            <span className="tnum">
+              seed {data.meta.seed} · {data.meta.days}일 · 소비자 {data.meta.consumers.toLocaleString("ko-KR")}명 · {data.meta.generated_at}
+            </span>
+          )
+        }
+      />
       {missing || !data ? (
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-4 text-[13px] text-gray-500">
           {missing ? (
             <>
-              결과 파일이 없습니다. <code>make sim</code>을 실행하세요.
+              결과 파일이 없어요. <code className="font-mono">make sim</code>을 실행하세요.
             </>
           ) : (
-            "읽는 중…"
+            "읽는 중이에요."
           )}
         </p>
       ) : (
         <>
-          <p className="mt-1 text-xs text-gray-500">
-            seed {data.meta.seed} · {data.meta.days}일 · 소비자 {data.meta.consumers.toLocaleString("ko-KR")}명 · 생성 {data.meta.generated_at}
-          </p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {METRICS.map((m) => (
-              <Bars key={m} metric={m} scenarios={data.scenarios} />
+              <Bars key={m.key} metric={m.key} label={m.label} scenarios={data.scenarios} />
             ))}
           </div>
-          <table className="mt-3 w-full text-[11px]">
-            <thead className="text-left text-gray-500">
-              <tr>
-                <th className="py-1">시나리오</th>
-                <th className="py-1 text-right">총매출</th>
-                <th className="py-1 text-right">총 보너스</th>
-                <th className="py-1 text-right">k</th>
+          <Table className="mt-4" minWidth={480}>
+            <thead>
+              <tr className="border-b border-gray-100">
+                <th className={th}>시나리오</th>
+                <th className={thRight}>총매출</th>
+                <th className={thRight}>총 보너스</th>
+                <th className={thRight}>k</th>
               </tr>
             </thead>
-            <tbody className="divide-y">
-              {ORDER.filter((n) => n in data.scenarios).map((n) => (
-                <tr key={n}>
-                  <td className="py-1">{n}</td>
-                  <td className="py-1 text-right">{data.scenarios[n].total_sales.toLocaleString("ko-KR")}</td>
-                  <td className="py-1 text-right">{data.scenarios[n].total_boost.toLocaleString("ko-KR")}</td>
-                  <td className="py-1 text-right">{data.scenarios[n].k === null ? "해당 없음" : data.scenarios[n].k}</td>
+            <tbody className="divide-y divide-gray-100">
+              {SCENARIOS.filter((s) => s.key in data.scenarios).map((s) => (
+                <tr key={s.key}>
+                  <td className={cx(td, "font-medium")}>
+                    {s.label} <span className="font-mono text-[11px] text-gray-400">{s.key}</span>
+                  </td>
+                  <td className={tdRight}>{data.scenarios[s.key].total_sales.toLocaleString("ko-KR")}</td>
+                  <td className={tdRight}>{data.scenarios[s.key].total_boost.toLocaleString("ko-KR")}</td>
+                  <td className={tdRight}>{data.scenarios[s.key].k === null ? "해당 없음" : data.scenarios[s.key].k}</td>
                 </tr>
               ))}
             </tbody>
-          </table>
+          </Table>
           {data.definitions && (
-            <details className="mt-2 text-[11px] text-gray-600">
-              <summary className="cursor-pointer">지표 정의</summary>
-              <ul className="mt-1 list-disc pl-4">
+            <details className="mt-3 text-[12px] text-gray-600">
+              <summary className="cursor-pointer font-medium text-gray-700">지표 정의</summary>
+              <ul className="mt-2 space-y-1 pl-1">
                 {Object.entries(data.definitions).map(([k, v]) => (
                   <li key={k}>
-                    <code>{k}</code>: {v}
+                    <code className="font-mono text-[11px] text-gray-500">{k}</code> {v}
                   </li>
                 ))}
               </ul>
             </details>
           )}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/sim/compare.png" alt="시뮬레이션 비교 차트 (matplotlib)" className="mt-3 w-full rounded border border-gray-200" />
+          <details className="mt-3 text-[12px] text-gray-600">
+            <summary className="cursor-pointer font-medium text-gray-700">matplotlib 원본 차트 (sim/out/compare.png)</summary>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/sim/compare.png" alt="시뮬레이션 비교 차트 (matplotlib)" className="mt-2 w-full rounded-xl border border-gray-200" />
+          </details>
         </>
       )}
-    </section>
+    </Card>
   );
 }

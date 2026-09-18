@@ -36,3 +36,21 @@ export function txUrl(hash: string): string | null {
 export function addressUrl(addr: string): string | null {
   return explorer ? `${explorer.replace(/\/$/, "")}/address/${addr}` : null;
 }
+
+/** Compact KST stamp for lists: "9. 18. 17:15". */
+export function kstShort(ts: number): string {
+  return new Date(ts * 1000).toLocaleString("ko-KR", {
+    timeZone: "Asia/Seoul",
+    month: "numeric",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}
+
+/** "17시 ~ 18시" for an hourEpoch, in KST. */
+export function kstHourLabel(epoch: number): string {
+  const h = (epoch + 9) % 24;
+  return `${h}시 ~ ${(h + 1) % 24}시`;
+}

@@ -1,24 +1,39 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { PersonaGate } from "@/components/PersonaGate";
 import { usePersona } from "@/components/PersonaProvider";
-import { ZoneMap, useZoneRates } from "@/components/ZoneMap";
+import { RecentList } from "@/components/consumer/RecentList";
+import { ResultCard } from "@/components/consumer/ResultCard";
+import { WalletCard } from "@/components/consumer/WalletCard";
+import { ZoneLegend, ZoneMap, rateLevel, useZoneRates } from "@/components/ZoneMap";
+import { AmountInput, Badge, Button, Card, CardHeader, Mono, Notice, PageHeader, cx } from "@/components/ui";
 import { publicClient } from "@/lib/chain";
-import { CATEGORY_NAMES, caps, merchants, zoneName } from "@/lib/config";
-import { addresses, localBoostAbi, readBoostState, registryAbi, tokenAbi, type BoostState } from "@/lib/contracts";
+import { CATEGORY_NAMES, caps, merchants, zoneName, zones } from "@/lib/config";
+import { addresses, hourEpoch, localBoostAbi, readBoostState, registryAbi, tokenAbi, type BoostState } from "@/lib/contracts";
 import { payments as fetchPayments, type PaymentRow } from "@/lib/engine";
-import { parseChainError, reasonLabel } from "@/lib/errors";
-import { kst, num, pct, short, txUrl, won } from "@/lib/format";
+import { parseChainError } from "@/lib/errors";
+import { kstHourLabel, pct, won } from "@/lib/format";
 import { runPayFlow, type PayFlowResult } from "@/lib/pay";
-import { pendingNote, zeroBoostReason } from "@/lib/reasons";
+import { zeroBoostReason } from "@/lib/reasons";
 
 const QUOTE_DEBOUNCE_MS = 500;
 const PAYMENTS_REFRESH_MS = 10_000;
+const QUICK_AMOUNTS = [10_000, 30_000, 50_000, 100_000];
 
 interface Quote {
   boost: bigint;
   reason: string | null;
   state: BoostState;
+}
+
+function RateBadge({ bps }: { bps: number }) {
+  const lv = rateLevel(bps);
+  return (
+    <Badge tone={lv === "none" ? "gray" : "brand"} className={cx("tnum", lv === "high" && "bg-brand-500 text-white")}>
+      {pct(bps)}
+    </Badge>
+  );
 }
 
 export default function ConsumerPage() {
@@ -41,6 +56,7 @@ export default function ConsumerPage() {
   const visibleMerchants = useMemo(() => (zone ? merchants.filter((m) => m.zoneId === zone) : merchants), [zone]);
   const selected = merchants.find((m) => m.address === merchant);
   const isPayer = persona?.role === "payer";
+  const epochLabel = kstHourLabel(hourEpoch(Math.floor(Date.now() / 1000)));
 
   useEffect(() => {
     if (zone && selected && selected.zoneId !== zone && visibleMerchants[0]) setMerchant(visibleMerchants[0].address);
@@ -116,8 +132,10 @@ export default function ConsumerPage() {
     try {
       const r = await runPayFlow(persona.account, selected.address, amount, useCredit, setStep);
       setResult(r);
+      setUseCredit(0);
       await refreshBalances();
       setTimeout(refreshRecent, 3000);
+      if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (e) {
       setError(parseChainError(e));
     } finally {
@@ -127,239 +145,210 @@ export default function ConsumerPage() {
   }
 
   if (!persona || !isPayer) {
-    return (
-      <section className="rounded border border-gray-200 bg-white p-6">
-        <h1 className="text-xl font-semibold">소비자</h1>
-        <p className="mt-2 text-sm text-gray-600">상단에서 소비자 페르소나(소비자 1~5)를 선택하세요.</p>
-      </section>
-    );
+    return <PersonaGate roles={["payer"]} title="소비자 화면이에요" desc="소비자 페르소나를 고르면 상권별 보너스율을 보고 결제할 수 있어요." />;
   }
 
   const creditMax = credit ?? 0n;
   const useCreditInvalid = BigInt(useCredit) > creditMax || useCredit > amount || useCredit < 0;
+  const personRemaining =
+    quote && quote.state.personDay < BigInt(caps.personDailyBoost) ? BigInt(caps.personDailyBoost) - quote.state.personDay : 0n;
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
-      <section className="rounded border border-gray-200 bg-white p-4">
-        <h2 className="mb-2 text-base font-semibold">상권 보너스율 (현재 시간)</h2>
-        <ZoneMap rates={rates} selected={zone} onSelect={setZone} />
-        <p className="mt-2 text-xs text-gray-500">
-          상권을 누르면 가맹점 목록이 그 상권으로 좁혀집니다. 10초마다 갱신됩니다.
-          {zone && (
-            <button className="ml-2 underline" onClick={() => setZone(null)}>
-              전체 보기
-            </button>
-          )}
-        </p>
-      </section>
+    <>
+      <PageHeader
+        title="결제하기"
+        desc="지금 보너스율이 높은 상권에서 결제하면 크레딧을 더 받아요."
+        right={<Badge tone="gray">현재 시간대 {epochLabel}</Badge>}
+      />
 
-      <section className="space-y-4">
-        <div className="rounded border border-gray-200 bg-white p-4">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h2 className="text-base font-semibold">{persona.label} 지갑</h2>
-            <code className="text-xs text-gray-500">{short(persona.account.address, 6)}</code>
-          </div>
-          <dl className="mt-2 grid grid-cols-2 gap-2 text-sm">
-            <dt className="text-gray-500">iMKRW 잔액</dt>
-            <dd className="text-right font-medium">{balance === null ? "—" : won(balance)}</dd>
-            <dt className="text-gray-500">보너스 크레딧</dt>
-            <dd className="text-right font-medium">{credit === null ? "—" : won(credit)}</dd>
-          </dl>
-        </div>
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+        <div className="space-y-6">
+          <WalletCard persona={persona} balance={balance} credit={credit} />
 
-        <form
-          className="rounded border border-gray-200 bg-white p-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            onPay();
-          }}
-        >
-          <h2 className="text-base font-semibold">결제</h2>
-          <label className="mt-3 block text-sm">
-            <span className="text-gray-600">가맹점</span>
-            <select
-              className="mt-1 w-full rounded border border-gray-300 px-2 py-1.5"
-              value={merchant}
-              onChange={(e) => setMerchant(e.target.value as `0x${string}`)}
-            >
-              {visibleMerchants.map((m) => (
-                <option key={m.address} value={m.address}>
-                  {m.name} · {zoneName(m.zoneId)} · {CATEGORY_NAMES[m.categoryId] ?? m.categoryId}
-                </option>
-              ))}
-            </select>
-          </label>
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            <label className="block text-sm">
-              <span className="text-gray-600">금액 (원)</span>
-              <input
-                type="number"
-                min={1000}
-                step={1000}
-                className="mt-1 w-full rounded border border-gray-300 px-2 py-1.5"
-                value={amount}
-                onChange={(e) => setAmount(Math.max(0, Math.trunc(Number(e.target.value) || 0)))}
-              />
-            </label>
-            <label className="block text-sm">
-              <span className="text-gray-600">크레딧 사용 (원)</span>
-              <input
-                type="number"
-                min={0}
-                step={100}
-                max={Number(creditMax)}
-                className="mt-1 w-full rounded border border-gray-300 px-2 py-1.5"
-                value={useCredit}
-                onChange={(e) => setUseCredit(Math.max(0, Math.trunc(Number(e.target.value) || 0)))}
-              />
-            </label>
-          </div>
-          {useCreditInvalid && <p className="mt-1 text-xs text-red-600">크레딧 사용액은 보유 크레딧과 결제 금액 이하여야 합니다.</p>}
-
-          <div className="mt-3 rounded bg-gray-50 p-3 text-sm">
-            <div className="flex items-baseline justify-between">
-              <span className="text-gray-600">예상 보너스</span>
-              <span className="text-lg font-semibold">{quote ? won(quote.boost) : quoteError ? "—" : "계산 중…"}</span>
+          <Card>
+            <CardHeader title="지금 상권별 보너스율" desc="상권을 누르면 그 상권의 가게만 골라 볼 수 있어요." />
+            <ZoneMap className="mt-4" rates={rates} selected={zone} onSelect={setZone} />
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+              <ZoneLegend />
+              <span className="text-[12px] text-gray-400">10초마다 갱신</span>
             </div>
-            {quote && quote.reason && <p className="mt-1 text-xs text-amber-700">사유: {quote.reason}</p>}
-            {quote && selected && (
-              <p className="mt-1 text-xs text-gray-500">
-                {zoneName(selected.zoneId)} 현재 율 {pct(quote.state.currentRate)} · 건당 상한 {won(caps.perTxBoost)} · 오늘 개인 잔여{" "}
-                {won(BigInt(caps.personDailyBoost) - (quote.state.personDay < BigInt(caps.personDailyBoost) ? quote.state.personDay : BigInt(caps.personDailyBoost)))}
-              </p>
-            )}
-            {quoteError && <p className="mt-1 text-xs text-red-600">{quoteError}</p>}
-          </div>
-
-          <button
-            type="submit"
-            disabled={busy || amount <= 0 || useCreditInvalid || !selected}
-            className="mt-3 w-full rounded bg-gray-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
-          >
-            {busy ? "처리 중…" : `${won(amount)} 결제하기`}
-          </button>
-          {step && <p className="mt-2 text-xs text-gray-600">{step}</p>}
-          {error && (
-            <p className="mt-2 rounded border border-red-200 bg-red-50 p-2 text-xs text-red-700">
-              결제 실패: {error.message}
-              {error.name && <code className="ml-1 text-[11px]">({error.name})</code>}
-            </p>
-          )}
-        </form>
-
-        {result && <ResultCard result={result} />}
-
-        <div className="rounded border border-gray-200 bg-white p-4">
-          <h2 className="text-base font-semibold">최근 결제</h2>
-          {recent.length === 0 ? (
-            <p className="mt-2 text-xs text-gray-500">기록이 없습니다.</p>
-          ) : (
-            <ul className="mt-2 divide-y text-xs">
-              {recent.map((p) => (
-                <li key={`${p.txHash}-${p.blockNumber}`} className="flex flex-wrap items-center justify-between gap-2 py-1.5">
-                  <span className="text-gray-500">{kst(p.ts)}</span>
-                  <span>{merchants.find((m) => m.address.toLowerCase() === p.merchant)?.name ?? short(p.merchant)}</span>
-                  <span>{won(p.amount)}</span>
-                  <span className={p.boost > 0 ? "text-blue-700" : "text-gray-400"}>+{num(p.boost)}</span>
-                  <TxLink hash={p.txHash} />
-                </li>
-              ))}
-            </ul>
-          )}
+          </Card>
         </div>
-      </section>
-    </div>
-  );
-}
 
-function TxLink({ hash }: { hash: string }) {
-  const url = txUrl(hash);
-  return url ? (
-    <a href={url} target="_blank" rel="noreferrer" className="font-mono text-blue-700 underline">
-      {short(hash, 5)}
-    </a>
-  ) : (
-    <code className="font-mono text-gray-500" title={hash}>
-      {short(hash, 5)}
-    </code>
-  );
-}
+        <div className="space-y-6">
+          {result && <ResultCard result={result} onClose={() => setResult(null)} />}
 
-function ResultCard({ result }: { result: PayFlowResult }) {
-  const { paid, attest: att, hash, approveHash } = result;
-  const [state, setState] = useState<BoostState | null>(null);
-  const [now, setNow] = useState<number>(Math.floor(Date.now() / 1000));
+          <Card>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                onPay();
+              }}
+            >
+              <CardHeader title="어디서 결제할까요?" />
 
-  useEffect(() => {
-    if (!paid) return;
-    readBoostState(paid.payer, paid.merchant, paid.zoneId).then(setState).catch(() => setState(null));
-  }, [paid]);
-  useEffect(() => {
-    const id = setInterval(() => setNow(Math.floor(Date.now() / 1000)), 1000);
-    return () => clearInterval(id);
-  }, []);
+              <div className="mt-4 flex flex-wrap gap-1.5" role="group" aria-label="상권 필터">
+                <ZoneChip active={zone === null} onClick={() => setZone(null)}>
+                  전체
+                </ZoneChip>
+                {zones.map((z) => (
+                  <ZoneChip key={z.id} active={zone === z.id} onClick={() => setZone(zone === z.id ? null : z.id)}>
+                    {z.name}
+                    <span className={cx("tnum ml-1", (rates[z.id] ?? 0) > 0 ? "text-brand-600" : "text-gray-400")}>{pct(rates[z.id] ?? 0)}</span>
+                  </ZoneChip>
+                ))}
+              </div>
 
-  if (!paid) {
-    return (
-      <div className="rounded border border-amber-300 bg-amber-50 p-4 text-sm">
-        트랜잭션은 성공했지만 Paid 이벤트를 찾지 못했습니다. <TxLink hash={hash} />
+              <ul className="mt-3 divide-y divide-gray-100 overflow-hidden rounded-xl border border-gray-200" role="radiogroup" aria-label="가맹점">
+                {visibleMerchants.map((m) => {
+                  const active = m.address === merchant;
+                  return (
+                    <li key={m.address}>
+                      <button
+                        type="button"
+                        role="radio"
+                        aria-checked={active}
+                        onClick={() => setMerchant(m.address)}
+                        className={cx(
+                          "flex w-full items-center gap-3 px-4 py-3 text-left transition-colors",
+                          active ? "bg-brand-50/70" : "hover:bg-gray-50",
+                        )}
+                      >
+                        <span
+                          aria-hidden="true"
+                          className={cx(
+                            "grid h-[18px] w-[18px] shrink-0 place-items-center rounded-full border-2",
+                            active ? "border-brand-500" : "border-gray-300",
+                          )}
+                        >
+                          {active && <span className="h-2 w-2 rounded-full bg-brand-500" />}
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-[15px] font-semibold text-gray-900">{m.name}</span>
+                          <span className="block text-[12px] text-gray-500">
+                            {zoneName(m.zoneId)} · {CATEGORY_NAMES[m.categoryId] ?? m.categoryId}
+                          </span>
+                        </span>
+                        <RateBadge bps={rates[m.zoneId] ?? 0} />
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              <div className="mt-6">
+                <label htmlFor="amount" className="text-[13px] font-medium text-gray-600">
+                  결제 금액
+                </label>
+                <div className="mt-1.5">
+                  <AmountInput id="amount" size="lg" value={amount} onChange={setAmount} ariaLabel="결제 금액 (원)" />
+                </div>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {QUICK_AMOUNTS.map((v) => (
+                    <button
+                      key={v}
+                      type="button"
+                      onClick={() => setAmount(v)}
+                      className={cx(
+                        "tnum rounded-full px-3 py-1 text-[12px] font-medium transition-colors",
+                        amount === v ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200",
+                      )}
+                    >
+                      {v / 10_000}만원
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-5 rounded-xl border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="useCredit" className="text-[14px] font-medium text-gray-800">
+                    보너스 크레딧 사용
+                  </label>
+                  <span className="tnum text-[12px] text-gray-500">보유 {won(creditMax)}</span>
+                </div>
+                {creditMax > 0n ? (
+                  <>
+                    <div className="mt-2 flex gap-2">
+                      <div className="flex-1">
+                        <AmountInput id="useCredit" value={useCredit} onChange={setUseCredit} ariaLabel="크레딧 사용액 (원)" />
+                      </div>
+                      <Button type="button" variant="secondary" size="md" className="h-12" onClick={() => setUseCredit(Number(creditMax < BigInt(amount) ? creditMax : BigInt(amount)))}>
+                        전액
+                      </Button>
+                    </div>
+                    {useCreditInvalid ? (
+                      <p className="mt-1.5 text-[12px] text-red-600">크레딧 사용액은 보유 크레딧과 결제 금액 이하여야 해요.</p>
+                    ) : (
+                      <p className="mt-1.5 text-[12px] text-gray-500">크레딧으로 낸 금액에는 보너스가 붙지 않아요.</p>
+                    )}
+                  </>
+                ) : (
+                  <p className="mt-1 text-[12px] text-gray-500">아직 사용할 수 있는 크레딧이 없어요.</p>
+                )}
+              </div>
+
+              <div className="mt-5 rounded-2xl bg-gray-50 p-5">
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="text-[14px] text-gray-600">예상 보너스</span>
+                  <span className={cx("tnum text-[26px] font-bold tracking-tight", quote && quote.boost > 0n ? "text-brand-600" : "text-gray-400")}>
+                    {quote ? won(quote.boost) : quoteError ? "—" : "계산 중"}
+                  </span>
+                </div>
+                {quote && selected && (
+                  <p className="tnum mt-1 text-[12px] text-gray-500">
+                    {zoneName(selected.zoneId)} 현재 {pct(quote.state.currentRate)} · 건당 최대 {won(caps.perTxBoost)} · 오늘 남은 한도 {won(personRemaining)}
+                  </p>
+                )}
+                {quote?.reason && (
+                  <Notice tone="warn" className="mt-3">
+                    사유: {quote.reason}
+                  </Notice>
+                )}
+                {quoteError && (
+                  <Notice tone="error" className="mt-3">
+                    {quoteError}
+                  </Notice>
+                )}
+              </div>
+
+              <Button type="submit" size="lg" full loading={busy} disabled={amount <= 0 || useCreditInvalid || !selected} className="mt-4">
+                {busy ? (step ?? "처리 중") : `${won(amount)} 결제하기`}
+              </Button>
+              <p className="mt-2 text-center text-[12px] text-gray-400">엔진 위험 판정 → 서명 → 온체인 결제 순으로 진행돼요.</p>
+
+              {error && (
+                <Notice tone="error" className="mt-3" title="결제에 실패했어요">
+                  {error.message}
+                  {error.name && (
+                    <Mono className="ml-1.5 bg-red-100 text-red-700" title={error.name}>
+                      {error.name}
+                    </Mono>
+                  )}
+                </Notice>
+              )}
+            </form>
+          </Card>
+
+          <RecentList rows={recent} />
+        </div>
       </div>
-    );
-  }
-  const status = paid.boost === 0n ? "0원" : paid.tier === 1 ? "보류" : "지급";
-  const color = status === "지급" ? "border-green-300 bg-green-50" : status === "보류" ? "border-amber-300 bg-amber-50" : "border-gray-300 bg-gray-50";
-  let reason: string | null = null;
-  if (paid.boost === 0n) {
-    // After the payment the counters already include it; when pairDay was just set that is the honest reason.
-    reason = state
-      ? zeroBoostReason({ state, amount: paid.amount, useCredit: paid.useCredit, tier: att.tier, engineReasons: att.reasons })
-      : att.tier >= 2
-        ? `위험 등급 2: 보너스 미지급 (${att.reasons.map(reasonLabel).join(", ")})`
-        : null;
-  } else if (paid.tier === 1 && state) {
-    reason = pendingNote(state.now + caps.pendingDelay, now, att.reasons);
-  } else if (paid.tier === 1) {
-    reason = pendingNote(caps.pendingDelay + Math.floor(Date.now() / 1000), now, att.reasons);
-  }
+    </>
+  );
+}
 
+function ZoneChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
-    <div className={`rounded border p-4 text-sm ${color}`}>
-      <div className="flex items-baseline justify-between">
-        <h2 className="text-base font-semibold">결과: {status}</h2>
-        <span className="text-lg font-semibold">보너스 {won(paid.boost)}</span>
-      </div>
-      <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-xs">
-        <dt className="text-gray-500">결제 금액</dt>
-        <dd>
-          {won(paid.amount)} {paid.useCredit > 0n && `(크레딧 ${won(paid.useCredit)} 사용)`}
-        </dd>
-        <dt className="text-gray-500">위험 등급</dt>
-        <dd>
-          tier {paid.tier} · score {att.score.toFixed(3)}
-          {att.reasons.length > 0 && ` · ${att.reasons.map(reasonLabel).join(", ")}`}
-        </dd>
-        {paid.pendingId > 0n && (
-          <>
-            <dt className="text-gray-500">보류 ID</dt>
-            <dd>{paid.pendingId.toString()}</dd>
-          </>
-        )}
-        {reason && (
-          <>
-            <dt className="text-gray-500">사유</dt>
-            <dd className="text-amber-800">{reason}</dd>
-          </>
-        )}
-        <dt className="text-gray-500">트랜잭션</dt>
-        <dd>
-          <TxLink hash={hash} />
-          {approveHash && (
-            <span className="ml-2 text-gray-500">
-              (approve <TxLink hash={approveHash} />)
-            </span>
-          )}
-        </dd>
-      </dl>
-    </div>
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onClick}
+      className={cx(
+        "rounded-full border px-2.5 py-1 text-[12px] font-medium transition-colors",
+        active ? "border-gray-900 bg-gray-900 text-white" : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50",
+      )}
+    >
+      {children}
+    </button>
   );
 }

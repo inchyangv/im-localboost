@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { PersonaGate } from "@/components/PersonaGate";
 import { usePersona } from "@/components/PersonaProvider";
 import { BudgetForm, RatesPanel } from "@/components/city/BudgetAndRates";
 import { CapsPanel } from "@/components/city/CapsPanel";
@@ -8,9 +9,39 @@ import { DemoPanel } from "@/components/city/DemoPanel";
 import { SimPanel } from "@/components/city/SimPanel";
 import { PendingTable, RiskLogTable } from "@/components/city/RiskAndPending";
 import { ZoneCards } from "@/components/city/ZoneCards";
+import { Badge, PageHeader, cx } from "@/components/ui";
 import { readZoneCards, type ZoneCard } from "@/lib/city";
+import { kstHourLabel } from "@/lib/format";
 
 const CARDS_REFRESH_MS = 10_000;
+
+const SECTIONS = [
+  { id: "zones", label: "상권 현황" },
+  { id: "budget", label: "예산·율" },
+  { id: "risk", label: "위험·보류" },
+  { id: "caps", label: "상한" },
+  { id: "demo", label: "데모" },
+  { id: "sim", label: "시뮬레이션" },
+];
+
+function SectionNav() {
+  return (
+    <nav className="sticky top-16 z-20 -mx-5 mb-6 border-b border-gray-200/70 bg-page/90 px-5 py-2 backdrop-blur" aria-label="화면 내 이동">
+      <ul className="scroll-thin flex gap-1 overflow-x-auto">
+        {SECTIONS.map((s) => (
+          <li key={s.id}>
+            <a
+              href={`#${s.id}`}
+              className={cx("block whitespace-nowrap rounded-full px-3 py-1.5 text-[13px] font-medium text-gray-600 transition-colors hover:bg-white hover:text-gray-900")}
+            >
+              {s.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
 
 export default function CityPage() {
   const { persona } = usePersona();
@@ -45,29 +76,37 @@ export default function CityPage() {
 
   if (!persona || !actor) {
     return (
-      <section className="rounded border border-gray-200 bg-white p-6">
-        <h1 className="text-xl font-semibold">대구시 · 은행</h1>
-        <p className="mt-2 text-sm text-gray-600">상단에서 대구시 또는 은행 페르소나를 선택하세요.</p>
-      </section>
+      <PersonaGate
+        roles={["city", "bank"]}
+        title="운영 화면이에요"
+        desc="대구시는 예산·보너스율·상한을 관리하고, 은행은 보류된 보너스를 환수해요."
+      />
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-baseline justify-between">
-        <h1 className="text-xl font-semibold">{persona.label} 운영 화면</h1>
-        <span className="text-xs text-gray-500">{isCity ? "예산·율·상한 담당" : "환수 담당"}</span>
+    <>
+      <PageHeader
+        title={isCity ? "대구시 운영" : "은행 운영"}
+        desc={isCity ? "상권별 예산을 예치하고 보너스율과 상한을 관리해요." : "위험 판정으로 보류된 보너스를 확인하고 환수해요."}
+        right={<Badge tone="gray">{epoch !== null ? `현재 시간대 ${kstHourLabel(epoch)}` : "읽는 중"}</Badge>}
+      />
+      <SectionNav />
+
+      <div className="space-y-6">
+        <ZoneCards cards={cards} epoch={epoch} />
+        <div id="budget" className="grid scroll-mt-32 gap-6 lg:grid-cols-2 lg:items-start">
+          <BudgetForm city={isCity ? actor : null} onDone={bump} />
+          <RatesPanel enabled={isCity} onPublished={bump} />
+        </div>
+        <div id="risk" className="grid scroll-mt-32 gap-6">
+          <RiskLogTable />
+          <PendingTable actor={actor} isBank={isBank} onChanged={bump} refreshKey={refreshKey} />
+        </div>
+        <CapsPanel actor={actor} isCity={isCity} />
+        <DemoPanel onChanged={bump} />
+        <SimPanel />
       </div>
-      <ZoneCards cards={cards} epoch={epoch} />
-      <div className="grid gap-6 lg:grid-cols-2">
-        <BudgetForm city={isCity ? actor : null} onDone={bump} />
-        <RatesPanel enabled={isCity} onPublished={bump} />
-      </div>
-      <RiskLogTable />
-      <PendingTable actor={actor} isBank={isBank} onChanged={bump} refreshKey={refreshKey} />
-      <CapsPanel actor={actor} isCity={isCity} />
-      <DemoPanel onChanged={bump} />
-      <SimPanel />
-    </div>
+    </>
   );
 }
