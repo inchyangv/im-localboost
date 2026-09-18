@@ -57,10 +57,14 @@ deploy-local: ## Deploy + seed on localhost, refresh shared/
 	  && ENV_FILE=$(ENV_FILE) npx hardhat run scripts/write-shared.ts --network localhost
 
 kairos-keys: ## Generate .env.kairos with fresh testnet keys (no-op if it exists)
-	@echo "TODO"
+	cd contracts && npx ts-node --transpile-only scripts/gen-keys.ts
 
 deploy-kairos: ## Deploy + seed on Kaia Kairos using .env.kairos
-	@echo "TODO"
+	cd contracts && ENV_FILE=.env.kairos npx hardhat run scripts/check-funds.ts --network kairos \
+	  && ENV_FILE=.env.kairos npx hardhat run scripts/fund.ts --network kairos \
+	  && ENV_FILE=.env.kairos npx hardhat run scripts/deploy.ts --network kairos \
+	  && ENV_FILE=.env.kairos npx hardhat run scripts/seed.ts --network kairos \
+	  && ENV_FILE=.env.kairos npx hardhat run scripts/write-shared.ts --network kairos
 
 train: ## Generate synthetic data and train risk/boost models
 	$(PY) -m engine.synth --seed 42 --out data/
