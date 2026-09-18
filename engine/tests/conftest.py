@@ -74,6 +74,7 @@ def app_client(fake_settings, monkeypatch: pytest.MonkeyPatch):
 
     monkeypatch.setattr(chain, "block_number", lambda: 42)
     monkeypatch.setattr(chain, "chain_id", lambda: 31337)
+    monkeypatch.setattr(chain, "now_ts", lambda: int(__import__("time").time()))
 
     # The poller must not touch the RPC in unit tests.
     from engine import poller

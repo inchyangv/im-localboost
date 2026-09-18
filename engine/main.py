@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import time
 from contextlib import asynccontextmanager
 from typing import Any
 
@@ -15,9 +14,12 @@ from web3 import Web3
 
 from engine import chain, db, poller
 from engine.config import get_settings
+from engine.features import Ctx
+from engine.rules import evaluate_rules, rule_score
 from engine.signer import AttestationSigner, build_attestation
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+log = logging.getLogger("engine.main")
 
 _settings = get_settings()
 _signer = AttestationSigner(
@@ -97,15 +99,41 @@ async def health() -> dict[str, Any]:
     }
 
 
+def _risk_context(merchant: str) -> Ctx:
+    """Reads rate, per-tx cap and slot baseline from chain. Falls back to deployment caps and 0
+    when the RPC is unavailable so that attestation still works (rules then see rate 0)."""
+    s = get_settings()
+    try:
+        m = chain.registry().functions.get(merchant).call()
+        zone_id = int(m[0])
+        slot_baseline = int(m[3])
+        rate = int(chain.local_boost().functions.currentRate(zone_id).call())
+        per_tx = int(chain.local_boost().functions.caps().call()[1])
+    except Exception as exc:  # noqa: BLE001
+        log.warning("risk context from chain failed, using fallback: %s", exc)
+        fallback = next((x for x in s.deployment.merchants if x["address"].lower() == merchant.lower()), None)
+        slot_baseline = int(fallback["slotBaseline"]) if fallback else 0
+        rate = 0
+        per_tx = int(s.deployment.caps["perTxBoost"])
+    return {"rate_bps": rate, "per_tx_boost": per_tx, "slot_baseline": slot_baseline}
+
+
+def assess_risk(conn, payer: str, merchant: str, amount: int, ts: int) -> tuple[int, float, list[str]]:
+    """Rule layer only for now; the model layer is combined in a later milestone."""
+    ctx = _risk_context(merchant)
+    tier, reasons = evaluate_rules(conn, payer, merchant, amount, ts, ctx)
+    return tier, rule_score(tier), reasons
+
+
 @app.post("/attest")
 async def attest(req: AttestRequest) -> dict[str, Any]:
     payer = _checksum("payer", req.payer)
     merchant = _checksum("merchant", req.merchant)
-    # Risk scoring is attached in later milestones; tier 0 for now.
-    tier, score, reasons = 0, 0.0, []
-    att = build_attestation(payer, merchant, req.amount, tier)
+    now = await asyncio.to_thread(chain.now_ts)
+    tier, score, reasons = await asyncio.to_thread(assess_risk, _conn(), payer, merchant, req.amount, now)
+    att = build_attestation(payer, merchant, req.amount, tier, now=now)
     signature = _signer.sign_attestation(att)
-    db.insert_risk_log(_conn(), int(time.time()), payer, merchant, req.amount, tier, score, reasons, att["nonce"])
+    db.insert_risk_log(_conn(), now, payer, merchant, req.amount, tier, score, reasons, att["nonce"])
     return {
         "tier": tier,
         "score": score,

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from functools import lru_cache
 
 from web3 import Web3
@@ -50,6 +51,17 @@ def local_boost() -> Contract:
 
 def block_number() -> int:
     return int(w3().eth.block_number)
+
+
+def now_ts() -> int:
+    """Reference time for risk evaluation and attestation deadlines: the later of wall clock and the
+    latest block timestamp. Hardhat automine drifts ahead of wall clock by one second per block, and
+    an idle node lags behind it; the max covers both."""
+    wall = int(time.time())
+    try:
+        return max(wall, int(w3().eth.get_block("latest")["timestamp"]))
+    except Exception:  # noqa: BLE001
+        return wall
 
 
 def chain_id() -> int:
