@@ -35,13 +35,13 @@ def _person_of(wallet: str) -> bytes:
     return bytes(chain.registry().functions.personOf(wallet).call())
 
 
-def _set_person(wallet: str, person_id: str) -> str:
+def _set_person(wallet: str, person_id: str, nonce: int) -> str:
     fn = chain.registry().functions.setPerson(wallet, bytes.fromhex(person_id.removeprefix("0x")))
-    return chain.send_tx(fn, get_settings().bank_key)
+    return chain.submit_tx(fn, get_settings().bank_key, nonce)
 
 
-def _mint(wallet: str, amount: int) -> str:
-    return chain.send_tx(chain.token().functions.mint(wallet, int(amount)), get_settings().bank_key)
+def _mint(wallet: str, amount: int, nonce: int) -> str:
+    return chain.submit_tx(chain.token().functions.mint(wallet, int(amount)), get_settings().bank_key, nonce)
 
 
 def _token_balance(wallet: str) -> int:
@@ -52,8 +52,16 @@ def _native_balance(wallet: str) -> int:
     return int(chain.w3().eth.get_balance(wallet))
 
 
-def _send_native(wallet: str, value_wei: int) -> str:
-    return chain.send_native(wallet, int(value_wei), get_settings().bank_key)
+def _send_native(wallet: str, value_wei: int, nonce: int) -> str:
+    return chain.submit_native(wallet, int(value_wei), get_settings().bank_key, nonce)
+
+
+def _next_nonce() -> int:
+    return chain.next_nonce(get_settings().bank_key)
+
+
+def _wait_all(tx_hashes: list[str]) -> None:
+    chain.wait_all(tx_hashes)
 
 
 # --------------------------------------------------------------------------- api
@@ -80,26 +88,40 @@ def onboard(conn: sqlite3.Connection, wallet: str, now: int) -> dict[str, Any]:
     with _lock:
         existing = _person_of(wallet)
         registered_before = existing != ZERO_PERSON
+        prior = db.onboard_get(conn, wallet, day)
+        need_gas = s.onboard_gas_wei > 0 and _native_balance(wallet) < s.onboard_gas_wei // 2
+
+        # Queue every needed transaction back to back (explicit nonces) and wait once, so the
+        # wallet is ready in one block on Hardhat and a few seconds on Kairos.
+        nonce = _next_nonce() if (not registered_before or prior is None or need_gas) else 0
+        pending: list[str] = []
         person_tx: str | None = None
         if registered_before:
             person_id = _hex32(existing)
         else:
             person_id = person_id_for(wallet)
-            person_tx = _set_person(wallet, person_id)
+            person_tx = _set_person(wallet, person_id, nonce)
+            nonce += 1
+            pending.append(person_tx)
 
-        prior = db.onboard_get(conn, wallet, day)
         mint_tx: str | None = None
         minted = 0
         if prior is None and s.onboard_imkrw > 0:
-            mint_tx = _mint(wallet, s.onboard_imkrw)
+            mint_tx = _mint(wallet, s.onboard_imkrw, nonce)
+            nonce += 1
             minted = s.onboard_imkrw
+            pending.append(mint_tx)
 
         gas_tx: str | None = None
         gas_sent = 0
-        if s.onboard_gas_wei > 0 and _native_balance(wallet) < s.onboard_gas_wei // 2:
-            gas_tx = _send_native(wallet, s.onboard_gas_wei)
+        if need_gas:
+            gas_tx = _send_native(wallet, s.onboard_gas_wei, nonce)
+            nonce += 1
             gas_sent = s.onboard_gas_wei
+            pending.append(gas_tx)
 
+        if pending:
+            _wait_all(pending)
         if prior is None:
             db.onboard_insert(conn, wallet, day, now, person_tx, mint_tx, gas_tx, minted)
 

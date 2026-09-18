@@ -89,6 +89,51 @@ def send_tx(fn, private_key: str, timeout: int = 120) -> str:
     return "0x" + tx_hash.hex().removeprefix("0x")
 
 
+def submit_tx(fn, private_key: str, nonce: int) -> str:
+    """Signs and submits a contract call with an explicit nonce without waiting. Lets a caller
+    queue several transactions from one account back to back and wait for them together."""
+    from eth_account import Account
+
+    acct = Account.from_key(private_key)
+    tx = fn.build_transaction({"from": acct.address, "nonce": nonce, "chainId": chain_id()})
+    signed = acct.sign_transaction(tx)
+    tx_hash = w3().eth.send_raw_transaction(signed.raw_transaction)
+    return "0x" + tx_hash.hex().removeprefix("0x")
+
+
+def submit_native(to: str, value_wei: int, private_key: str, nonce: int) -> str:
+    """Native-coin transfer with an explicit nonce, submitted without waiting."""
+    from eth_account import Account
+
+    acct = Account.from_key(private_key)
+    tx = {
+        "from": acct.address,
+        "to": Web3.to_checksum_address(to),
+        "value": int(value_wei),
+        "nonce": nonce,
+        "chainId": chain_id(),
+        "gas": 21_000,
+        "gasPrice": w3().eth.gas_price,
+    }
+    signed = acct.sign_transaction(tx)
+    tx_hash = w3().eth.send_raw_transaction(signed.raw_transaction)
+    return "0x" + tx_hash.hex().removeprefix("0x")
+
+
+def wait_all(tx_hashes: list[str], timeout: int = 120) -> None:
+    """Waits for every receipt; raises naming the first reverted transaction."""
+    for h in tx_hashes:
+        receipt = w3().eth.wait_for_transaction_receipt(h, timeout=timeout)
+        if int(receipt["status"]) != 1:
+            raise RuntimeError(f"transaction {h} reverted")
+
+
+def next_nonce(private_key: str) -> int:
+    from eth_account import Account
+
+    return int(w3().eth.get_transaction_count(Account.from_key(private_key).address, "pending"))
+
+
 def send_native(to: str, value_wei: int, private_key: str, timeout: int = 120) -> str:
     """Sends a plain native-coin transfer (gas top-up for onboarded wallets) signed with
     `private_key` and waits for the receipt. Legacy gas pricing works on Hardhat and Kaia."""

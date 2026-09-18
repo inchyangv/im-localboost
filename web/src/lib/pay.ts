@@ -111,6 +111,12 @@ export interface PayFlowResult {
   paid: PaidEvent | null;
 }
 
+/** The risk model reacts strongly to payments made within the first seconds after the hour
+ *  boundary (`secs_since_rate_change`, SPEC 5.2). Waiting this long avoids a spurious hold. */
+export const HOUR_GUARD_SECS = 45;
+
+const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
 /** Full consumer flow: allowance -> /attest -> payWithBoost. `onStep` receives progress messages. */
 export async function runPayFlow(
   who: PrivateKeyAccount | Signer,
@@ -122,6 +128,13 @@ export async function runPayFlow(
 ): Promise<PayFlowResult> {
   const signer = toSigner(who);
   const cash = BigInt(amount) - BigInt(useCredit);
+  const offset = Math.floor(Date.now() / 1000) % 3600;
+  if (offset < HOUR_GUARD_SECS) {
+    for (let left = HOUR_GUARD_SECS - offset; left > 0; left--) {
+      onStep?.(`정시 직후에는 위험 판정이 민감해서 ${left}초 뒤에 요청해요`);
+      await sleep(1000);
+    }
+  }
   onStep?.("엔진에 위험 판정과 서명을 요청하는 중…");
   const att = await attest(signer.address, merchant, amount); // engine first: no tx when the engine is down
   const approveHash = cash > 0n ? await ensureAllowance(signer, cash, onStep) : null;
