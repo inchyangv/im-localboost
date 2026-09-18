@@ -116,6 +116,7 @@ export async function runPayFlow(
   amount: number,
   useCredit: number,
   onStep?: (msg: string) => void,
+  remember = true,
 ): Promise<PayFlowResult> {
   const cash = BigInt(amount) - BigInt(useCredit);
   onStep?.("엔진에 위험 판정과 서명을 요청하는 중…");
@@ -123,13 +124,15 @@ export async function runPayFlow(
   const approveHash = cash > 0n ? await ensureAllowance(account, cash, onStep) : null;
   onStep?.(`판정 tier ${att.tier}. payWithBoost 전송 중…`);
   const { hash, paid } = await payWithBoost(account, merchant, BigInt(amount), BigInt(useCredit), att.attestation, att.signature);
-  saveLastSignature({
-    attestation: att.attestation,
-    signature: att.signature,
-    merchant,
-    amount,
-    useCredit,
-    payerId: account.address,
-  });
+  if (remember) {
+    saveLastSignature({
+      attestation: att.attestation,
+      signature: att.signature,
+      merchant,
+      amount,
+      useCredit,
+      payerId: account.address,
+    });
+  }
   return { approveHash, attest: att, hash, paid };
 }

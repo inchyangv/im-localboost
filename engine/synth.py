@@ -271,6 +271,19 @@ class Synth:
         return count
 
     # ------------------------------------------------------------------ assembly
+    def person_mints(self, payments: pd.DataFrame) -> None:
+        """Every regular person is minted by the bank before their first payment: 20% within 24h of
+        it (new users start paying right away), the rest 1-30 days earlier. Without this, wallet age
+        would separate rings from regulars by construction (train/serve mismatch: demo wallets are
+        minutes old)."""
+        first = payments[payments["is_collusion"] == 0].groupby("payer")["ts"].min()
+        for payer, ts in first.sort_index().items():
+            if self.rng.random() < 0.2:
+                lead = int(self.rng.integers(60, 24 * 3600))
+            else:
+                lead = int(self.rng.integers(86400, 30 * 86400))
+            self.transfers.append((int(ts) - lead, ZERO, payer, 1_000_000))
+
     def zone_hour_sales(self, cal: pd.DataFrame, payments: pd.DataFrame) -> pd.DataFrame:
         payments = payments.assign(hour_idx=(payments["ts"] - self.start_ts) // 3600)
         sales = payments.groupby(["zoneId", "hour_idx"])["amount"].sum()
@@ -290,6 +303,7 @@ class Synth:
 
         payments = pd.DataFrame(self.payments, columns=["ts", "payer", "merchant", "zoneId", "amount", "is_collusion", "ring_type"])
         payments = payments.sort_values(["ts", "payer", "merchant"], kind="mergesort").reset_index(drop=True)
+        self.person_mints(payments)
         # Every payment is a payer -> merchant token transfer.
         pay_tr = payments[["ts", "payer", "merchant", "amount"]].rename(columns={"payer": "from", "merchant": "to"})
         extra_tr = pd.DataFrame(self.transfers, columns=["ts", "from", "to", "amount"])

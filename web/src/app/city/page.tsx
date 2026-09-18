@@ -5,6 +5,7 @@ import { usePersona } from "@/components/PersonaProvider";
 import { BudgetForm, RatesPanel } from "@/components/city/BudgetAndRates";
 import { CapsPanel } from "@/components/city/CapsPanel";
 import { DemoBadge } from "@/components/city/DemoBadge";
+import { DemoPanel } from "@/components/city/DemoPanel";
 import { PendingTable, RiskLogTable } from "@/components/city/RiskAndPending";
 import { ZoneCards } from "@/components/city/ZoneCards";
 import { readZoneCards, type ZoneCard } from "@/lib/city";
@@ -65,13 +66,7 @@ export default function CityPage() {
       <RiskLogTable />
       <PendingTable actor={actor} isBank={isBank} onChanged={bump} refreshKey={refreshKey} />
       <CapsPanel actor={actor} isCity={isCity} />
-      <section className="rounded border border-dashed border-purple-300 bg-white p-4">
-        <h2 className="text-base font-semibold">
-          데모 보조
-          <DemoBadge />
-        </h2>
-        <p className="mt-1 text-xs text-gray-500">담합 링 실행·서명 재사용 공격 버튼은 다음 단계에서 추가됩니다.</p>
-      </section>
+      <DemoPanel onChanged={bump} />
       <section className="rounded border border-dashed border-purple-300 bg-white p-4">
         <h2 className="text-base font-semibold">
           시뮬레이션
