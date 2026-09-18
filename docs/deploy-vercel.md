@@ -42,3 +42,10 @@ make deploy-web   ENGINE_URL=https://engine-production-1edd.up.railway.app ENV_F
   4. 담합 링: 소비자 2~5 전부 tier 2(환류 + 모델 점수 0.947~0.989)로 즉시 차단, 보류 0건. SPEC 11절이 신규 지갑에서 기본이라고 적은 경우이며 보류→환수 경로는 이번 실행에서 나오지 않았다
   5. 서명 재사용: `NonceUsed` revert 표시. 참고로 마지막 서명 후 120초(`DEADLINE_SECONDS`)가 지나면 `AttestationExpired`가 먼저 걸리므로 데모에서는 결제 직후에 눌러야 한다
 - 브라우저 콘솔에 CORS 오류 없음. `OPTIONS /attest` (Origin `https://im-localboost-web.vercel.app`)에 `access-control-allow-origin` 헤더 확인. Railway `WEB_ORIGIN`도 웹 URL로 갱신
+
+## 재배포 (2026-09-18, 웹 UI 재설계)
+
+- 커밋 `4c49052` (feat(web): redesign UI with a Toss/iM Bank-inspired design system)를 같은 절차(`make deploy-web ENGINE_URL=https://engine-production-1edd.up.railway.app ENV_FILE=.env.kairos`)로 올렸다. 배포 `dpl_EEAKuzQ5gHnF7CvWzs5tUa4boMQe`, 별칭 https://im-localboost-web.vercel.app
+- 엔진·컨트랙트는 바꾸지 않았으므로 Railway와 Kairos는 그대로다
+- 확인: `/`, `/merchant`, `/city` 200. 소비자 페이지 청크에 새 UI 문구와 엔진 URL 포함. 브라우저에서 상단 "엔진 연결됨 | Kaia Kairos", 상권 카드가 온체인 값(북성로 10.0%, 예산 499,000원)을 표시. Pretendard는 jsDelivr CDN에서 로드되며 실패 시 시스템 한글 글꼴로 대체된다
+- 데모 스크린샷 `docs/demo/prod-step*.png`는 재설계 이전 UI다. 단계와 기대 결과는 README 표와 같다
