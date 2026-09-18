@@ -57,6 +57,29 @@ export interface HealthResponse {
   model?: boolean;
 }
 
+export interface OnboardResponse {
+  wallet: string;
+  personId: string;
+  registered: boolean;
+  personTx: string | null;
+  minted: number;
+  mintTx: string | null;
+  mintedToday: boolean;
+  mintAmount: number;
+  gasSentWei: string;
+  gasTx: string | null;
+  balance: number;
+}
+
+export interface OnboardStatus {
+  wallet: string;
+  registered: boolean;
+  personId: string | null;
+  mintedToday: boolean;
+  mintAmount: number;
+  gasWei: string;
+}
+
 export class EngineError extends Error {
   constructor(message: string, public readonly status?: number) {
     super(message);
@@ -107,3 +130,6 @@ export const payments = (params: { merchant?: string; payer?: string; limit?: nu
   return call<PaymentRow[]>(`/payments?${q.toString()}`);
 };
 export const health = () => call<HealthResponse>("/health", undefined, 5_000);
+/** Bank-side onboarding for a browser wallet: personId link, starter iMKRW, gas top-up (three txs, allow time). */
+export const onboard = (wallet: string) => call<OnboardResponse>("/onboard", json({ wallet }), 180_000);
+export const onboardStatus = (wallet: string) => call<OnboardStatus>(`/onboard/status?wallet=${encodeURIComponent(wallet)}`);

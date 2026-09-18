@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { PersonaGate } from "@/components/PersonaGate";
 import { usePersona } from "@/components/PersonaProvider";
 import { RoleAvatar } from "@/components/PersonaSwitcher";
+import { QrPanel } from "@/components/merchant/QrPanel";
 import { Badge, Card, CardHeader, Mono, Notice, PageHeader, Progress, Stat, Table, TierBadge, TxLink, cx, td, tdRight, th, thRight } from "@/components/ui";
 import { publicClient } from "@/lib/chain";
 import { CATEGORY_NAMES, caps, merchantByAddress, zoneName } from "@/lib/config";
@@ -22,13 +23,15 @@ interface SlotGauge {
 }
 
 export default function MerchantPage() {
-  const { persona } = usePersona();
+  const { persona, mode, wallet } = usePersona();
   const [rows, setRows] = useState<PaymentRow[]>([]);
   const [engineError, setEngineError] = useState<string | null>(null);
   const [gauge, setGauge] = useState<SlotGauge | null>(null);
   const [balance, setBalance] = useState<bigint | null>(null);
 
-  const address = persona?.role === "merchant" ? persona.account.address : null;
+  // A connected wallet that is a registered merchant takes precedence over the demo persona.
+  const walletMerchant = mode === "wallet" && wallet.address && merchantByAddress(wallet.address) ? wallet.address : null;
+  const address = walletMerchant ?? (persona?.role === "merchant" ? persona.account.address : null);
   const info = address ? merchantByAddress(address) : undefined;
 
   const refresh = useCallback(async () => {
@@ -64,8 +67,14 @@ export default function MerchantPage() {
     return () => clearInterval(id);
   }, [refresh]);
 
-  if (!persona || !address) {
-    return <PersonaGate roles={["merchant"]} title="가맹점 화면이에요" desc="가맹점 페르소나를 고르면 수취 내역과 이번 시간 슬롯 게이지를 볼 수 있어요." />;
+  if (!address) {
+    return (
+      <PersonaGate
+        roles={["merchant"]}
+        title="가맹점 화면이에요"
+        desc="가맹점으로 등록된 지갑을 연결하거나 데모 가맹점 계정을 고르면 수취 내역과 이번 시간 슬롯 게이지를 볼 수 있어요."
+      />
+    );
   }
 
   const remaining = gauge ? (gauge.volume >= gauge.cap ? 0n : gauge.cap - gauge.volume) : null;
@@ -77,7 +86,7 @@ export default function MerchantPage() {
   return (
     <>
       <PageHeader
-        title={info?.name ?? persona.label}
+        title={info?.name ?? persona?.label ?? "가맹점"}
         desc={
           info ? (
             <span className="flex flex-wrap items-center gap-2">
@@ -111,6 +120,10 @@ export default function MerchantPage() {
         <Card>
           <Stat label="기준 매출 (시간당)" value={info ? won(info.slotBaseline) : "—"} size="lg" sub={`기준의 ${caps.slotCapBps / 100}%까지 보너스 대상`} />
         </Card>
+      </div>
+
+      <div className="mt-6">
+        <QrPanel merchant={address} />
       </div>
 
       <Card className="mt-6">

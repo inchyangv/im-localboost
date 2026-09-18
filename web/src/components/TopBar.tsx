@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
 import { PersonaSwitcher } from "./PersonaSwitcher";
+import { WalletButton } from "./WalletButton";
 import { cx } from "./ui";
 import { chainId, chainLabel } from "@/lib/config";
 import { health } from "@/lib/engine";
@@ -89,6 +90,7 @@ export function TopBar() {
             <span className="text-gray-300">|</span>
             {chainLabel(chainId)}
           </span>
+          <WalletButton />
           <PersonaSwitcher />
         </div>
       </div>

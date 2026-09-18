@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[2]
 # Hardhat default accounts (public), the same ones .env.example uses.
 ATTESTER_KEY = "0x47e179ec197488593b187f80a00eb0da91f1b9d0b13f8733639f19c30a34926a"
 ORACLE_KEY = "0x7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6"
+BANK_KEY = "0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a"
 PAYER1 = "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc"
 MERCHANT1 = "0xBcd4042DE499D14e55001CcbB24a551F3b954096"
 
@@ -54,6 +55,7 @@ def fake_settings(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
         chain_id=31337,
         oracle_key=ORACLE_KEY,
         attester_key=ATTESTER_KEY,
+        bank_key=BANK_KEY,
         db_path=tmp_path / "engine.db",
         web_origin="http://localhost:3000",
         port=8000,

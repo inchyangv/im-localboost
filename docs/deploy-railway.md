@@ -16,6 +16,8 @@
 | `WEB_ORIGIN` | CORS 허용 오리진 (Vercel 배포 후 웹 URL로 갱신) |
 | `ORACLE_KEY` | 율 게시용 키. stdin으로만 입력했고 로그·인자에 남기지 않았다 |
 | `ATTESTER_KEY` | 결제 서명용 키. 동일 |
+| `BANK_KEY` | 지갑 온보딩용 키 (`POST /onboard`: setPerson, iMKRW 발행, 가스 전송). 동일 방식으로 입력. 2026-09-18 추가 |
+| `ONBOARD_IMKRW`, `ONBOARD_GAS_KAIA` | 선택. 기본 100000원, 0.2 KAIA |
 | `RAILWAY_DOCKERFILE_PATH` | `engine/Dockerfile`. 이 CLI 버전(5.47)에서 `railway.json`의 빌더 설정이 무시되고 railpack 자동 감지로 빠지기 때문에 변수로 지정했다 |
 
 ## 명령

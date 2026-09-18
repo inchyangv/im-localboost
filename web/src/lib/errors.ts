@@ -1,4 +1,4 @@
-import { BaseError, ContractFunctionRevertedError } from "viem";
+import { BaseError, ContractFunctionRevertedError, UserRejectedRequestError } from "viem";
 
 /** Custom error name -> Korean message. Names are fixed by the contract interface. */
 export const ERROR_MESSAGES: Record<string, string> = {
@@ -45,6 +45,10 @@ export interface ParsedError {
 
 /** Finds the custom error inside a viem error tree and maps it to Korean. Unknown names are shown as is. */
 export function parseChainError(err: unknown): ParsedError {
+  // Browser wallet: the user closed or rejected the signing prompt.
+  if ((err as { code?: number })?.code === 4001 || (err instanceof BaseError && err.walk((e) => e instanceof UserRejectedRequestError))) {
+    return { name: "UserRejected", message: "지갑에서 요청을 거절했어요" };
+  }
   if (err instanceof BaseError) {
     const revert = err.walk((e) => e instanceof ContractFunctionRevertedError);
     if (revert instanceof ContractFunctionRevertedError) {

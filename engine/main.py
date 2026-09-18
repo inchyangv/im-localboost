@@ -13,7 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from web3 import Web3
 
-from engine import boost, chain, db, poller
+from engine import boost, chain, db, onboard as onboarding, poller
 from engine.config import get_settings
 from engine import risk_model
 from engine.features import Ctx, build_features
@@ -82,6 +82,10 @@ class AttestRequest(BaseModel):
 
 class PublishRequest(BaseModel):
     overrides: dict[str, int] = Field(default_factory=dict)
+
+
+class OnboardRequest(BaseModel):
+    wallet: str
 
 
 def _checksum(name: str, value: str) -> str:
@@ -169,6 +173,31 @@ async def attest(req: AttestRequest) -> dict[str, Any]:
         "attestation": {**att, "nonce": str(att["nonce"])},
         "signature": signature,
     }
+
+
+@app.get("/onboard/status")
+async def onboard_status(wallet: str) -> dict[str, Any]:
+    """Whether the wallet is linked to a personId and whether it already received today's iMKRW."""
+    addr = _checksum("wallet", wallet)
+    now = await asyncio.to_thread(chain.now_ts)
+    try:
+        return await asyncio.to_thread(onboarding.status, _conn(), addr, now)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("onboard status failed: %s", exc)
+        raise HTTPException(status_code=502, detail=f"onboard status failed: {exc}")
+
+
+@app.post("/onboard")
+async def onboard(req: OnboardRequest) -> dict[str, Any]:
+    """Bank-side onboarding for a browser wallet: setPerson (once), starter iMKRW (once per KST day)
+    and a native gas top-up when the wallet is nearly empty. Signed with BANK_KEY."""
+    addr = _checksum("wallet", req.wallet)
+    now = await asyncio.to_thread(chain.now_ts)
+    try:
+        return await asyncio.to_thread(onboarding.onboard, _conn(), addr, now)
+    except Exception as exc:  # noqa: BLE001
+        log.exception("onboard failed")
+        raise HTTPException(status_code=502, detail=f"onboard failed: {exc}")
 
 
 @app.get("/risk/log")

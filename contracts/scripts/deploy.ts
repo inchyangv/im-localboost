@@ -36,6 +36,8 @@ async function main() {
   await (await boost.grantRole(await boost.BANK_ROLE(), w.bank.address)).wait();
   await (await boost.grantRole(await boost.ORACLE_ROLE(), w.oracle.address)).wait();
   await (await boost.connect(w.bank).setAttester(w.attester.address, true)).wait();
+  // The bank issues iMKRW to onboarded wallets (engine POST /onboard signs with BANK_KEY).
+  await (await token.grantRole(await token.MINTER_ROLE(), w.bank.address)).wait();
 
   const rec = {
     chainId: Number(chainId),

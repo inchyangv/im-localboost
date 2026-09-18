@@ -87,3 +87,26 @@ def send_tx(fn, private_key: str, timeout: int = 120) -> str:
     if int(receipt["status"]) != 1:
         raise RuntimeError(f"transaction {tx_hash.hex()} reverted")
     return "0x" + tx_hash.hex().removeprefix("0x")
+
+
+def send_native(to: str, value_wei: int, private_key: str, timeout: int = 120) -> str:
+    """Sends a plain native-coin transfer (gas top-up for onboarded wallets) signed with
+    `private_key` and waits for the receipt. Legacy gas pricing works on Hardhat and Kaia."""
+    from eth_account import Account
+
+    acct = Account.from_key(private_key)
+    tx = {
+        "from": acct.address,
+        "to": Web3.to_checksum_address(to),
+        "value": int(value_wei),
+        "nonce": w3().eth.get_transaction_count(acct.address, "pending"),
+        "chainId": chain_id(),
+        "gas": 21_000,
+        "gasPrice": w3().eth.gas_price,
+    }
+    signed = acct.sign_transaction(tx)
+    tx_hash = w3().eth.send_raw_transaction(signed.raw_transaction)
+    receipt = w3().eth.wait_for_transaction_receipt(tx_hash, timeout=timeout)
+    if int(receipt["status"]) != 1:
+        raise RuntimeError(f"transaction {tx_hash.hex()} reverted")
+    return "0x" + tx_hash.hex().removeprefix("0x")

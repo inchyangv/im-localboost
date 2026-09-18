@@ -33,7 +33,7 @@ const GROUPS: Array<{ label: string; roles: Role[] }> = [
 ];
 
 export function PersonaSwitcher() {
-  const { persona, personas, select } = usePersona();
+  const { persona, personas, select, mode } = usePersona();
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -74,9 +74,11 @@ export function PersonaSwitcher() {
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label="페르소나 선택"
+        title="데모 계정 (개인키가 번들에 포함된 발표용 계정)"
         className={cx(
-          "flex h-10 items-center gap-2 rounded-full border border-gray-200 bg-white pl-1 pr-3 text-[14px] font-semibold text-gray-900 transition-colors",
-          "hover:border-gray-300 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300",
+          "flex h-10 items-center gap-2 rounded-full border pl-1 pr-3 text-[14px] font-semibold transition-colors",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300",
+          mode === "persona" ? "border-gray-200 bg-white text-gray-900 hover:border-gray-300 hover:bg-gray-50" : "border-gray-200 bg-white text-gray-500 hover:bg-gray-50",
         )}
       >
         {persona ? <RoleAvatar role={persona.role} /> : null}
@@ -87,6 +89,7 @@ export function PersonaSwitcher() {
 
       {open && (
         <div role="menu" className="absolute right-0 top-full z-40 mt-2 w-72 rounded-2xl bg-white p-2 shadow-pop ring-1 ring-gray-200/70">
+          <p className="px-3 pb-1 pt-1.5 text-[12px] font-semibold text-gray-700">데모 계정</p>
           {GROUPS.map((g) => {
             const items = personas.filter((p) => g.roles.includes(p.role));
             if (items.length === 0) return null;
@@ -122,7 +125,9 @@ export function PersonaSwitcher() {
               </div>
             );
           })}
-          <p className="px-3 pb-1 pt-2 text-[11px] leading-relaxed text-gray-400">페르소나를 고르면 그 역할의 화면으로 이동해요. 키는 데모 전용이에요.</p>
+          <p className="px-3 pb-1 pt-2 text-[11px] leading-relaxed text-gray-400">
+            발표용 계정이에요. 개인키가 번들에 들어 있어 누구나 쓸 수 있으니 실제 사용은 상단의 지갑 연결로 하세요. 계정을 고르면 그 역할의 화면으로 이동해요.
+          </p>
         </div>
       )}
     </div>

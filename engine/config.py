@@ -11,6 +11,7 @@ import json
 import os
 import sys
 from dataclasses import dataclass, field
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
@@ -51,10 +52,14 @@ class Settings:
     chain_id: int
     oracle_key: str
     attester_key: str
+    bank_key: str
     db_path: Path
     web_origin: str
     port: int
     deployment: Deployment = field(repr=False)
+    # Wallet onboarding (POST /onboard): starter iMKRW per wallet per KST day and native gas top-up.
+    onboard_imkrw: int = 100_000
+    onboard_gas_wei: int = 2 * 10**17
 
 
 def load_deployment(chain_id: int) -> Deployment:
@@ -89,10 +94,13 @@ def load_settings() -> Settings:
         chain_id=chain_id,
         oracle_key=_env("ORACLE_KEY"),
         attester_key=_env("ATTESTER_KEY"),
+        bank_key=_env("BANK_KEY"),
         db_path=db_path,
         web_origin=_env("WEB_ORIGIN", "http://localhost:3000"),
         port=int(_env("PORT", "8000")),
         deployment=load_deployment(chain_id),
+        onboard_imkrw=int(_env("ONBOARD_IMKRW", "100000")),
+        onboard_gas_wei=int(Decimal(_env("ONBOARD_GAS_KAIA", "0.2")) * Decimal(10**18)),
     )
 
 

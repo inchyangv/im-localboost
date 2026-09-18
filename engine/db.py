@@ -70,6 +70,17 @@ CREATE TABLE IF NOT EXISTS kv (
     key   TEXT PRIMARY KEY,
     value TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS onboard (
+    wallet    TEXT NOT NULL,
+    day       INTEGER NOT NULL,
+    ts        INTEGER NOT NULL,
+    person_tx TEXT,
+    mint_tx   TEXT,
+    gas_tx    TEXT,
+    amount    INTEGER NOT NULL,
+    PRIMARY KEY (wallet, day)
+);
 """
 
 
@@ -95,6 +106,29 @@ def kv_set(conn: sqlite3.Connection, key: str, value: str) -> None:
     conn.execute(
         "INSERT INTO kv(key, value) VALUES(?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
         (key, value),
+    )
+    conn.commit()
+
+
+# --------------------------------------------------------------------------- onboarding
+def onboard_get(conn: sqlite3.Connection, wallet: str, day: int) -> dict[str, Any] | None:
+    row = conn.execute("SELECT * FROM onboard WHERE wallet = ? AND day = ?", (wallet.lower(), int(day))).fetchone()
+    return dict(row) if row else None
+
+
+def onboard_insert(
+    conn: sqlite3.Connection,
+    wallet: str,
+    day: int,
+    ts: int,
+    person_tx: str | None,
+    mint_tx: str | None,
+    gas_tx: str | None,
+    amount: int,
+) -> None:
+    conn.execute(
+        "INSERT OR IGNORE INTO onboard (wallet, day, ts, person_tx, mint_tx, gas_tx, amount) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (wallet.lower(), int(day), int(ts), person_tx, mint_tx, gas_tx, int(amount)),
     )
     conn.commit()
 

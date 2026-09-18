@@ -15,7 +15,7 @@ PORT := $(if $(PORT),$(PORT),8000)
 WEB_PORT ?= $(shell grep -E '^WEB_ORIGIN=' $(ENV_FILE) 2>/dev/null | head -1 | sed -E 's/.*:([0-9]+).*/\1/')
 WEB_PORT := $(if $(WEB_PORT),$(WEB_PORT),3000)
 
-.PHONY: help setup venv node test test-integration deploy-local kairos-keys deploy-kairos \
+.PHONY: help setup venv node test test-integration deploy-local grant-minter-kairos kairos-keys deploy-kairos \
         train engine web web-prod-env deploy-web sim docker-engine
 
 help:
@@ -55,6 +55,9 @@ deploy-local: ## Deploy + seed on localhost, refresh shared/
 	cd contracts && ENV_FILE=$(ENV_FILE) npx hardhat run scripts/deploy.ts --network localhost \
 	  && ENV_FILE=$(ENV_FILE) npx hardhat run scripts/seed.ts --network localhost \
 	  && ENV_FILE=$(ENV_FILE) npx hardhat run scripts/write-shared.ts --network localhost
+
+grant-minter-kairos: ## One-off: deployer grants MINTER_ROLE on MockIMKRW to the bank (existing Kairos deployment)
+	cd contracts && ENV_FILE=.env.kairos npx hardhat run scripts/grant-minter.ts --network kairos
 
 kairos-keys: ## Generate .env.kairos with fresh testnet keys (no-op if it exists)
 	cd contracts && npx ts-node --transpile-only scripts/gen-keys.ts
