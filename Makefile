@@ -81,7 +81,7 @@ web-prod-env: ## Write web/.env.production.local from .env.kairos (ENGINE_URL=..
 	cd web && node scripts/write-prod-env.mjs "$(ENGINE_URL)" "$(ENV_FILE)"
 
 deploy-web: web-prod-env ## Build locally and deploy prebuilt output to Vercel
-	cd web && npx vercel build --prod --yes && npx vercel deploy --prebuilt --prod --yes
+	cd web && vercel build --prod --yes && vercel deploy --prebuilt --prod --yes
 
 sim: ## Run the simulation and copy results into web/public/sim
 	$(PY) -m sim.run --seed 7 --days 28 --consumers 5000

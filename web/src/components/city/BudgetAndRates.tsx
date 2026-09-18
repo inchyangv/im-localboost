@@ -58,7 +58,7 @@ export function BudgetForm({ city, onDone }: { city: PrivateKeyAccount | null; o
           <input
             type="number"
             min={1}
-            step={10000}
+            step={1}
             className="mt-1 w-full rounded border border-gray-300 px-2 py-1.5"
             value={amount}
             onChange={(e) => setAmount(Math.max(0, Math.trunc(Number(e.target.value) || 0)))}

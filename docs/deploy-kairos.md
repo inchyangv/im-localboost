@@ -2,21 +2,22 @@
 
 - 체인: Kaia Kairos 테스트넷 (chainId 1001), RPC `https://public-en-kairos.node.kaia.io`
 - 탐색기: https://kairos.kaiascan.io
-- 배포 블록: 228091986 (`shared/deployments.json["1001"].startBlock`)
+- 배포 블록: 228092680 (`shared/deployments.json["1001"].startBlock`)
 - 배포 명령: `make deploy-kairos` (check-funds → fund → deploy → seed → write-shared)
 
 ## 컨트랙트
 
 | 이름 | 주소 | 탐색기 |
 | --- | --- | --- |
-| MockIMKRW | `0xf2D47bc1c67D72E1A72e84373c462C92BA2dB0C8` | https://kairos.kaiascan.io/address/0xf2D47bc1c67D72E1A72e84373c462C92BA2dB0C8 |
-| MerchantRegistry | `0xB95C24BFC84E2aa1f489eF2f1E6c5448208453AC` | https://kairos.kaiascan.io/address/0xB95C24BFC84E2aa1f489eF2f1E6c5448208453AC |
-| LocalBoost | `0xFc382AE68c984e50A1BBaaC9bACD64C8aa17B440` | https://kairos.kaiascan.io/address/0xFc382AE68c984e50A1BBaaC9bACD64C8aa17B440 |
+| MockIMKRW | `0xCE53923831A766a03419c36ef6F08eAF33Cd9A6D` | https://kairos.kaiascan.io/address/0xCE53923831A766a03419c36ef6F08eAF33Cd9A6D |
+| MerchantRegistry | `0x8bAfE729E4f16FC54F26E3E412E83BF008eFF1aD` | https://kairos.kaiascan.io/address/0x8bAfE729E4f16FC54F26E3E412E83BF008eFF1aD |
+| LocalBoost | `0x70c55cb306cc42aA5b48f5936Ac7F7FE9d3419Bd` | https://kairos.kaiascan.io/address/0x70c55cb306cc42aA5b48f5936Ac7F7FE9d3419Bd |
 
 ## 첫 결제 (`Paid`)
 
-- 엔진 서명 → `pay()` 통합 테스트로 발생. payer 1 → 북성로 한식당(zone 4), 10,000원, boost 1,000원, tier 0.
-- 트랜잭션: https://kairos.kaiascan.io/tx/0xc7d8bf8b5601741f78f5098f0d64031513293c2e437c1184ca7ca6c6a5e0b94f (블록 228092070)
+- Vercel 웹 데모 2단계(소비자 1 → 북성로 한식당, 10,000원, boost 1,000원, tier 0)로 발생.
+- 트랜잭션: https://kairos.kaiascan.io/tx/0x94bf32b1a44e4179566366a69efd2c1effe400b0d7257f35056237af5eb1c5c1 (블록 228093098)
+- 이력: 첫 배포(블록 228091986, LocalBoost 0xFc38…B440)에서는 통합 테스트로 첫 Paid `0xc7d8bf8b…b94f`를 남겼으나, 같은 KST 날에 데모 전제(오늘 결제 없음)를 맞추기 위해 재배포했다. 옛 컨트랙트는 탐색기에 남아 있지만 사용하지 않는다.
 
 ## 역할별 주소 (개인키는 `.env.kairos`에만 있으며 저장소에 넣지 않는다)
 
