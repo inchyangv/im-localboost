@@ -14,7 +14,8 @@ from web3 import Web3
 
 from engine import chain, db, poller
 from engine.config import get_settings
-from engine.features import Ctx
+from engine import risk_model
+from engine.features import Ctx, build_features
 from engine.rules import evaluate_rules, rule_score
 from engine.signer import AttestationSigner, build_attestation
 
@@ -25,6 +26,7 @@ _settings = get_settings()
 _signer = AttestationSigner(
     _settings.attester_key, _settings.chain_id, _settings.deployment.contracts["LocalBoost"]
 )
+_model = risk_model.load()
 
 
 class State:
@@ -96,6 +98,7 @@ async def health() -> dict[str, Any]:
         "contract": s.deployment.contracts["LocalBoost"],
         "lastBlock": int(last_block) if last_block is not None else None,
         "dbPath": str(s.db_path),
+        "model": _model is not None,
     }
 
 
@@ -119,10 +122,22 @@ def _risk_context(merchant: str) -> Ctx:
 
 
 def assess_risk(conn, payer: str, merchant: str, amount: int, ts: int) -> tuple[int, float, list[str]]:
-    """Rule layer only for now; the model layer is combined in a later milestone."""
+    """Final tier = max(rule tier, model tier). Score is the model's when loaded, else the rule score.
+    A model failure never blocks attestation: it falls back to rules only."""
     ctx = _risk_context(merchant)
-    tier, reasons = evaluate_rules(conn, payer, merchant, amount, ts, ctx)
-    return tier, rule_score(tier), reasons
+    rule_tier, reasons = evaluate_rules(conn, payer, merchant, amount, ts, ctx)
+    tier, score = rule_tier, rule_score(rule_tier)
+    if _model is not None:
+        try:
+            score = _model.score(build_features(conn, payer, merchant, amount, ts, ctx))
+            model_tier = _model.tier_for(score)
+            if model_tier > rule_tier:
+                tier = model_tier
+                reasons = [*reasons, "model_score"]
+        except Exception as exc:  # noqa: BLE001
+            log.warning("model scoring failed, rules only: %s", exc)
+            score = rule_score(rule_tier)
+    return tier, score, reasons
 
 
 @app.post("/attest")

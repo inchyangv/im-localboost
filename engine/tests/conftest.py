@@ -81,6 +81,11 @@ def app_client(fake_settings, monkeypatch: pytest.MonkeyPatch):
 
     monkeypatch.setattr(poller, "sync_once", lambda conn, times: 0)
 
+    # Model layer off by default so API tests are independent of engine/models/risk.txt.
+    from engine import risk_model
+
+    monkeypatch.setattr(risk_model, "load", lambda path=None: None)
+
     sys.modules.pop("engine.main", None)
     main = importlib.import_module("engine.main")
     from fastapi.testclient import TestClient

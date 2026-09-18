@@ -1,0 +1,27 @@
+{
+  "precision_at_0_5": 0.995475113122172,
+  "recall_at_0_5": 0.9969788519637462,
+  "precision_at_0_8": 0.9984802431610942,
+  "recall_at_0_8": 0.9924471299093656,
+  "auc": 0.9999937964106032,
+  "n_train": 18229,
+  "n_valid": 4558,
+  "n_valid_positive": 662,
+  "rounds": 200,
+  "features": [
+    "pair_count_7d",
+    "pair_count_1d",
+    "amount",
+    "amount_is_round",
+    "amount_to_cap_ratio",
+    "secs_since_rate_change",
+    "payer_age_hours",
+    "merchant_slot_ratio",
+    "payer_distinct_merchants_7d",
+    "merchant_distinct_payers_1h",
+    "backflow_flag"
+  ],
+  "recall_at_0_5_cross": 0.9821428571428571,
+  "recall_at_0_5_simple_loop": 1.0,
+  "recall_at_0_5_spread": 1.0
+}

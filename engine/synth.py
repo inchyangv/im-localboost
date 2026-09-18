@@ -39,6 +39,9 @@ CATEGORY_MEAN = {1: 12_000, 2: 6_000, 3: 20_000, 4: 30_000}  # 식당, 카페, �
 N_MERCHANTS_PER_ZONE = 8
 N_PERSONS = 2000
 TARGET_COLLUSION_RATIO = 0.04
+# Share of normal payments that are legitimately refunded (merchant -> payer transfer within a day).
+# Without this, a merchant -> payer edge would be a perfect proxy for the collusion label.
+REFUND_RATIO = 0.015
 RING_SHARE = {"simple_loop": 0.55, "spread": 0.25, "cross": 0.20}
 
 DOW_FACTOR = [0.90, 0.85, 0.90, 0.95, 1.15, 1.30, 1.10]  # Mon..Sun
@@ -140,8 +143,14 @@ class Synth:
                         self.rng.integers(0, N_PERSONS, size=n),
                     )
                     offsets = self.rng.integers(0, 3600, size=n)
+                    refunds = self.rng.random(n) < REFUND_RATIO
                     for k in range(n):
-                        rows.append((hour_ts + int(offsets[k]), self.persons[int(payer_idx[k])], m.address, zid, round_1000(amounts[k]), 0, ""))
+                        ts = hour_ts + int(offsets[k])
+                        payer = self.persons[int(payer_idx[k])]
+                        amount = round_1000(amounts[k])
+                        rows.append((ts, payer, m.address, zid, amount, 0, ""))
+                        if refunds[k]:
+                            self.transfers.append((ts + int(self.rng.integers(3600, 86400)), m.address, payer, amount))
         self.payments.extend(rows)
 
     # ------------------------------------------------------------------ rings
@@ -262,11 +271,6 @@ class Synth:
         return count
 
     # ------------------------------------------------------------------ assembly
-    def person_mints(self) -> None:
-        for i, p in enumerate(self.persons):
-            ts = self.start_ts - int(self.rng.integers(1, 60)) * 86400
-            self.transfers.append((ts, ZERO, p, 1_000_000))
-
     def zone_hour_sales(self, cal: pd.DataFrame, payments: pd.DataFrame) -> pd.DataFrame:
         payments = payments.assign(hour_idx=(payments["ts"] - self.start_ts) // 3600)
         sales = payments.groupby(["zoneId", "hour_idx"])["amount"].sum()
@@ -283,7 +287,6 @@ class Synth:
         self.gen_normal(cal)
         n_normal = len(self.payments)
         self.gen_rings(int(round(n_normal * TARGET_COLLUSION_RATIO / (1 - TARGET_COLLUSION_RATIO))))
-        self.person_mints()
 
         payments = pd.DataFrame(self.payments, columns=["ts", "payer", "merchant", "zoneId", "amount", "is_collusion", "ring_type"])
         payments = payments.sort_values(["ts", "payer", "merchant"], kind="mergesort").reset_index(drop=True)

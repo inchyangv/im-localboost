@@ -85,4 +85,6 @@ def test_api_payments_and_risk_log(app_client):
     log = app_client.get("/risk/log?limit=1").json()
     assert len(log) == 1 and log[0]["payer"] == PAYER1.lower() and log[0]["tier"] == 0
     assert app_client.get("/payments?limit=5").json() == []
-    assert app_client.get("/health").json()["lastBlock"] is None
+    health = app_client.get("/health").json()
+    assert health["lastBlock"] is None
+    assert health["model"] is False
