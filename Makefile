@@ -6,6 +6,9 @@ PY := $(VENV)/bin/python
 PYTEST := $(VENV)/bin/pytest
 ENV_FILE ?= .env
 ENGINE_URL ?= http://127.0.0.1:8000
+# Engine port: taken from the env file's PORT when present (default 8000).
+PORT ?= $(shell grep -E '^PORT=' $(ENV_FILE) 2>/dev/null | head -1 | cut -d= -f2)
+PORT := $(if $(PORT),$(PORT),8000)
 
 .PHONY: help setup venv node test test-integration deploy-local kairos-keys deploy-kairos \
         train engine web web-prod-env deploy-web sim docker-engine
@@ -57,7 +60,7 @@ train: ## Generate synthetic data and train risk/boost models
 	@echo "TODO"
 
 engine: ## Run the FastAPI engine with reload
-	ENV_FILE=$(ENV_FILE) $(VENV)/bin/uvicorn engine.main:app --reload --host 127.0.0.1 --port 8000
+	ENV_FILE=$(ENV_FILE) $(VENV)/bin/uvicorn engine.main:app --reload --host 127.0.0.1 --port $(PORT)
 
 web: ## Run the Next.js dev server
 	cd web && npm run dev
