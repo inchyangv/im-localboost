@@ -78,14 +78,15 @@ web: ## Run the Next.js dev server
 	cd web && npm run dev -- -p $(WEB_PORT)
 
 web-prod-env: ## Write web/.env.production.local from .env.kairos (ENGINE_URL=...)
-	@echo "TODO"
+	cd web && node scripts/write-prod-env.mjs "$(ENGINE_URL)" "$(ENV_FILE)"
 
-deploy-web: ## Build locally and deploy prebuilt output to Vercel
-	@echo "TODO"
+deploy-web: web-prod-env ## Build locally and deploy prebuilt output to Vercel
+	cd web && npx vercel build --prod --yes && npx vercel deploy --prebuilt --prod --yes
 
 sim: ## Run the simulation and copy results into web/public/sim
 	$(PY) -m sim.run --seed 7 --days 28 --consumers 5000
 	mkdir -p web/public/sim && cp sim/out/results.json sim/out/compare.png web/public/sim/
 
 docker-engine: ## Build and run the engine Docker image
-	@echo "TODO"
+	docker build -f engine/Dockerfile -t localboost-engine . && \
+	docker run --rm -p 8000:8000 --env-file .env.kairos -e DB_PATH=/tmp/engine.db localboost-engine

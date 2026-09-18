@@ -1,0 +1,15 @@
+node_modules
+.venv
+web
+contracts
+sim
+.git
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+.env*
+data
+engine/models/*.txt
+engine/__pycache__
+engine/tests
