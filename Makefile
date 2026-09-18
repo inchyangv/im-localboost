@@ -5,7 +5,9 @@ VENV := .venv
 PY := $(VENV)/bin/python
 PYTEST := $(VENV)/bin/pytest
 ENV_FILE ?= .env
-ENGINE_URL ?= http://127.0.0.1:8000
+# Engine URL: taken from the env file's ENGINE_URL when present (default http://127.0.0.1:8000).
+ENGINE_URL ?= $(shell grep -E '^ENGINE_URL=' $(ENV_FILE) 2>/dev/null | head -1 | cut -d= -f2-)
+ENGINE_URL := $(if $(ENGINE_URL),$(ENGINE_URL),http://127.0.0.1:8000)
 # Engine port: taken from the env file's PORT when present (default 8000).
 PORT ?= $(shell grep -E '^PORT=' $(ENV_FILE) 2>/dev/null | head -1 | cut -d= -f2)
 PORT := $(if $(PORT),$(PORT),8000)
@@ -43,7 +45,8 @@ test: ## Contract tests + engine unit tests (integration excluded)
 	$(PYTEST) engine/tests -q -m "not integration"
 
 test-integration: ## Attest-to-payment integration test (needs node + engine running)
-	@echo "TODO"
+	@curl -sf $(ENGINE_URL)/health >/dev/null || (echo "engine not reachable at $(ENGINE_URL); run make node, make deploy-local, make engine" && exit 1)
+	ENV_FILE=$(ENV_FILE) ENGINE_URL=$(ENGINE_URL) $(PYTEST) engine/tests -q -s -m integration
 
 deploy-local: ## Deploy + seed on localhost, refresh shared/
 	cd contracts && ENV_FILE=$(ENV_FILE) npx hardhat run scripts/deploy.ts --network localhost \
