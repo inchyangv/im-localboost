@@ -2,11 +2,11 @@
   "1001": {
     "chainId": 1001,
     "explorer": "https://kairos.kaiascan.io",
-    "startBlock": 228092680,
+    "startBlock": 228099395,
     "contracts": {
-      "MockIMKRW": "0xCE53923831A766a03419c36ef6F08eAF33Cd9A6D",
-      "MerchantRegistry": "0x8bAfE729E4f16FC54F26E3E412E83BF008eFF1aD",
-      "DalgubeolPay": "0x70c55cb306cc42aA5b48f5936Ac7F7FE9d3419Bd"
+      "MockIMKRW": "0x0618ba0D361C5107bE2E39901dd394BFC4092A4b",
+      "MerchantRegistry": "0xEB0aFb837B488e9713a825299F4DF6BB6D32Cc41",
+      "DalgubeolPay": "0x7ef0DA4bd695E91eAe9d53fb1Df18F302585258d"
     },
     "zones": [
       {
@@ -61,7 +61,7 @@
         "keyIndex": 2
       },
       {
-        "address": "0x3Eb0C4eCB95a3F451696334cf613049251ee4181",
+        "address": "0x1D3444f52143739D780b7585Af3438cf1342f26C",
         "name": "동성로 미용실",
         "zoneId": 1,
         "categoryId": 4,
@@ -69,7 +69,7 @@
         "keyIndex": null
       },
       {
-        "address": "0xFcf54Fe0c6266bb0cD32844aD887139fFd933D6d",
+        "address": "0xab2d5e2b3462429Ebc1a17735fF1aD25774A98f2",
         "name": "안지랑 곱창집",
         "zoneId": 3,
         "categoryId": 1,
@@ -77,7 +77,7 @@
         "keyIndex": null
       },
       {
-        "address": "0xff26972655c46718ae67f7e74dd96467D52ae552",
+        "address": "0xD022960DACB4e230C56EddF0cBc370ed98D90ada",
         "name": "북성로 카페",
         "zoneId": 4,
         "categoryId": 2,
@@ -85,7 +85,7 @@
         "keyIndex": null
       },
       {
-        "address": "0x0Dd4756F420e7E4a10040c67e5264cF620424395",
+        "address": "0x6b5dD4d13eFfF002CE48A1291f97CE2e9EB0BF81",
         "name": "서문시장 세탁소",
         "zoneId": 5,
         "categoryId": 4,
@@ -93,7 +93,7 @@
         "keyIndex": null
       },
       {
-        "address": "0x3Ff2494Ae722b4f5862D769Ea10d424D5a264808",
+        "address": "0xC85fFaF4F29c1A41980f3898c08083B92ce1fA53",
         "name": "동성로 편의점",
         "zoneId": 1,
         "categoryId": 3,

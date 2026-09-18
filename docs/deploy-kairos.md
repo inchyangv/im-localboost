@@ -2,18 +2,20 @@
 
 - 체인: Kaia Kairos 테스트넷 (chainId 1001), RPC `https://public-en-kairos.node.kaia.io`
 - 탐색기: https://kairos.kaiascan.io
-- 배포 블록: 228092680 (`shared/deployments.json["1001"].startBlock`)
+- 배포 블록: 228099395 (`shared/deployments.json["1001"].startBlock`)
 - 배포 명령: `make deploy-kairos` (check-funds → fund → deploy → seed → write-shared)
 
 ## 컨트랙트
 
 | 이름 | 주소 | 탐색기 |
 | --- | --- | --- |
-| MockIMKRW | `0xCE53923831A766a03419c36ef6F08eAF33Cd9A6D` | https://kairos.kaiascan.io/address/0xCE53923831A766a03419c36ef6F08eAF33Cd9A6D |
-| MerchantRegistry | `0x8bAfE729E4f16FC54F26E3E412E83BF008eFF1aD` | https://kairos.kaiascan.io/address/0x8bAfE729E4f16FC54F26E3E412E83BF008eFF1aD |
-| DalgubeolPay | `0x70c55cb306cc42aA5b48f5936Ac7F7FE9d3419Bd` | https://kairos.kaiascan.io/address/0x70c55cb306cc42aA5b48f5936Ac7F7FE9d3419Bd |
+| MockIMKRW | `0x0618ba0D361C5107bE2E39901dd394BFC4092A4b` | https://kairos.kaiascan.io/address/0x0618ba0D361C5107bE2E39901dd394BFC4092A4b |
+| MerchantRegistry | `0xEB0aFb837B488e9713a825299F4DF6BB6D32Cc41` | https://kairos.kaiascan.io/address/0xEB0aFb837B488e9713a825299F4DF6BB6D32Cc41 |
+| DalgubeolPay | `0x7ef0DA4bd695E91eAe9d53fb1Df18F302585258d` | https://kairos.kaiascan.io/address/0x7ef0DA4bd695E91eAe9d53fb1Df18F302585258d |
 
 ## 첫 결제 (`Paid`)
+
+- 2026-09-18 세 번째 배포(블록 228099395): 컨트랙트 이름·EIP-712 도메인이 `DalgubeolPay`로 바뀌고 bank에 MockIMKRW MINTER_ROLE이 부여됨(온보딩용). 아래 첫 결제 기록은 이전 배포 기준이며 새 배포의 첫 결제는 데모 리허설 때 갱신한다.
 
 - Vercel 웹 데모 2단계(소비자 1 → 북성로 한식당, 10,000원, boost 1,000원, tier 0)로 발생.
 - 트랜잭션: https://kairos.kaiascan.io/tx/0x94bf32b1a44e4179566366a69efd2c1effe400b0d7257f35056237af5eb1c5c1 (블록 228093098)

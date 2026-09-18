@@ -26,9 +26,9 @@
 | --- | --- |
 | 웹 | https://im-localboost-web.vercel.app (`/` 소비자, `/merchant` 가맹점, `/city` 대구시·은행) |
 | 엔진 | https://engine-production-1edd.up.railway.app/health |
-| MockIMKRW | https://kairos.kaiascan.io/address/0xCE53923831A766a03419c36ef6F08eAF33Cd9A6D |
-| MerchantRegistry | https://kairos.kaiascan.io/address/0x8bAfE729E4f16FC54F26E3E412E83BF008eFF1aD |
-| DalgubeolPay | https://kairos.kaiascan.io/address/0x70c55cb306cc42aA5b48f5936Ac7F7FE9d3419Bd |
+| MockIMKRW | https://kairos.kaiascan.io/address/0x0618ba0D361C5107bE2E39901dd394BFC4092A4b |
+| MerchantRegistry | https://kairos.kaiascan.io/address/0xEB0aFb837B488e9713a825299F4DF6BB6D32Cc41 |
+| DalgubeolPay | https://kairos.kaiascan.io/address/0x7ef0DA4bd695E91eAe9d53fb1Df18F302585258d |
 
 배포 절차와 검증 기록은 `docs/deploy-kairos.md`, `docs/deploy-railway.md`, `docs/deploy-vercel.md`에 있습니다. Kairos 배포에서는 보류 지연 60초가 실제 시간이고, 공개 RPC라 트랜잭션 확인에 몇 초씩 걸립니다.
 
