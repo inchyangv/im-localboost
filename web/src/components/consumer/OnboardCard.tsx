@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { Button, Card, CardHeader, Notice, TxLink } from "@/components/ui";
 import { onboard, onboardStatus, type OnboardResponse, type OnboardStatus } from "@/lib/engine";
+import { usePersona } from "@/components/PersonaProvider";
+import { formatKaia } from "@/components/WalletButton";
+import { FAUCET_URL, LOW_GAS_WEI } from "@/lib/config";
 import { won } from "@/lib/format";
 
 /** Bank onboarding for a connected wallet: personId link, starter iMKRW and gas, once per KST day. */
@@ -21,6 +24,9 @@ export function OnboardCard({
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<OnboardResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const { wallet } = usePersona();
+  const lowGas = wallet.nativeBalance !== null && wallet.nativeBalance < LOW_GAS_WEI;
 
   useEffect(() => {
     let alive = true;
@@ -102,6 +108,45 @@ export function OnboardCard({
           {error}
         </Notice>
       )}
+
+      <div className="mt-5 rounded-xl border border-gray-200 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <p className="text-[13px] font-semibold text-gray-900">수수료용 KAIA (가스)</p>
+            <p className="text-[12px] text-gray-500">
+              현재 <span className={lowGas ? "font-medium text-amber-700" : "font-medium text-gray-700"}>{formatKaia(wallet.nativeBalance)}</span>
+              {lowGas ? " · 결제 트랜잭션을 보내기엔 부족해요." : " · 결제 한 건에 0.01 KAIA가 채 안 들어요."}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {FAUCET_URL && (
+              <a href={FAUCET_URL} target="_blank" rel="noreferrer" className="rounded-full bg-gray-900 px-3 py-1.5 text-[12px] font-medium text-white">
+                Kaia faucet 열기
+              </a>
+            )}
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(address);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 1200);
+                } catch {
+                  // clipboard blocked
+                }
+              }}
+              className="rounded-full bg-gray-100 px-3 py-1.5 text-[12px] font-medium text-gray-800"
+            >
+              {copied ? "주소 복사됨" : "내 주소 복사"}
+            </button>
+          </div>
+        </div>
+        <p className="mt-2 text-[11px] leading-relaxed text-gray-400">
+          {FAUCET_URL
+            ? "faucet에 주소를 붙여 넣으면 테스트 KAIA를 보내 줘요. 위의 은행 온보딩도 지갑에 KAIA가 거의 없으면 0.2 KAIA를 함께 보내요."
+            : "이 네트워크에는 공개 faucet이 없어요. 은행 온보딩이 필요한 만큼의 KAIA를 함께 보내요."}
+        </p>
+      </div>
     </Card>
   );
 }

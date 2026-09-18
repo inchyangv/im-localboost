@@ -28,7 +28,7 @@ export function Logo({ className }: { className?: string }) {
     <span className={cx("inline-flex items-center gap-2.5", className)}>
       <LogoMark className="h-8 w-8 shrink-0" />
       <span className="whitespace-nowrap text-[17px] font-bold tracking-[-0.025em] text-gray-900">
-        <span className="text-brand-600">iM</span> LocalBoost
+        <span className="text-brand-600">달구벌</span>페이
       </span>
     </span>
   );

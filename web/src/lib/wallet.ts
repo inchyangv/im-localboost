@@ -35,27 +35,114 @@ export type AppWalletClient = WalletClient<Transport, Chain, Account>;
 export const KAIA_WALLET_URL = "https://www.kaiawallet.io/";
 
 export interface DetectedProvider {
-  /** Normalised EIP-1193 provider (Kaia Wallet is wrapped so viem can drive it). */
+  /** Normalised EIP-1193 provider (legacy Kaia Wallet `klay_*` API is wrapped so viem can drive it). */
   provider: Eip1193;
   kind: "kaia" | "eip1193";
   name: string;
 }
 
+/** One connectable wallet, as shown in the picker. `id` is the EIP-6963 rdns or a legacy pseudo id. */
+export interface WalletOption extends DetectedProvider {
+  id: string;
+  /** Data URI from EIP-6963, or null for legacy-injected providers (the UI draws a generic glyph). */
+  icon: string | null;
+}
+
+export const LAST_WALLET_KEY = "dalgubeolpay.wallet";
+export const METAMASK_URL = "https://metamask.io/download/";
+
 function isKaia(p: KaiaProvider | Eip1193 | undefined | null): p is KaiaProvider {
   return !!p && (!!(p as KaiaProvider).enable || !!p.isKaikas || !!p.isKaiaWallet);
 }
 
-/** Kaia Wallet first (window.klaytn / window.kaia), then any injected EIP-1193 provider. */
+/** Speaks `eth_*` already (Kaia Wallet's window.ethereum, MetaMask, EIP-6963 providers)? Then no adapter is needed. */
+function normalise(p: Eip1193 | KaiaProvider, preferAdapter: boolean): { provider: Eip1193; kind: "kaia" | "eip1193" } {
+  if (preferAdapter && isKaia(p)) return { provider: wrapKaia(p), kind: "kaia" };
+  return { provider: p, kind: isKaia(p) ? "kaia" : "eip1193" };
+}
+
+interface Eip6963Detail {
+  info: { uuid: string; name: string; icon: string; rdns: string };
+  provider: Eip1193;
+}
+
+/**
+ * Discovers wallets the DeFi way: EIP-6963 announcements (name + icon + rdns) first, then the
+ * legacy `window.ethereum` / `window.klaytn` injections for wallets that do not announce.
+ * Resolves after `waitMs` so late announcers are included.
+ */
+export async function discoverWallets(waitMs = 250): Promise<WalletOption[]> {
+  if (typeof window === "undefined") return [];
+  const found = new Map<string, WalletOption>();
+  const onAnnounce = (e: Event) => {
+    const d = (e as CustomEvent<Eip6963Detail>).detail;
+    if (!d?.info?.rdns || !d.provider || found.has(d.info.rdns)) return;
+    const n = normalise(d.provider, false);
+    found.set(d.info.rdns, { id: d.info.rdns, name: d.info.name, icon: d.info.icon ?? null, provider: n.provider, kind: n.kind });
+  };
+  window.addEventListener("eip6963:announceProvider", onAnnounce);
+  window.dispatchEvent(new Event("eip6963:requestProvider"));
+  await new Promise((r) => setTimeout(r, waitMs));
+  window.removeEventListener("eip6963:announceProvider", onAnnounce);
+
+  // Legacy fallbacks (deduplicated against the announced providers by object identity).
+  const announced = new Set(Array.from(found.values()).map((o) => o.provider));
+  const eth = window.ethereum;
+  if (eth && !announced.has(eth)) {
+    const n = normalise(eth, false);
+    const name = isKaia(eth) ? "Kaia Wallet" : eth.isMetaMask ? "MetaMask" : "브라우저 지갑";
+    found.set(`legacy:${name}`, { id: `legacy:${name}`, name, icon: null, provider: n.provider, kind: n.kind });
+  }
+  const kaia = window.klaytn ?? window.kaia;
+  if (kaia && !announced.has(kaia as Eip1193) && kaia !== (eth as unknown) && !Array.from(found.values()).some((o) => o.name === "Kaia Wallet")) {
+    const n = normalise(kaia, true);
+    found.set("legacy:kaia", { id: "legacy:kaia", name: "Kaia Wallet", icon: null, provider: n.provider, kind: n.kind });
+  }
+  // Kaia first, then the rest in announcement order.
+  return Array.from(found.values()).sort((a, b) => Number(b.name === "Kaia Wallet") - Number(a.name === "Kaia Wallet"));
+}
+
+/** Synchronous best guess used before discovery finishes (and for tests): Kaia Wallet first, then any injected provider. */
 export function detectProvider(): DetectedProvider | null {
   if (typeof window === "undefined") return null;
+  const eth = window.ethereum;
+  if (eth && isKaia(eth)) return { ...normalise(eth, false), name: "Kaia Wallet" };
   const kaia = window.klaytn ?? window.kaia;
-  if (isKaia(kaia)) return { provider: wrapKaia(kaia), kind: "kaia", name: "Kaia Wallet" };
-  if (window.ethereum) {
-    const eth = window.ethereum;
-    if (isKaia(eth)) return { provider: wrapKaia(eth as KaiaProvider), kind: "kaia", name: "Kaia Wallet" };
-    return { provider: eth, kind: "eip1193", name: eth.isMetaMask ? "MetaMask" : "브라우저 지갑" };
-  }
+  if (isKaia(kaia)) return { ...normalise(kaia, true), name: "Kaia Wallet" };
+  if (eth) return { ...normalise(eth, false), name: eth.isMetaMask ? "MetaMask" : "브라우저 지갑" };
   return null;
+}
+
+export function rememberWallet(id: string | null): void {
+  try {
+    if (id) window.localStorage.setItem(LAST_WALLET_KEY, id);
+    else window.localStorage.removeItem(LAST_WALLET_KEY);
+  } catch {
+    // storage may be unavailable
+  }
+}
+
+export function rememberedWallet(): string | null {
+  try {
+    return window.localStorage.getItem(LAST_WALLET_KEY);
+  } catch {
+    return null;
+  }
+}
+
+/** Native (KAIA) balance of an address on the app chain, for the gas hint. */
+export async function nativeBalance(address: `0x${string}`): Promise<bigint> {
+  return publicClient.getBalance({ address });
+}
+
+/** Wallet error codes users actually hit, mapped to short Korean. */
+export function walletErrorMessage(e: unknown): string {
+  const code = (e as { code?: number })?.code;
+  const msg = String((e as Error)?.message ?? e ?? "");
+  if (code === 4001 || /user rejected|User denied|rejected the request/i.test(msg)) return "지갑에서 요청을 거절했어요.";
+  if (code === -32002 || /already pending/i.test(msg)) return "지갑에 처리 중인 요청이 있어요. 지갑 창을 확인해 주세요.";
+  if (code === 4902) return "지갑에 이 네트워크가 없어요. 네트워크 추가를 승인해 주세요.";
+  return msg.length > 160 ? `${msg.slice(0, 160)}…` : msg;
 }
 
 const CHAIN_HEX = numberToHex(chainId);

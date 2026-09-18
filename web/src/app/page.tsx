@@ -11,7 +11,7 @@ import { WalletCard } from "@/components/consumer/WalletCard";
 import { ZoneLegend, ZoneMap, rateLevel, useZoneRates } from "@/components/ZoneMap";
 import { AmountInput, Badge, Button, Card, CardHeader, Mono, Notice, PageHeader, cx } from "@/components/ui";
 import { publicClient } from "@/lib/chain";
-import { CATEGORY_NAMES, caps, chainId, chainLabel, merchants, zoneName, zones } from "@/lib/config";
+import { CATEGORY_NAMES, FAUCET_URL, LOW_GAS_WEI, caps, chainId, chainLabel, merchants, zoneName, zones } from "@/lib/config";
 import { addresses, dalgubeolPayAbi, hourEpoch, readBoostState, registryAbi, tokenAbi, type BoostState } from "@/lib/contracts";
 import { payments as fetchPayments, type PaymentRow } from "@/lib/engine";
 import { parseChainError } from "@/lib/errors";
@@ -178,7 +178,8 @@ export default function ConsumerPage() {
   const creditMax = credit ?? 0n;
   const useCreditInvalid = BigInt(useCredit) > creditMax || useCredit > amount || useCredit < 0;
   const needsOnboard = isWallet && (registered === false || balance === 0n);
-  const canPay = !isWallet || (registered === true && actor.chainOk);
+  const lowGas = isWallet && wallet.nativeBalance !== null && wallet.nativeBalance < LOW_GAS_WEI;
+  const canPay = !isWallet || (registered === true && actor.chainOk && !lowGas);
   const personRemaining =
     quote && quote.state.personDay < BigInt(caps.personDailyBoost) ? BigInt(caps.personDailyBoost) - quote.state.personDay : 0n;
 
@@ -390,13 +391,24 @@ export default function ConsumerPage() {
               <Button type="submit" size="lg" full loading={busy} disabled={amount <= 0 || useCreditInvalid || !selected || !canPay} className="mt-4">
                 {busy ? (step ?? "처리 중") : `${won(amount)} 결제하기`}
               </Button>
-              <p className="mt-2 text-center text-[12px] text-gray-400">
-                {isWallet && registered === false
-                  ? "먼저 위에서 은행 등록을 마치면 결제할 수 있어요."
-                  : isWallet
-                    ? "엔진 위험 판정 → 지갑 서명 → 온체인 결제 순으로 진행돼요."
-                    : "엔진 위험 판정 → 서명 → 온체인 결제 순으로 진행돼요."}
-              </p>
+              {lowGas ? (
+                <p className="mt-2 text-center text-[12px] text-amber-700">
+                  수수료용 KAIA가 부족해서 결제를 보낼 수 없어요.{" "}
+                  {FAUCET_URL && (
+                    <a href={FAUCET_URL} target="_blank" rel="noreferrer" className="underline underline-offset-2">
+                      faucet에서 받기
+                    </a>
+                  )}
+                </p>
+              ) : (
+                <p className="mt-2 text-center text-[12px] text-gray-400">
+                  {isWallet && registered === false
+                    ? "먼저 위에서 은행 등록을 마치면 결제할 수 있어요."
+                    : isWallet
+                      ? "엔진 위험 판정 → 지갑 서명 → 온체인 결제 순으로 진행돼요."
+                      : "엔진 위험 판정 → 서명 → 온체인 결제 순으로 진행돼요."}
+                </p>
+              )}
 
               {error && (
                 <Notice tone="error" className="mt-3" title="결제에 실패했어요">

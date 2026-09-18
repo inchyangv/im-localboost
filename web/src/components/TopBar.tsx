@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
 import { PersonaSwitcher } from "./PersonaSwitcher";
-import { WalletButton } from "./WalletButton";
+import { NetworkBanner, WalletButton } from "./WalletButton";
 import { cx } from "./ui";
 import { chainId, chainLabel } from "@/lib/config";
 import { health } from "@/lib/engine";
@@ -75,20 +75,18 @@ export function TopBar() {
         <Link
           href="/"
           className="rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2"
-          aria-label="iM LocalBoost 홈"
+          aria-label="달구벌페이 홈"
         >
           <Logo />
         </Link>
         <NavTabs className="hidden sm:flex" />
         <div className="ml-auto flex items-center gap-2 sm:gap-3">
           <span
-            className="hidden items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1 text-[12px] text-gray-600 md:inline-flex"
-            title={`${chainLabel(chainId)} (chainId ${chainId}) · ${engineText}`}
+            className="hidden items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 text-[12px] text-gray-600 lg:inline-flex"
+            title={`${engineText} · ${chainLabel(chainId)} (chainId ${chainId})`}
           >
             <span className={cx("inline-block h-2 w-2 rounded-full", dot)} aria-hidden="true" />
             {engineText}
-            <span className="text-gray-300">|</span>
-            {chainLabel(chainId)}
           </span>
           <WalletButton />
           <PersonaSwitcher />
@@ -97,6 +95,7 @@ export function TopBar() {
       <div className="border-t border-gray-100 px-3 py-2 sm:hidden">
         <NavTabs />
       </div>
+      <NetworkBanner />
     </header>
   );
 }

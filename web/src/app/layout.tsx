@@ -7,8 +7,8 @@ import { chainId, chainLabel, deployment } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: {
-    default: "iM LocalBoost",
-    template: "%s | iM LocalBoost",
+    default: "달구벌페이",
+    template: "%s | 달구벌페이",
   },
   description: "상권·시간대별 동적 보너스 지역화폐 프로토타입",
 };
@@ -38,7 +38,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           </main>
           <footer className="mx-auto w-full max-w-[1120px] px-5 pb-10 text-[12px] text-gray-500">
             <p>
-              iM LocalBoost 프로토타입 · {chainLabel(chainId)} (chainId {chainId}) · 하루 경계 KST · 브라우저 서명은 데모 전용이에요
+              달구벌페이 프로토타입 · {chainLabel(chainId)} (chainId {chainId}) · 하루 경계 KST · 브라우저 서명은 데모 전용이에요
             </p>
           </footer>
         </PersonaProvider>

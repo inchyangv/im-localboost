@@ -68,8 +68,24 @@ export function merchantByAddress(address: string): Merchant | undefined {
 }
 
 /** Human label for the configured chain, shown in the top bar and footer. */
+/** Chains the UI knows how to name. Anything else is shown as `chain <id>`. */
+export const CHAIN_NAMES: Record<number, string> = {
+  8217: "Kaia Mainnet",
+  1001: "Kaia Kairos",
+  31337: "로컬 체인",
+  1: "Ethereum",
+  11155111: "Sepolia",
+};
+
 export function chainLabel(id: number): string {
-  if (id === 31337) return "로컬 체인";
-  if (id === 1001) return "Kaia Kairos";
-  return `chain ${id}`;
+  return CHAIN_NAMES[id] ?? `chain ${id}`;
 }
+
+export function isTestnet(id: number): boolean {
+  return id === 1001 || id === 31337 || id === 11155111;
+}
+
+/** Gas (KAIA) faucet for the app chain; null when there is none (local chain, mainnet). */
+export const FAUCET_URL: string | null = chainId === 1001 ? "https://faucet.kaia.io" : null;
+/** Below this the wallet cannot pay for a payment tx; the UI points to the faucet / bank top-up. */
+export const LOW_GAS_WEI = 10n ** 16n; // 0.01 KAIA
