@@ -22,7 +22,7 @@ export async function requestSettlement(who: PrivateKeyAccount | Signer, amount:
   if (!bank) throw new Error("은행 주소를 찾을 수 없어요.");
   const signer = toSigner(who);
   const { request } = await publicClient.simulateContract({
-    account: signer.address,
+    account: signer.wallet.account,
     address: addresses.MockIMKRW,
     abi: tokenAbi,
     functionName: "transfer",
@@ -37,7 +37,7 @@ export async function requestSettlement(who: PrivateKeyAccount | Signer, amount:
 export async function retireSettled(bank: PrivateKeyAccount | Signer, amount: bigint): Promise<`0x${string}`> {
   const signer = toSigner(bank);
   const { request } = await publicClient.simulateContract({
-    account: signer.address,
+    account: signer.wallet.account,
     address: addresses.MockIMKRW,
     abi: tokenAbi,
     functionName: "transfer",
