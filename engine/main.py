@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from web3 import Web3
 
-from engine import chain, db, poller
+from engine import boost, chain, db, poller
 from engine.config import get_settings
 from engine import risk_model
 from engine.features import Ctx, build_features
@@ -38,10 +38,16 @@ class State:
 state = State()
 
 
+def _daily_k_hook(conn) -> None:
+    boost.update_k_if_new_day(conn, chain.now_ts())
+
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     state.conn = db.connect(_settings.db_path)
     state.stop = asyncio.Event()
+    if _daily_k_hook not in poller.tick_hooks:
+        poller.tick_hooks.append(_daily_k_hook)
     state.task = asyncio.create_task(poller.run(state.conn, state.stop))
     try:
         yield
@@ -69,6 +75,10 @@ class AttestRequest(BaseModel):
     payer: str
     merchant: str
     amount: int = Field(gt=0)
+
+
+class PublishRequest(BaseModel):
+    overrides: dict[str, int] = Field(default_factory=dict)
 
 
 def _checksum(name: str, value: str) -> str:
@@ -168,3 +178,58 @@ async def payments(
     merchant: str | None = None, payer: str | None = None, limit: int = Query(50, ge=1, le=500)
 ) -> list[dict[str, Any]]:
     return db.list_payments(_conn(), merchant=merchant, payer=payer, limit=limit)
+
+
+def _strip_explore(rates: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [{k: v for k, v in r.items() if k != "explore"} for r in rates]
+
+
+@app.get("/rates/current")
+async def rates_current() -> list[dict[str, Any]]:
+    """Published rates for the current hour when present, otherwise a preview without exploration."""
+    conn = _conn()
+    now = await asyncio.to_thread(chain.now_ts)
+    epoch = chain.hour_epoch(now)
+    published = boost.published_rates(conn, epoch)
+    if published:
+        return published
+    try:
+        preview = await asyncio.to_thread(boost.rates_for, now, boost.get_k(conn), False, {})
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=503, detail=str(exc))
+    return _strip_explore(preview)
+
+
+@app.post("/rates/publish")
+async def rates_publish(req: PublishRequest | None = None) -> dict[str, Any]:
+    """Computes rates for the current and the next hour and publishes both via setRates."""
+    conn = _conn()
+    overrides: dict[int, int] = {}
+    for zid, bps in (req.overrides if req else {}).items():
+        if not (0 <= int(bps) <= boost.MAX_BPS):
+            raise HTTPException(status_code=422, detail=f"bps for zone {zid} must be within 0..{boost.MAX_BPS}")
+        overrides[int(zid)] = int(bps)
+
+    now = await asyncio.to_thread(chain.now_ts)
+    epoch = chain.hour_epoch(now)
+    k = boost.get_k(conn)
+    try:
+        current = await asyncio.to_thread(boost.rates_for, now, k, True, overrides)
+        nxt = await asyncio.to_thread(boost.rates_for, (epoch + 1) * 3600, k, False, overrides)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=503, detail=str(exc))
+
+    def publish(hour_epoch: int, rates: list[dict[str, Any]]) -> str:
+        fn = chain.local_boost().functions.setRates(hour_epoch, [r["zoneId"] for r in rates], [r["bps"] for r in rates])
+        return chain.send_tx(fn, _settings.oracle_key)
+
+    try:
+        tx_hash = await asyncio.to_thread(publish, epoch, current)
+        next_tx_hash = await asyncio.to_thread(publish, epoch + 1, nxt)
+    except Exception as exc:  # noqa: BLE001
+        log.exception("rates publish failed")
+        raise HTTPException(status_code=502, detail=f"setRates failed: {exc}")
+    boost.store_published(conn, epoch, current, tx_hash)
+    boost.store_published(conn, epoch + 1, nxt, next_tx_hash)
+    log.info("published rates epoch=%d %s explore=%s", epoch, [(r["zoneId"], r["bps"]) for r in current], [r["zoneId"] for r in current if r["explore"]])
+    return {"txHash": tx_hash, "nextTxHash": next_tx_hash, "rates": _strip_explore(current)}

@@ -60,7 +60,9 @@ deploy-kairos: ## Deploy + seed on Kaia Kairos using .env.kairos
 	@echo "TODO"
 
 train: ## Generate synthetic data and train risk/boost models
-	@echo "TODO"
+	$(PY) -m engine.synth --seed 42 --out data/
+	$(PY) -m engine.train_risk
+	$(PY) -m engine.train_boost
 
 engine: ## Run the FastAPI engine with reload
 	ENV_FILE=$(ENV_FILE) $(VENV)/bin/uvicorn engine.main:app --reload --host 127.0.0.1 --port $(PORT)

@@ -1,0 +1,17 @@
+{
+  "mae": 48458.370948917385,
+  "mape_nonzero": 0.6956287978366545,
+  "mape_hours_8_21_nonzero": 0.5894480597539457,
+  "n_train": 5040,
+  "n_valid": 840,
+  "rounds": 200,
+  "features": [
+    "dow",
+    "hour",
+    "is_holiday",
+    "temp",
+    "rain_mm",
+    "sales_lag_1h",
+    "sales_same_slot_mean_4w"
+  ]
+}
