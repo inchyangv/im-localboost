@@ -82,6 +82,8 @@ make web            # [터미널 3] next dev (기본 3000)
 ```
 make test              # contracts: Hardhat 테스트 (SPEC 4.4의 17개 케이스 포함) + engine: pytest (통합 제외)
 make test-integration  # 노드·엔진이 떠 있는 상태에서 엔진 서명 → 온체인 결제 → 재사용 revert 확인
+cd web && npx tsx --env-file=.env.local scripts/verify-wallet.ts             # 일회용 키로 지갑 온보딩 → approve → 결제 (브라우저 없이)
+cd web && npx tsx --env-file=.env.production.local scripts/verify-wallet.ts  # 같은 검증을 Kairos + Railway 상대로
 ```
 
 ## 시뮬레이션
