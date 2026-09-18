@@ -1,4 +1,115 @@
 {
+  "1001": {
+    "chainId": 1001,
+    "explorer": "https://kairos.kaiascan.io",
+    "startBlock": 228091986,
+    "contracts": {
+      "MockIMKRW": "0xf2D47bc1c67D72E1A72e84373c462C92BA2dB0C8",
+      "MerchantRegistry": "0xB95C24BFC84E2aa1f489eF2f1E6c5448208453AC",
+      "LocalBoost": "0xFc382AE68c984e50A1BBaaC9bACD64C8aa17B440"
+    },
+    "zones": [
+      {
+        "id": 1,
+        "name": "동성로",
+        "vulnerability": 0.3
+      },
+      {
+        "id": 2,
+        "name": "들안길",
+        "vulnerability": 0.6
+      },
+      {
+        "id": 3,
+        "name": "안지랑",
+        "vulnerability": 0.8
+      },
+      {
+        "id": 4,
+        "name": "북성로",
+        "vulnerability": 1
+      },
+      {
+        "id": 5,
+        "name": "서문시장",
+        "vulnerability": 0.7
+      }
+    ],
+    "merchants": [
+      {
+        "address": "0x5b29D2Cb77C81D67E16D6ab57c9b8D4b74E851cE",
+        "name": "북성로 한식당",
+        "zoneId": 4,
+        "categoryId": 1,
+        "slotBaseline": 100000,
+        "keyIndex": 0
+      },
+      {
+        "address": "0x6BBbC596887E0DED9F5BfAb41592e6A54999259D",
+        "name": "들안길 카페",
+        "zoneId": 2,
+        "categoryId": 2,
+        "slotBaseline": 100000,
+        "keyIndex": 1
+      },
+      {
+        "address": "0x3df23b5F7531D55540ECF53b8cf61E42E7a65106",
+        "name": "서문시장 소매",
+        "zoneId": 5,
+        "categoryId": 3,
+        "slotBaseline": 100000,
+        "keyIndex": 2
+      },
+      {
+        "address": "0x3Eb0C4eCB95a3F451696334cf613049251ee4181",
+        "name": "동성로 미용실",
+        "zoneId": 1,
+        "categoryId": 4,
+        "slotBaseline": 100000,
+        "keyIndex": null
+      },
+      {
+        "address": "0xFcf54Fe0c6266bb0cD32844aD887139fFd933D6d",
+        "name": "안지랑 곱창집",
+        "zoneId": 3,
+        "categoryId": 1,
+        "slotBaseline": 100000,
+        "keyIndex": null
+      },
+      {
+        "address": "0xff26972655c46718ae67f7e74dd96467D52ae552",
+        "name": "북성로 카페",
+        "zoneId": 4,
+        "categoryId": 2,
+        "slotBaseline": 100000,
+        "keyIndex": null
+      },
+      {
+        "address": "0x0Dd4756F420e7E4a10040c67e5264cF620424395",
+        "name": "서문시장 세탁소",
+        "zoneId": 5,
+        "categoryId": 4,
+        "slotBaseline": 100000,
+        "keyIndex": null
+      },
+      {
+        "address": "0x3Ff2494Ae722b4f5862D769Ea10d424D5a264808",
+        "name": "동성로 편의점",
+        "zoneId": 1,
+        "categoryId": 3,
+        "slotBaseline": 100000,
+        "keyIndex": null
+      }
+    ],
+    "caps": {
+      "maxRateBps": 1500,
+      "perTxBoost": 3000,
+      "personDailyBoost": 5000,
+      "slotCapBps": 15000,
+      "pendingDelay": 60,
+      "capsDelay": 60
+    }
+  },
   "31337": {
     "chainId": 31337,
     "explorer": null,
