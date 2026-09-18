@@ -43,7 +43,9 @@ test-integration: ## Attest-to-payment integration test (needs node + engine run
 	@echo "TODO"
 
 deploy-local: ## Deploy + seed on localhost, refresh shared/
-	@echo "TODO"
+	cd contracts && ENV_FILE=$(ENV_FILE) npx hardhat run scripts/deploy.ts --network localhost \
+	  && ENV_FILE=$(ENV_FILE) npx hardhat run scripts/seed.ts --network localhost \
+	  && ENV_FILE=$(ENV_FILE) npx hardhat run scripts/write-shared.ts --network localhost
 
 kairos-keys: ## Generate .env.kairos with fresh testnet keys (no-op if it exists)
 	@echo "TODO"

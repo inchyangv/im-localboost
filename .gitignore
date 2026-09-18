@@ -34,6 +34,7 @@ pnpm-debug.log*
 contracts/artifacts/
 contracts/cache/
 contracts/typechain-types/
+contracts/.deploy-*.json
 
 # Next.js
 web/.next/

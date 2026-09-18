@@ -1,0 +1,1462 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token_",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "registry_",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "maxRateBps",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint256",
+            "name": "perTxBoost",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "personDailyBoost",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint16",
+            "name": "slotCapBps",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint32",
+            "name": "pendingDelay",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "capsDelay",
+            "type": "uint32"
+          }
+        ],
+        "internalType": "struct LocalBoost.Caps",
+        "name": "initialCaps",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "AccessControlBadConfirmation",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "neededRole",
+        "type": "bytes32"
+      }
+    ],
+    "name": "AccessControlUnauthorizedAccount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AttestationExpired",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AttestationMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BadEpoch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "recovered",
+        "type": "address"
+      }
+    ],
+    "name": "BadSigner",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CapsNotProposed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CapsNotReady",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CreditExceedsAmount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ECDSAInvalidSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "length",
+        "type": "uint256"
+      }
+    ],
+    "name": "ECDSAInvalidSignatureLength",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "s",
+        "type": "bytes32"
+      }
+    ],
+    "name": "ECDSAInvalidSignatureS",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InsufficientCredit",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidShortString",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LengthMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MerchantInactive",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NonceUsed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotPending",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotReleasable",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "zoneId",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint16",
+        "name": "bps",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "maxRateBps",
+        "type": "uint16"
+      }
+    ],
+    "name": "RateTooHigh",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "SafeERC20FailedOperation",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "str",
+        "type": "string"
+      }
+    ],
+    "name": "StringTooLong",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnregisteredPayer",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroAddress",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "attester",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "ok",
+        "type": "bool"
+      }
+    ],
+    "name": "AttesterSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint32",
+        "name": "zoneId",
+        "type": "uint32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      }
+    ],
+    "name": "BudgetDeposited",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "maxRateBps",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint256",
+            "name": "perTxBoost",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "personDailyBoost",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint16",
+            "name": "slotCapBps",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint32",
+            "name": "pendingDelay",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "capsDelay",
+            "type": "uint32"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct LocalBoost.Caps",
+        "name": "caps",
+        "type": "tuple"
+      }
+    ],
+    "name": "CapsApplied",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "maxRateBps",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint256",
+            "name": "perTxBoost",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "personDailyBoost",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint16",
+            "name": "slotCapBps",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint32",
+            "name": "pendingDelay",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "capsDelay",
+            "type": "uint32"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct LocalBoost.Caps",
+        "name": "caps",
+        "type": "tuple"
+      }
+    ],
+    "name": "CapsProposed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [],
+    "name": "EIP712DomainChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "payer",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "personId",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "merchant",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "zoneId",
+        "type": "uint32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "useCredit",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "boost",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "tier",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "pendingId",
+        "type": "uint256"
+      }
+    ],
+    "name": "Paid",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "pendingId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint32",
+        "name": "zoneId",
+        "type": "uint32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "PendingClawedBack",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "pendingId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "personId",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "PendingReleased",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "hourEpoch",
+        "type": "uint64"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint32[]",
+        "name": "zoneIds",
+        "type": "uint32[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "bps",
+        "type": "uint16[]"
+      }
+    ],
+    "name": "RatesSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "previousAdminRole",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "newAdminRole",
+        "type": "bytes32"
+      }
+    ],
+    "name": "RoleAdminChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "RoleGranted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "RoleRevoked",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "ATTESTER_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "BANK_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "CITY_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "DEFAULT_ADMIN_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "ORACLE_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "applyCaps",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "attesters",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "caps",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "maxRateBps",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint256",
+        "name": "perTxBoost",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "personDailyBoost",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "slotCapBps",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint32",
+        "name": "pendingDelay",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "capsDelay",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "capsReadyAt",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "pendingId",
+        "type": "uint256"
+      }
+    ],
+    "name": "clawback",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "personId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "creditOf",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "zoneId",
+        "type": "uint32"
+      }
+    ],
+    "name": "currentRate",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "zoneId",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "depositBudget",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "eip712Domain",
+    "outputs": [
+      {
+        "internalType": "bytes1",
+        "name": "fields",
+        "type": "bytes1"
+      },
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "version",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "chainId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "verifyingContract",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "salt",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "extensions",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getRoleAdmin",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "grantRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "hasRole",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "nextPendingId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "pairDay",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "merchant",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "useCredit",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "payer",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "merchant",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "tier",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint256",
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "deadline",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct LocalBoost.Attestation",
+        "name": "att",
+        "type": "tuple"
+      },
+      {
+        "internalType": "bytes",
+        "name": "sig",
+        "type": "bytes"
+      }
+    ],
+    "name": "payWithBoost",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "pendingCaps",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "maxRateBps",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint256",
+        "name": "perTxBoost",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "personDailyBoost",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "slotCapBps",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint32",
+        "name": "pendingDelay",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "capsDelay",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "pendings",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "personId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "zoneId",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint64",
+        "name": "releaseAt",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint8",
+        "name": "status",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "name": "personDay",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "maxRateBps",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint256",
+            "name": "perTxBoost",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "personDailyBoost",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint16",
+            "name": "slotCapBps",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint32",
+            "name": "pendingDelay",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "capsDelay",
+            "type": "uint32"
+          }
+        ],
+        "internalType": "struct LocalBoost.Caps",
+        "name": "c",
+        "type": "tuple"
+      }
+    ],
+    "name": "proposeCaps",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "payer",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "merchant",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "useCredit",
+        "type": "uint256"
+      }
+    ],
+    "name": "quoteBoost",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "boost",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "name": "rates",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "registry",
+    "outputs": [
+      {
+        "internalType": "contract MerchantRegistry",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "pendingId",
+        "type": "uint256"
+      }
+    ],
+    "name": "release",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "callerConfirmation",
+        "type": "address"
+      }
+    ],
+    "name": "renounceRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "revokeRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "a",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "ok",
+        "type": "bool"
+      }
+    ],
+    "name": "setAttester",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "hourEpoch",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint32[]",
+        "name": "zoneIds",
+        "type": "uint32[]"
+      },
+      {
+        "internalType": "uint16[]",
+        "name": "bps",
+        "type": "uint16[]"
+      }
+    ],
+    "name": "setRates",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "zoneId",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "cap",
+        "type": "uint256"
+      }
+    ],
+    "name": "setZoneHourlyCap",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "name": "slotVolume",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes4",
+        "name": "interfaceId",
+        "type": "bytes4"
+      }
+    ],
+    "name": "supportsInterface",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "token",
+    "outputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "usedNonce",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
+      }
+    ],
+    "name": "zoneBudget",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "name": "zoneHourSpent",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
+      }
+    ],
+    "name": "zoneHourlyCap",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
