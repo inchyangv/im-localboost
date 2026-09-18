@@ -5,7 +5,7 @@ import * as path from "path";
 
 // Environment file selection: ENV_FILE=.env.kairos for testnet, .env (repo root) by default.
 const envFile = process.env.ENV_FILE ?? ".env";
-dotenv.config({ path: path.resolve(__dirname, "..", envFile) });
+dotenv.config({ path: path.resolve(__dirname, "..", envFile), quiet: true });
 
 function keyList(): string[] {
   const single = ["DEPLOYER_KEY", "CITY_KEY", "BANK_KEY", "ORACLE_KEY", "ATTESTER_KEY"]
