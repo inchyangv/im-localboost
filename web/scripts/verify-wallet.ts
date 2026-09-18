@@ -7,7 +7,10 @@
  *   cd web && npx tsx --env-file=.env.production.local scripts/verify-wallet.ts      # Kairos + Railway
  *
  * Only NEXT_PUBLIC_CHAIN_ID / RPC_URL / ENGINE_URL are needed; no persona keys. MERCHANT=<index> picks
- * the demo merchant (default 0 = 북성로 한식당), AMOUNT the won amount (default 10000).
+ * the demo merchant from shared/deployments.json for the chain (default 0 = the 북성로 restaurant, zone 4;
+ * names differ between 31337 and 1001 and the script prints the one it uses), AMOUNT the won amount
+ * (default 10000). A fresh seed leaves zone 4 unfunded for demo step 1 (city deposit), so the payment
+ * there succeeds with boost 0; MERCHANT=4 (안지랑, zone 3) pays into a funded zone.
  */
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 
