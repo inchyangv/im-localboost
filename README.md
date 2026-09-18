@@ -65,7 +65,7 @@ make web            # [터미널 3] next dev (기본 3000)
 - 4단계는 프로덕션 실행에서 소비자 2~5가 전부 **tier 2**(환류 규칙 + 모델 점수 0.947~0.989)로 즉시 차단되었고 보류는 생기지 않았습니다. 최종 등급은 규칙과 모델 중 큰 값이며, 학습된 모델이 "신규 지갑 + 환류 + 직후 결제"를 0.9 이상으로 평가하기 때문입니다. 보류(tier 1) → 환수 흐름만 따로 보려면 attester 키로 tier 1 서명을 만들어 결제하는 스크립트를 씁니다: `cd contracts && PAYER=2 MERCHANT=1 AMOUNT=10000 TIER=1 npx hardhat run scripts/demo-pay.ts --network localhost`.
 - 5단계는 직전 서명의 유효 시간(120초)이 지나면 `AttestationExpired`가 먼저 걸립니다. 결제 직후에 누르세요.
 - 데모는 시드 직후 상태(북성로 예산 0, 오늘 결제 없음)를 전제합니다. 하루 경계는 KST입니다. 다시 하려면 `make deploy-local`(로컬) 또는 `make deploy-kairos` 후 엔진·웹 재배포(Kairos)를 합니다.
-- 브라우저 없이 같은 순서를 검증: `cd web && npx tsx --env-file=.env.local scripts/demo-e2e.ts` (Kairos: `ENV_FILE=.env.kairos ENGINE_URL=<엔진 URL> npx tsx scripts/demo-e2e.ts`).
+- 브라우저 없이 같은 순서를 검증: `cd web && npx tsx --env-file=.env.local scripts/demo-e2e.ts` (Kairos: `ENV_FILE=.env.kairos ENGINE_URL=<엔진 URL> npx tsx scripts/demo-e2e.ts`). `make test-integration`도 소비자 1의 결제를 남기므로, 통합 테스트와 데모(브라우저·e2e)는 각각 새 시드에서 시작하세요.
 
 ## 테스트
 
