@@ -24,6 +24,7 @@ async function main() {
       name: m.name,
       zoneId: m.zoneId,
       categoryId: m.categoryId,
+      tag: m.tag,
       slotBaseline: m.slotBaseline,
       keyIndex: m.keyIndex,
       roadAddress: m.roadAddress,

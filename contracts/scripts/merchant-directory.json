@@ -1,0 +1,1922 @@
+[
+ {
+  "name": "골목작업실 커피",
+  "zoneId": 1,
+  "categoryId": 2,
+  "tag": "카페",
+  "roadAddress": "대구 중구 동성로4길",
+  "lat": 35.87029,
+  "lng": 128.59182,
+  "derivedIndex": 9
+ },
+ {
+  "name": "삼덕동 핸드드립 온도",
+  "zoneId": 1,
+  "categoryId": 2,
+  "tag": "카페",
+  "roadAddress": "대구 중구 동성로6길",
+  "lat": 35.86927,
+  "lng": 128.5912,
+  "derivedIndex": 10
+ },
+ {
+  "name": "동성로 소금빵 공방",
+  "zoneId": 1,
+  "categoryId": 2,
+  "tag": "베이커리",
+  "roadAddress": "대구 중구 동성로2길",
+  "lat": 35.86718,
+  "lng": 128.59407,
+  "derivedIndex": 11
+ },
+ {
+  "name": "마카롱 하루",
+  "zoneId": 1,
+  "categoryId": 2,
+  "tag": "디저트",
+  "roadAddress": "대구 중구 국채보상로 (동성로 입구)",
+  "lat": 35.86627,
+  "lng": 128.5969,
+  "derivedIndex": 12
+ },
+ {
+  "name": "카페 느린오후",
+  "zoneId": 1,
+  "categoryId": 2,
+  "tag": "카페",
+  "roadAddress": "대구 중구 동덕로 (삼덕동)",
+  "lat": 35.86908,
+  "lng": 128.5957,
+  "derivedIndex": 13
+ },
+ {
+  "name": "수제 젤라또 담다",
+  "zoneId": 1,
+  "categoryId": 2,
+  "tag": "디저트",
+  "roadAddress": "대구 중구 동덕로 (삼덕동)",
+  "lat": 35.86985,
+  "lng": 128.59512,
+  "derivedIndex": 14
+ },
+ {
+  "name": "동성로 에그타르트집",
+  "zoneId": 1,
+  "categoryId": 2,
+  "tag": "베이커리",
+  "roadAddress": "대구 중구 국채보상로 (동성로 입구)",
+  "lat": 35.87109,
+  "lng": 128.59228,
+  "derivedIndex": 15
+ },
+ {
+  "name": "로스터리 반월",
+  "zoneId": 1,
+  "categoryId": 2,
+  "tag": "카페",
+  "roadAddress": "대구 중구 국채보상로 (동성로 입구)",
+  "lat": 35.87101,
+  "lng": 128.59541,
+  "derivedIndex": 16
+ },
+ {
+  "name": "동성로 할매떡볶이",
+  "zoneId": 1,
+  "categoryId": 1,
+  "tag": "분식",
+  "roadAddress": "대구 중구 동성로6길",
+  "lat": 35.86853,
+  "lng": 128.59202,
+  "derivedIndex": 17
+ },
+ {
+  "name": "수제버거 빅토리",
+  "zoneId": 1,
+  "categoryId": 1,
+  "tag": "양식",
+  "roadAddress": "대구 중구 동성로2길",
+  "lat": 35.86996,
+  "lng": 128.59219,
+  "derivedIndex": 18
+ },
+ {
+  "name": "골목 파스타 식당",
+  "zoneId": 1,
+  "categoryId": 1,
+  "tag": "양식",
+  "roadAddress": "대구 중구 동성로4길",
+  "lat": 35.87263,
+  "lng": 128.59545,
+  "derivedIndex": 19
+ },
+ {
+  "name": "삼덕 우동집",
+  "zoneId": 1,
+  "categoryId": 1,
+  "tag": "일식",
+  "roadAddress": "대구 중구 동성로2길",
+  "lat": 35.87114,
+  "lng": 128.59842,
+  "derivedIndex": 20
+ },
+ {
+  "name": "동성로 김밥천사네",
+  "zoneId": 1,
+  "categoryId": 1,
+  "tag": "분식",
+  "roadAddress": "대구 중구 동성로6길",
+  "lat": 35.86727,
+  "lng": 128.5979,
+  "derivedIndex": 21
+ },
+ {
+  "name": "한그릇 덮밥",
+  "zoneId": 1,
+  "categoryId": 1,
+  "tag": "일식",
+  "roadAddress": "대구 중구 동덕로 (삼덕동)",
+  "lat": 35.86896,
+  "lng": 128.59532,
+  "derivedIndex": 22
+ },
+ {
+  "name": "동성로 돈가스 연구소",
+  "zoneId": 1,
+  "categoryId": 1,
+  "tag": "일식",
+  "roadAddress": "대구 중구 동덕로 (삼덕동)",
+  "lat": 35.86716,
+  "lng": 128.59392,
+  "derivedIndex": 23
+ },
+ {
+  "name": "찜갈비 골목집",
+  "zoneId": 1,
+  "categoryId": 1,
+  "tag": "한식",
+  "roadAddress": "대구 중구 동성로2길",
+  "lat": 35.87085,
+  "lng": 128.59596,
+  "derivedIndex": 24
+ },
+ {
+  "name": "동성로 쌀국수 포하나",
+  "zoneId": 1,
+  "categoryId": 1,
+  "tag": "아시안",
+  "roadAddress": "대구 중구 동성로2길",
+  "lat": 35.86991,
+  "lng": 128.59907,
+  "derivedIndex": 25
+ },
+ {
+  "name": "중앙로 손칼국수",
+  "zoneId": 1,
+  "categoryId": 1,
+  "tag": "국수·국밥",
+  "roadAddress": "대구 중구 동성로4길",
+  "lat": 35.87097,
+  "lng": 128.593,
+  "derivedIndex": 26
+ },
+ {
+  "name": "삼덕동 닭한마리",
+  "zoneId": 1,
+  "categoryId": 1,
+  "tag": "한식",
+  "roadAddress": "대구 중구 국채보상로 (동성로 입구)",
+  "lat": 35.86652,
+  "lng": 128.59382,
+  "derivedIndex": 27
+ },
+ {
+  "name": "빈티지 옷가게 오래된옷장",
+  "zoneId": 1,
+  "categoryId": 3,
+  "tag": "의류·잡화",
+  "roadAddress": "대구 중구 동성로4길",
+  "lat": 35.86626,
+  "lng": 128.59567,
+  "derivedIndex": 28
+ },
+ {
+  "name": "동성로 소품샵 모모",
+  "zoneId": 1,
+  "categoryId": 3,
+  "tag": "의류·잡화",
+  "roadAddress": "대구 중구 동성로2길",
+  "lat": 35.86937,
+  "lng": 128.59184,
+  "derivedIndex": 29
+ },
+ {
+  "name": "독립서점 책방골목",
+  "zoneId": 1,
+  "categoryId": 3,
+  "tag": "서점·문구",
+  "roadAddress": "대구 중구 동성로6길",
+  "lat": 35.86601,
+  "lng": 128.5941,
+  "derivedIndex": 30
+ },
+ {
+  "name": "동성로 문구사",
+  "zoneId": 1,
+  "categoryId": 3,
+  "tag": "서점·문구",
+  "roadAddress": "대구 중구 동성로2길",
+  "lat": 35.8699,
+  "lng": 128.59682,
+  "derivedIndex": 31
+ },
+ {
+  "name": "꽃집 오늘의꽃",
+  "zoneId": 1,
+  "categoryId": 3,
+  "tag": "꽃집",
+  "roadAddress": "대구 중구 동성로2길",
+  "lat": 35.87021,
+  "lng": 128.59831,
+  "derivedIndex": 32
+ },
+ {
+  "name": "양말가게 발끝",
+  "zoneId": 1,
+  "categoryId": 3,
+  "tag": "의류·잡화",
+  "roadAddress": "대구 중구 국채보상로 (동성로 입구)",
+  "lat": 35.87248,
+  "lng": 128.59456,
+  "derivedIndex": 33
+ },
+ {
+  "name": "동성로 안경원",
+  "zoneId": 1,
+  "categoryId": 3,
+  "tag": "의류·잡화",
+  "roadAddress": "대구 중구 국채보상로 (동성로 입구)",
+  "lat": 35.86656,
+  "lng": 128.59442,
+  "derivedIndex": 34
+ },
+ {
+  "name": "머리하는 집 동성로",
+  "zoneId": 1,
+  "categoryId": 4,
+  "tag": "미용",
+  "roadAddress": "대구 중구 동성로4길",
+  "lat": 35.87031,
+  "lng": 128.59492,
+  "derivedIndex": 35
+ },
+ {
+  "name": "네일룸 손끝",
+  "zoneId": 1,
+  "categoryId": 4,
+  "tag": "미용",
+  "roadAddress": "대구 중구 국채보상로 (동성로 입구)",
+  "lat": 35.86858,
+  "lng": 128.59776,
+  "derivedIndex": 36
+ },
+ {
+  "name": "동성로 사진관 찰칵",
+  "zoneId": 1,
+  "categoryId": 4,
+  "tag": "사진·인쇄",
+  "roadAddress": "대구 중구 중앙대로77길",
+  "lat": 35.86934,
+  "lng": 128.59112,
+  "derivedIndex": 37
+ },
+ {
+  "name": "삼덕 구두수선",
+  "zoneId": 1,
+  "categoryId": 4,
+  "tag": "수선·세탁",
+  "roadAddress": "대구 중구 동성로6길",
+  "lat": 35.87071,
+  "lng": 128.59605,
+  "derivedIndex": 38
+ },
+ {
+  "name": "동성로 열쇠·도장",
+  "zoneId": 1,
+  "categoryId": 4,
+  "tag": "수선·세탁",
+  "roadAddress": "대구 중구 동성로4길",
+  "lat": 35.86986,
+  "lng": 128.59393,
+  "derivedIndex": 39
+ },
+ {
+  "name": "증명사진 흑백관",
+  "zoneId": 1,
+  "categoryId": 4,
+  "tag": "사진·인쇄",
+  "roadAddress": "대구 중구 동성로4길",
+  "lat": 35.86859,
+  "lng": 128.59738,
+  "derivedIndex": 40
+ },
+ {
+  "name": "골목 이발소",
+  "zoneId": 1,
+  "categoryId": 4,
+  "tag": "미용",
+  "roadAddress": "대구 중구 동덕로 (삼덕동)",
+  "lat": 35.86862,
+  "lng": 128.59861,
+  "derivedIndex": 41
+ },
+ {
+  "name": "동성로 반찬가게",
+  "zoneId": 1,
+  "categoryId": 3,
+  "tag": "반찬·식료품",
+  "roadAddress": "대구 중구 중앙대로77길",
+  "lat": 35.86709,
+  "lng": 128.59757,
+  "derivedIndex": 42
+ },
+ {
+  "name": "삼덕동 과일가게",
+  "zoneId": 1,
+  "categoryId": 3,
+  "tag": "반찬·식료품",
+  "roadAddress": "대구 중구 동덕로 (삼덕동)",
+  "lat": 35.87143,
+  "lng": 128.59652,
+  "derivedIndex": 43
+ },
+ {
+  "name": "동성로 찐빵집",
+  "zoneId": 1,
+  "categoryId": 2,
+  "tag": "베이커리",
+  "roadAddress": "대구 중구 동성로2길",
+  "lat": 35.86716,
+  "lng": 128.59314,
+  "derivedIndex": 44
+ },
+ {
+  "name": "대구 막창 골목점",
+  "zoneId": 1,
+  "categoryId": 1,
+  "tag": "고기",
+  "roadAddress": "대구 중구 중앙대로77길",
+  "lat": 35.86898,
+  "lng": 128.5947,
+  "derivedIndex": 45
+ },
+ {
+  "name": "동성로 타코 가게",
+  "zoneId": 1,
+  "categoryId": 1,
+  "tag": "양식",
+  "roadAddress": "대구 중구 동성로2길",
+  "lat": 35.86739,
+  "lng": 128.59879,
+  "derivedIndex": 46
+ },
+ {
+  "name": "삼덕동 비건 베이커리",
+  "zoneId": 1,
+  "categoryId": 2,
+  "tag": "베이커리",
+  "roadAddress": "대구 중구 동성로6길",
+  "lat": 35.87078,
+  "lng": 128.59184,
+  "derivedIndex": 47
+ },
+ {
+  "name": "들안길 한정식 소담",
+  "zoneId": 2,
+  "categoryId": 1,
+  "tag": "한식",
+  "roadAddress": "대구 수성구 들안로",
+  "lat": 35.83908,
+  "lng": 128.61988,
+  "derivedIndex": 48
+ },
+ {
+  "name": "수성 돼지갈비 명가",
+  "zoneId": 2,
+  "categoryId": 1,
+  "tag": "고기",
+  "roadAddress": "대구 수성구 들안로 (먹거리타운)",
+  "lat": 35.84096,
+  "lng": 128.61662,
+  "derivedIndex": 49
+ },
+ {
+  "name": "들안길 복어집",
+  "zoneId": 2,
+  "categoryId": 1,
+  "tag": "한식",
+  "roadAddress": "대구 수성구 들안로 (먹거리타운)",
+  "lat": 35.83739,
+  "lng": 128.61404,
+  "derivedIndex": 50
+ },
+ {
+  "name": "들안길 횟집 바다마당",
+  "zoneId": 2,
+  "categoryId": 1,
+  "tag": "한식",
+  "roadAddress": "대구 수성구 수성로 (들안길 삼거리)",
+  "lat": 35.83824,
+  "lng": 128.61375,
+  "derivedIndex": 51
+ },
+ {
+  "name": "수성 추어탕",
+  "zoneId": 2,
+  "categoryId": 1,
+  "tag": "국수·국밥",
+  "roadAddress": "대구 수성구 들안로 (먹거리타운)",
+  "lat": 35.84069,
+  "lng": 128.61949,
+  "derivedIndex": 52
+ },
+ {
+  "name": "들안길 오리백숙",
+  "zoneId": 2,
+  "categoryId": 1,
+  "tag": "한식",
+  "roadAddress": "대구 수성구 들안로 (먹거리타운)",
+  "lat": 35.83944,
+  "lng": 128.62106,
+  "derivedIndex": 53
+ },
+ {
+  "name": "두산동 소고기국밥",
+  "zoneId": 2,
+  "categoryId": 1,
+  "tag": "국수·국밥",
+  "roadAddress": "대구 수성구 들안로",
+  "lat": 35.83969,
+  "lng": 128.61934,
+  "derivedIndex": 54
+ },
+ {
+  "name": "들안길 아구찜",
+  "zoneId": 2,
+  "categoryId": 1,
+  "tag": "한식",
+  "roadAddress": "대구 수성구 동대구로 (두산오거리)",
+  "lat": 35.83724,
+  "lng": 128.61625,
+  "derivedIndex": 55
+ },
+ {
+  "name": "수성 쭈꾸미",
+  "zoneId": 2,
+  "categoryId": 1,
+  "tag": "한식",
+  "roadAddress": "대구 수성구 들안로",
+  "lat": 35.842,
+  "lng": 128.61543,
+  "derivedIndex": 56
+ },
+ {
+  "name": "들안길 냉면집",
+  "zoneId": 2,
+  "categoryId": 1,
+  "tag": "국수·국밥",
+  "roadAddress": "대구 수성구 들안로",
+  "lat": 35.83814,
+  "lng": 128.61834,
+  "derivedIndex": 57
+ },
+ {
+  "name": "들안길 한우 숯불",
+  "zoneId": 2,
+  "categoryId": 1,
+  "tag": "고기",
+  "roadAddress": "대구 수성구 들안로 (먹거리타운)",
+  "lat": 35.8385,
+  "lng": 128.61548,
+  "derivedIndex": 58
+ },
+ {
+  "name": "수성 중화요리 홍원",
+  "zoneId": 2,
+  "categoryId": 1,
+  "tag": "중식",
+  "roadAddress": "대구 수성구 들안로",
+  "lat": 35.83811,
+  "lng": 128.61619,
+  "derivedIndex": 59
+ },
+ {
+  "name": "들안길 초밥 스시하루",
+  "zoneId": 2,
+  "categoryId": 1,
+  "tag": "일식",
+  "roadAddress": "대구 수성구 동대구로 (두산오거리)",
+  "lat": 35.83846,
+  "lng": 128.61722,
+  "derivedIndex": 60
+ },
+ {
+  "name": "들안길 순두부",
+  "zoneId": 2,
+  "categoryId": 1,
+  "tag": "한식",
+  "roadAddress": "대구 수성구 들안로 (먹거리타운)",
+  "lat": 35.83808,
+  "lng": 128.61887,
+  "derivedIndex": 61
+ },
+ {
+  "name": "수성 곰탕",
+  "zoneId": 2,
+  "categoryId": 1,
+  "tag": "국수·국밥",
+  "roadAddress": "대구 수성구 동대구로 (두산오거리)",
+  "lat": 35.83523,
+  "lng": 128.61778,
+  "derivedIndex": 62
+ },
+ {
+  "name": "들안길 카페 숲",
+  "zoneId": 2,
+  "categoryId": 2,
+  "tag": "카페",
+  "roadAddress": "대구 수성구 수성로 (들안길 삼거리)",
+  "lat": 35.83573,
+  "lng": 128.61531,
+  "derivedIndex": 63
+ },
+ {
+  "name": "수성못 가는길 커피",
+  "zoneId": 2,
+  "categoryId": 2,
+  "tag": "카페",
+  "roadAddress": "대구 수성구 들안로",
+  "lat": 35.83817,
+  "lng": 128.61775,
+  "derivedIndex": 64
+ },
+ {
+  "name": "들안길 베이커리 밀",
+  "zoneId": 2,
+  "categoryId": 2,
+  "tag": "베이커리",
+  "roadAddress": "대구 수성구 수성로 (들안길 삼거리)",
+  "lat": 35.83872,
+  "lng": 128.61871,
+  "derivedIndex": 65
+ },
+ {
+  "name": "수성 떡카페",
+  "zoneId": 2,
+  "categoryId": 2,
+  "tag": "디저트",
+  "roadAddress": "대구 수성구 들안로 (먹거리타운)",
+  "lat": 35.83927,
+  "lng": 128.61489,
+  "derivedIndex": 66
+ },
+ {
+  "name": "카페 들안",
+  "zoneId": 2,
+  "categoryId": 2,
+  "tag": "카페",
+  "roadAddress": "대구 수성구 수성로 (들안길 삼거리)",
+  "lat": 35.84111,
+  "lng": 128.61927,
+  "derivedIndex": 67
+ },
+ {
+  "name": "수성 브런치 아침",
+  "zoneId": 2,
+  "categoryId": 2,
+  "tag": "카페",
+  "roadAddress": "대구 수성구 동대구로 (두산오거리)",
+  "lat": 35.8412,
+  "lng": 128.6191,
+  "derivedIndex": 68
+ },
+ {
+  "name": "들안길 케이크 공방",
+  "zoneId": 2,
+  "categoryId": 2,
+  "tag": "디저트",
+  "roadAddress": "대구 수성구 수성로 (들안길 삼거리)",
+  "lat": 35.84211,
+  "lng": 128.61675,
+  "derivedIndex": 69
+ },
+ {
+  "name": "들안길 떡집",
+  "zoneId": 2,
+  "categoryId": 3,
+  "tag": "반찬·식료품",
+  "roadAddress": "대구 수성구 들안로 (먹거리타운)",
+  "lat": 35.83619,
+  "lng": 128.61673,
+  "derivedIndex": 70
+ },
+ {
+  "name": "수성 정육점",
+  "zoneId": 2,
+  "categoryId": 3,
+  "tag": "반찬·식료품",
+  "roadAddress": "대구 수성구 들안로 (먹거리타운)",
+  "lat": 35.83617,
+  "lng": 128.6184,
+  "derivedIndex": 71
+ },
+ {
+  "name": "들안길 꽃가게",
+  "zoneId": 2,
+  "categoryId": 3,
+  "tag": "꽃집",
+  "roadAddress": "대구 수성구 동대구로 (두산오거리)",
+  "lat": 35.84026,
+  "lng": 128.61601,
+  "derivedIndex": 72
+ },
+ {
+  "name": "수성 반찬나라",
+  "zoneId": 2,
+  "categoryId": 3,
+  "tag": "반찬·식료품",
+  "roadAddress": "대구 수성구 수성로 (들안길 삼거리)",
+  "lat": 35.84063,
+  "lng": 128.61582,
+  "derivedIndex": 73
+ },
+ {
+  "name": "들안길 과일상회",
+  "zoneId": 2,
+  "categoryId": 3,
+  "tag": "반찬·식료품",
+  "roadAddress": "대구 수성구 동대구로 (두산오거리)",
+  "lat": 35.83844,
+  "lng": 128.61344,
+  "derivedIndex": 74
+ },
+ {
+  "name": "수성 전통주 가게",
+  "zoneId": 2,
+  "categoryId": 3,
+  "tag": "반찬·식료품",
+  "roadAddress": "대구 수성구 들안로 (먹거리타운)",
+  "lat": 35.83756,
+  "lng": 128.61687,
+  "derivedIndex": 75
+ },
+ {
+  "name": "두산동 문구",
+  "zoneId": 2,
+  "categoryId": 3,
+  "tag": "서점·문구",
+  "roadAddress": "대구 수성구 동대구로 (두산오거리)",
+  "lat": 35.83525,
+  "lng": 128.61749,
+  "derivedIndex": 76
+ },
+ {
+  "name": "들안길 세탁소",
+  "zoneId": 2,
+  "categoryId": 4,
+  "tag": "수선·세탁",
+  "roadAddress": "대구 수성구 동대구로 (두산오거리)",
+  "lat": 35.83684,
+  "lng": 128.61815,
+  "derivedIndex": 77
+ },
+ {
+  "name": "수성 헤어살롱",
+  "zoneId": 2,
+  "categoryId": 4,
+  "tag": "미용",
+  "roadAddress": "대구 수성구 동대구로 (두산오거리)",
+  "lat": 35.84026,
+  "lng": 128.6145,
+  "derivedIndex": 78
+ },
+ {
+  "name": "들안길 옷수선",
+  "zoneId": 2,
+  "categoryId": 4,
+  "tag": "수선·세탁",
+  "roadAddress": "대구 수성구 들안로 (먹거리타운)",
+  "lat": 35.8393,
+  "lng": 128.61662,
+  "derivedIndex": 79
+ },
+ {
+  "name": "두산동 네일",
+  "zoneId": 2,
+  "categoryId": 4,
+  "tag": "미용",
+  "roadAddress": "대구 수성구 수성로 (들안길 삼거리)",
+  "lat": 35.84012,
+  "lng": 128.61405,
+  "derivedIndex": 80
+ },
+ {
+  "name": "수성 인쇄소",
+  "zoneId": 2,
+  "categoryId": 4,
+  "tag": "사진·인쇄",
+  "roadAddress": "대구 수성구 들안로 (먹거리타운)",
+  "lat": 35.84127,
+  "lng": 128.61522,
+  "derivedIndex": 81
+ },
+ {
+  "name": "들안길 자전거 수리",
+  "zoneId": 2,
+  "categoryId": 4,
+  "tag": "수선·세탁",
+  "roadAddress": "대구 수성구 들안로",
+  "lat": 35.83661,
+  "lng": 128.61487,
+  "derivedIndex": 82
+ },
+ {
+  "name": "수성 사진관",
+  "zoneId": 2,
+  "categoryId": 4,
+  "tag": "사진·인쇄",
+  "roadAddress": "대구 수성구 들안로 (먹거리타운)",
+  "lat": 35.83589,
+  "lng": 128.61583,
+  "derivedIndex": 83
+ },
+ {
+  "name": "들안길 칼국수",
+  "zoneId": 2,
+  "categoryId": 1,
+  "tag": "국수·국밥",
+  "roadAddress": "대구 수성구 들안로 (먹거리타운)",
+  "lat": 35.83596,
+  "lng": 128.61853,
+  "derivedIndex": 84
+ },
+ {
+  "name": "들안길 한방삼계탕",
+  "zoneId": 2,
+  "categoryId": 1,
+  "tag": "한식",
+  "roadAddress": "대구 수성구 수성로 (들안길 삼거리)",
+  "lat": 35.84008,
+  "lng": 128.61809,
+  "derivedIndex": 85
+ },
+ {
+  "name": "수성 도넛 가게",
+  "zoneId": 2,
+  "categoryId": 2,
+  "tag": "디저트",
+  "roadAddress": "대구 수성구 들안로 (먹거리타운)",
+  "lat": 35.83887,
+  "lng": 128.6179,
+  "derivedIndex": 86
+ },
+ {
+  "name": "안지랑 연탄곱창",
+  "zoneId": 3,
+  "categoryId": 1,
+  "tag": "고기",
+  "roadAddress": "대구 남구 현충로 (대명동)",
+  "lat": 35.83792,
+  "lng": 128.57394,
+  "derivedIndex": 87
+ },
+ {
+  "name": "대명동 막창구이",
+  "zoneId": 3,
+  "categoryId": 1,
+  "tag": "고기",
+  "roadAddress": "대구 남구 대명로36길 (안지랑 곱창골목)",
+  "lat": 35.83966,
+  "lng": 128.57744,
+  "derivedIndex": 88
+ },
+ {
+  "name": "안지랑 양곱창",
+  "zoneId": 3,
+  "categoryId": 1,
+  "tag": "고기",
+  "roadAddress": "대구 남구 안지랑로",
+  "lat": 35.83742,
+  "lng": 128.57728,
+  "derivedIndex": 89
+ },
+ {
+  "name": "곱창골목 원조집",
+  "zoneId": 3,
+  "categoryId": 1,
+  "tag": "고기",
+  "roadAddress": "대구 남구 현충로 (대명동)",
+  "lat": 35.8382,
+  "lng": 128.57265,
+  "derivedIndex": 90
+ },
+ {
+  "name": "안지랑 닭똥집",
+  "zoneId": 3,
+  "categoryId": 1,
+  "tag": "고기",
+  "roadAddress": "대구 남구 대명로36길 (안지랑 곱창골목)",
+  "lat": 35.83892,
+  "lng": 128.57803,
+  "derivedIndex": 91
+ },
+ {
+  "name": "대명동 순대국밥",
+  "zoneId": 3,
+  "categoryId": 1,
+  "tag": "국수·국밥",
+  "roadAddress": "대구 남구 안지랑로",
+  "lat": 35.83568,
+  "lng": 128.57895,
+  "derivedIndex": 92
+ },
+ {
+  "name": "안지랑 돼지국밥",
+  "zoneId": 3,
+  "categoryId": 1,
+  "tag": "국수·국밥",
+  "roadAddress": "대구 남구 대명로36길 (안지랑 곱창골목)",
+  "lat": 35.84119,
+  "lng": 128.57559,
+  "derivedIndex": 93
+ },
+ {
+  "name": "대명 칼국수",
+  "zoneId": 3,
+  "categoryId": 1,
+  "tag": "국수·국밥",
+  "roadAddress": "대구 남구 현충로 (대명동)",
+  "lat": 35.83683,
+  "lng": 128.57573,
+  "derivedIndex": 94
+ },
+ {
+  "name": "안지랑 분식",
+  "zoneId": 3,
+  "categoryId": 1,
+  "tag": "분식",
+  "roadAddress": "대구 남구 대명로",
+  "lat": 35.83811,
+  "lng": 128.58061,
+  "derivedIndex": 95
+ },
+ {
+  "name": "대명동 치킨",
+  "zoneId": 3,
+  "categoryId": 1,
+  "tag": "양식",
+  "roadAddress": "대구 남구 대명로",
+  "lat": 35.83527,
+  "lng": 128.57577,
+  "derivedIndex": 96
+ },
+ {
+  "name": "안지랑 짬뽕",
+  "zoneId": 3,
+  "categoryId": 1,
+  "tag": "중식",
+  "roadAddress": "대구 남구 현충로 (대명동)",
+  "lat": 35.83606,
+  "lng": 128.57503,
+  "derivedIndex": 97
+ },
+ {
+  "name": "대명동 김치찌개",
+  "zoneId": 3,
+  "categoryId": 1,
+  "tag": "한식",
+  "roadAddress": "대구 남구 대명로",
+  "lat": 35.83905,
+  "lng": 128.57279,
+  "derivedIndex": 98
+ },
+ {
+  "name": "곱창골목 볶음밥",
+  "zoneId": 3,
+  "categoryId": 1,
+  "tag": "한식",
+  "roadAddress": "대구 남구 현충로 (대명동)",
+  "lat": 35.83675,
+  "lng": 128.57965,
+  "derivedIndex": 99
+ },
+ {
+  "name": "안지랑 떡볶이",
+  "zoneId": 3,
+  "categoryId": 1,
+  "tag": "분식",
+  "roadAddress": "대구 남구 안지랑로",
+  "lat": 35.8388,
+  "lng": 128.5797,
+  "derivedIndex": 100
+ },
+ {
+  "name": "대명동 백반집",
+  "zoneId": 3,
+  "categoryId": 1,
+  "tag": "한식",
+  "roadAddress": "대구 남구 안지랑로",
+  "lat": 35.83529,
+  "lng": 128.57489,
+  "derivedIndex": 101
+ },
+ {
+  "name": "대명동 동네커피",
+  "zoneId": 3,
+  "categoryId": 2,
+  "tag": "카페",
+  "roadAddress": "대구 남구 안지랑로",
+  "lat": 35.83959,
+  "lng": 128.57397,
+  "derivedIndex": 102
+ },
+ {
+  "name": "안지랑 카페 골목",
+  "zoneId": 3,
+  "categoryId": 2,
+  "tag": "카페",
+  "roadAddress": "대구 남구 안지랑로",
+  "lat": 35.84044,
+  "lng": 128.57858,
+  "derivedIndex": 103
+ },
+ {
+  "name": "대명동 빵집",
+  "zoneId": 3,
+  "categoryId": 2,
+  "tag": "베이커리",
+  "roadAddress": "대구 남구 대명로36길 (안지랑 곱창골목)",
+  "lat": 35.83945,
+  "lng": 128.57791,
+  "derivedIndex": 104
+ },
+ {
+  "name": "안지랑 와플",
+  "zoneId": 3,
+  "categoryId": 2,
+  "tag": "디저트",
+  "roadAddress": "대구 남구 대명로",
+  "lat": 35.8381,
+  "lng": 128.57988,
+  "derivedIndex": 105
+ },
+ {
+  "name": "앞산 가는길 커피",
+  "zoneId": 3,
+  "categoryId": 2,
+  "tag": "카페",
+  "roadAddress": "대구 남구 대명로36길 (안지랑 곱창골목)",
+  "lat": 35.83632,
+  "lng": 128.57803,
+  "derivedIndex": 106
+ },
+ {
+  "name": "안지랑 슈퍼",
+  "zoneId": 3,
+  "categoryId": 3,
+  "tag": "반찬·식료품",
+  "roadAddress": "대구 남구 안지랑로",
+  "lat": 35.8361,
+  "lng": 128.57402,
+  "derivedIndex": 107
+ },
+ {
+  "name": "대명동 정육점",
+  "zoneId": 3,
+  "categoryId": 3,
+  "tag": "반찬·식료품",
+  "roadAddress": "대구 남구 대명로",
+  "lat": 35.83662,
+  "lng": 128.57703,
+  "derivedIndex": 108
+ },
+ {
+  "name": "대명 반찬가게",
+  "zoneId": 3,
+  "categoryId": 3,
+  "tag": "반찬·식료품",
+  "roadAddress": "대구 남구 대명로36길 (안지랑 곱창골목)",
+  "lat": 35.83955,
+  "lng": 128.57503,
+  "derivedIndex": 109
+ },
+ {
+  "name": "안지랑 철물점",
+  "zoneId": 3,
+  "categoryId": 3,
+  "tag": "공구·철물",
+  "roadAddress": "대구 남구 현충로 (대명동)",
+  "lat": 35.83936,
+  "lng": 128.57407,
+  "derivedIndex": 110
+ },
+ {
+  "name": "대명동 약초상회",
+  "zoneId": 3,
+  "categoryId": 3,
+  "tag": "반찬·식료품",
+  "roadAddress": "대구 남구 현충로 (대명동)",
+  "lat": 35.84141,
+  "lng": 128.577,
+  "derivedIndex": 111
+ },
+ {
+  "name": "안지랑 문구",
+  "zoneId": 3,
+  "categoryId": 3,
+  "tag": "서점·문구",
+  "roadAddress": "대구 남구 대명로",
+  "lat": 35.84043,
+  "lng": 128.57639,
+  "derivedIndex": 112
+ },
+ {
+  "name": "대명동 꽃집",
+  "zoneId": 3,
+  "categoryId": 3,
+  "tag": "꽃집",
+  "roadAddress": "대구 남구 안지랑로",
+  "lat": 35.83773,
+  "lng": 128.57995,
+  "derivedIndex": 113
+ },
+ {
+  "name": "대명 채소가게",
+  "zoneId": 3,
+  "categoryId": 3,
+  "tag": "반찬·식료품",
+  "roadAddress": "대구 남구 안지랑로",
+  "lat": 35.83868,
+  "lng": 128.58075,
+  "derivedIndex": 114
+ },
+ {
+  "name": "안지랑 세탁소",
+  "zoneId": 3,
+  "categoryId": 4,
+  "tag": "수선·세탁",
+  "roadAddress": "대구 남구 현충로 (대명동)",
+  "lat": 35.83665,
+  "lng": 128.57883,
+  "derivedIndex": 115
+ },
+ {
+  "name": "대명동 미용실",
+  "zoneId": 3,
+  "categoryId": 4,
+  "tag": "미용",
+  "roadAddress": "대구 남구 안지랑로",
+  "lat": 35.83757,
+  "lng": 128.57425,
+  "derivedIndex": 116
+ },
+ {
+  "name": "안지랑 이용원",
+  "zoneId": 3,
+  "categoryId": 4,
+  "tag": "미용",
+  "roadAddress": "대구 남구 대명로36길 (안지랑 곱창골목)",
+  "lat": 35.83858,
+  "lng": 128.57527,
+  "derivedIndex": 117
+ },
+ {
+  "name": "대명동 컴퓨터 수리",
+  "zoneId": 3,
+  "categoryId": 4,
+  "tag": "수선·세탁",
+  "roadAddress": "대구 남구 안지랑로",
+  "lat": 35.83781,
+  "lng": 128.57298,
+  "derivedIndex": 118
+ },
+ {
+  "name": "안지랑 사진관",
+  "zoneId": 3,
+  "categoryId": 4,
+  "tag": "사진·인쇄",
+  "roadAddress": "대구 남구 대명로",
+  "lat": 35.83968,
+  "lng": 128.57386,
+  "derivedIndex": 119
+ },
+ {
+  "name": "대명동 신발수선",
+  "zoneId": 3,
+  "categoryId": 4,
+  "tag": "수선·세탁",
+  "roadAddress": "대구 남구 대명로36길 (안지랑 곱창골목)",
+  "lat": 35.83944,
+  "lng": 128.57986,
+  "derivedIndex": 120
+ },
+ {
+  "name": "대명 코인세탁",
+  "zoneId": 3,
+  "categoryId": 4,
+  "tag": "수선·세탁",
+  "roadAddress": "대구 남구 현충로 (대명동)",
+  "lat": 35.83519,
+  "lng": 128.57821,
+  "derivedIndex": 121
+ },
+ {
+  "name": "안지랑 찐빵",
+  "zoneId": 3,
+  "categoryId": 2,
+  "tag": "베이커리",
+  "roadAddress": "대구 남구 현충로 (대명동)",
+  "lat": 35.84086,
+  "lng": 128.57433,
+  "derivedIndex": 122
+ },
+ {
+  "name": "대명동 순두부",
+  "zoneId": 3,
+  "categoryId": 1,
+  "tag": "한식",
+  "roadAddress": "대구 남구 대명로",
+  "lat": 35.83841,
+  "lng": 128.57282,
+  "derivedIndex": 123
+ },
+ {
+  "name": "대명동 만둣집",
+  "zoneId": 3,
+  "categoryId": 1,
+  "tag": "분식",
+  "roadAddress": "대구 남구 대명로",
+  "lat": 35.83775,
+  "lng": 128.57893,
+  "derivedIndex": 124
+ },
+ {
+  "name": "안지랑 수선집",
+  "zoneId": 3,
+  "categoryId": 4,
+  "tag": "수선·세탁",
+  "roadAddress": "대구 남구 안지랑로",
+  "lat": 35.83972,
+  "lng": 128.57338,
+  "derivedIndex": 125
+ },
+ {
+  "name": "북성로 석쇠불고기",
+  "zoneId": 4,
+  "categoryId": 1,
+  "tag": "고기",
+  "roadAddress": "대구 중구 태평로 (향촌동)",
+  "lat": 35.87508,
+  "lng": 128.58969,
+  "derivedIndex": 126
+ },
+ {
+  "name": "향촌동 옛날국수",
+  "zoneId": 4,
+  "categoryId": 1,
+  "tag": "국수·국밥",
+  "roadAddress": "대구 중구 북성로 (공구골목)",
+  "lat": 35.87405,
+  "lng": 128.5927,
+  "derivedIndex": 127
+ },
+ {
+  "name": "북성로 우동 한그릇",
+  "zoneId": 4,
+  "categoryId": 1,
+  "tag": "일식",
+  "roadAddress": "대구 중구 북성로 (공구골목)",
+  "lat": 35.8707,
+  "lng": 128.58785,
+  "derivedIndex": 128
+ },
+ {
+  "name": "공구골목 백반",
+  "zoneId": 4,
+  "categoryId": 1,
+  "tag": "한식",
+  "roadAddress": "대구 중구 태평로 (향촌동)",
+  "lat": 35.87293,
+  "lng": 128.59326,
+  "derivedIndex": 129
+ },
+ {
+  "name": "북성로 돼지찌개",
+  "zoneId": 4,
+  "categoryId": 1,
+  "tag": "한식",
+  "roadAddress": "대구 중구 태평로 (향촌동)",
+  "lat": 35.87365,
+  "lng": 128.58926,
+  "derivedIndex": 130
+ },
+ {
+  "name": "향촌동 소머리국밥",
+  "zoneId": 4,
+  "categoryId": 1,
+  "tag": "국수·국밥",
+  "roadAddress": "대구 중구 북성로",
+  "lat": 35.87247,
+  "lng": 128.59086,
+  "derivedIndex": 131
+ },
+ {
+  "name": "북성로 중국집 태평",
+  "zoneId": 4,
+  "categoryId": 1,
+  "tag": "중식",
+  "roadAddress": "대구 중구 태평로 (향촌동)",
+  "lat": 35.87628,
+  "lng": 128.58675,
+  "derivedIndex": 132
+ },
+ {
+  "name": "경상감영 비빔밥",
+  "zoneId": 4,
+  "categoryId": 1,
+  "tag": "한식",
+  "roadAddress": "대구 중구 태평로 (향촌동)",
+  "lat": 35.87421,
+  "lng": 128.58946,
+  "derivedIndex": 133
+ },
+ {
+  "name": "북성로 오뎅집",
+  "zoneId": 4,
+  "categoryId": 1,
+  "tag": "분식",
+  "roadAddress": "대구 중구 북성로 (공구골목)",
+  "lat": 35.87634,
+  "lng": 128.59128,
+  "derivedIndex": 134
+ },
+ {
+  "name": "서성로 칼국수",
+  "zoneId": 4,
+  "categoryId": 1,
+  "tag": "국수·국밥",
+  "roadAddress": "대구 중구 서성로",
+  "lat": 35.87582,
+  "lng": 128.58675,
+  "derivedIndex": 135
+ },
+ {
+  "name": "북성로 경양식",
+  "zoneId": 4,
+  "categoryId": 1,
+  "tag": "양식",
+  "roadAddress": "대구 중구 북성로",
+  "lat": 35.87443,
+  "lng": 128.59058,
+  "derivedIndex": 136
+ },
+ {
+  "name": "북성로 적산가옥 카페",
+  "zoneId": 4,
+  "categoryId": 2,
+  "tag": "카페",
+  "roadAddress": "대구 중구 경상감영길",
+  "lat": 35.87251,
+  "lng": 128.58911,
+  "derivedIndex": 137
+ },
+ {
+  "name": "공구골목 로스터스",
+  "zoneId": 4,
+  "categoryId": 2,
+  "tag": "카페",
+  "roadAddress": "대구 중구 북성로",
+  "lat": 35.87324,
+  "lng": 128.59363,
+  "derivedIndex": 138
+ },
+ {
+  "name": "향촌동 다방",
+  "zoneId": 4,
+  "categoryId": 2,
+  "tag": "카페",
+  "roadAddress": "대구 중구 북성로 (공구골목)",
+  "lat": 35.87654,
+  "lng": 128.59166,
+  "derivedIndex": 139
+ },
+ {
+  "name": "북성로 빵공장",
+  "zoneId": 4,
+  "categoryId": 2,
+  "tag": "베이커리",
+  "roadAddress": "대구 중구 북성로 (공구골목)",
+  "lat": 35.87365,
+  "lng": 128.58631,
+  "derivedIndex": 140
+ },
+ {
+  "name": "경상감영 찻집",
+  "zoneId": 4,
+  "categoryId": 2,
+  "tag": "카페",
+  "roadAddress": "대구 중구 경상감영길",
+  "lat": 35.87659,
+  "lng": 128.58838,
+  "derivedIndex": 141
+ },
+ {
+  "name": "북성로 디저트 방앗간",
+  "zoneId": 4,
+  "categoryId": 2,
+  "tag": "디저트",
+  "roadAddress": "대구 중구 태평로 (향촌동)",
+  "lat": 35.87536,
+  "lng": 128.59152,
+  "derivedIndex": 142
+ },
+ {
+  "name": "서성로 커피",
+  "zoneId": 4,
+  "categoryId": 2,
+  "tag": "카페",
+  "roadAddress": "대구 중구 북성로",
+  "lat": 35.87078,
+  "lng": 128.58821,
+  "derivedIndex": 143
+ },
+ {
+  "name": "북성로 공구상사",
+  "zoneId": 4,
+  "categoryId": 3,
+  "tag": "공구·철물",
+  "roadAddress": "대구 중구 서성로",
+  "lat": 35.87044,
+  "lng": 128.58886,
+  "derivedIndex": 144
+ },
+ {
+  "name": "대성 철물",
+  "zoneId": 4,
+  "categoryId": 3,
+  "tag": "공구·철물",
+  "roadAddress": "대구 중구 북성로 (공구골목)",
+  "lat": 35.87572,
+  "lng": 128.58952,
+  "derivedIndex": 145
+ },
+ {
+  "name": "북성로 전기자재",
+  "zoneId": 4,
+  "categoryId": 3,
+  "tag": "공구·철물",
+  "roadAddress": "대구 중구 북성로 (공구골목)",
+  "lat": 35.87396,
+  "lng": 128.58576,
+  "derivedIndex": 146
+ },
+ {
+  "name": "공구골목 볼트상회",
+  "zoneId": 4,
+  "categoryId": 3,
+  "tag": "공구·철물",
+  "roadAddress": "대구 중구 북성로 (공구골목)",
+  "lat": 35.87226,
+  "lng": 128.59266,
+  "derivedIndex": 147
+ },
+ {
+  "name": "향촌동 헌책방",
+  "zoneId": 4,
+  "categoryId": 3,
+  "tag": "서점·문구",
+  "roadAddress": "대구 중구 북성로 (공구골목)",
+  "lat": 35.87142,
+  "lng": 128.5892,
+  "derivedIndex": 148
+ },
+ {
+  "name": "북성로 레코드",
+  "zoneId": 4,
+  "categoryId": 3,
+  "tag": "의류·잡화",
+  "roadAddress": "대구 중구 태평로 (향촌동)",
+  "lat": 35.87036,
+  "lng": 128.59017,
+  "derivedIndex": 149
+ },
+ {
+  "name": "서성로 조명가게",
+  "zoneId": 4,
+  "categoryId": 3,
+  "tag": "공구·철물",
+  "roadAddress": "대구 중구 경상감영길",
+  "lat": 35.87196,
+  "lng": 128.59132,
+  "derivedIndex": 150
+ },
+ {
+  "name": "북성로 페인트",
+  "zoneId": 4,
+  "categoryId": 3,
+  "tag": "공구·철물",
+  "roadAddress": "대구 중구 서성로",
+  "lat": 35.87406,
+  "lng": 128.59172,
+  "derivedIndex": 151
+ },
+ {
+  "name": "향촌동 양복점",
+  "zoneId": 4,
+  "categoryId": 3,
+  "tag": "의류·잡화",
+  "roadAddress": "대구 중구 경상감영길",
+  "lat": 35.87386,
+  "lng": 128.59245,
+  "derivedIndex": 152
+ },
+ {
+  "name": "북성로 목공소",
+  "zoneId": 4,
+  "categoryId": 3,
+  "tag": "공구·철물",
+  "roadAddress": "대구 중구 경상감영길",
+  "lat": 35.87484,
+  "lng": 128.5928,
+  "derivedIndex": 153
+ },
+ {
+  "name": "북성로 인쇄소",
+  "zoneId": 4,
+  "categoryId": 4,
+  "tag": "사진·인쇄",
+  "roadAddress": "대구 중구 태평로 (향촌동)",
+  "lat": 35.87089,
+  "lng": 128.58875,
+  "derivedIndex": 154
+ },
+ {
+  "name": "향촌동 이발관",
+  "zoneId": 4,
+  "categoryId": 4,
+  "tag": "미용",
+  "roadAddress": "대구 중구 경상감영길",
+  "lat": 35.87213,
+  "lng": 128.58745,
+  "derivedIndex": 155
+ },
+ {
+  "name": "북성로 열쇠",
+  "zoneId": 4,
+  "categoryId": 4,
+  "tag": "수선·세탁",
+  "roadAddress": "대구 중구 북성로 (공구골목)",
+  "lat": 35.87183,
+  "lng": 128.58804,
+  "derivedIndex": 156
+ },
+ {
+  "name": "서성로 세탁소",
+  "zoneId": 4,
+  "categoryId": 4,
+  "tag": "수선·세탁",
+  "roadAddress": "대구 중구 태평로 (향촌동)",
+  "lat": 35.87142,
+  "lng": 128.58894,
+  "derivedIndex": 157
+ },
+ {
+  "name": "북성로 간판집",
+  "zoneId": 4,
+  "categoryId": 4,
+  "tag": "사진·인쇄",
+  "roadAddress": "대구 중구 태평로 (향촌동)",
+  "lat": 35.8717,
+  "lng": 128.58985,
+  "derivedIndex": 158
+ },
+ {
+  "name": "향촌동 시계수리",
+  "zoneId": 4,
+  "categoryId": 4,
+  "tag": "수선·세탁",
+  "roadAddress": "대구 중구 북성로 (공구골목)",
+  "lat": 35.87394,
+  "lng": 128.58926,
+  "derivedIndex": 159
+ },
+ {
+  "name": "북성로 미싱수리",
+  "zoneId": 4,
+  "categoryId": 4,
+  "tag": "수선·세탁",
+  "roadAddress": "대구 중구 북성로",
+  "lat": 35.87301,
+  "lng": 128.59038,
+  "derivedIndex": 160
+ },
+ {
+  "name": "북성로 수제맥주 양조장",
+  "zoneId": 4,
+  "categoryId": 1,
+  "tag": "양식",
+  "roadAddress": "대구 중구 서성로",
+  "lat": 35.87642,
+  "lng": 128.59064,
+  "derivedIndex": 161
+ },
+ {
+  "name": "향촌동 LP 카페",
+  "zoneId": 4,
+  "categoryId": 2,
+  "tag": "카페",
+  "roadAddress": "대구 중구 서성로",
+  "lat": 35.87454,
+  "lng": 128.59233,
+  "derivedIndex": 162
+ },
+ {
+  "name": "북성로 철판요리",
+  "zoneId": 4,
+  "categoryId": 1,
+  "tag": "고기",
+  "roadAddress": "대구 중구 서성로",
+  "lat": 35.87674,
+  "lng": 128.58798,
+  "derivedIndex": 163
+ },
+ {
+  "name": "서문시장 납작만두",
+  "zoneId": 5,
+  "categoryId": 1,
+  "tag": "분식",
+  "roadAddress": "대구 중구 큰장로 (서문시장 2지구)",
+  "lat": 35.87008,
+  "lng": 128.58422,
+  "derivedIndex": 164
+ },
+ {
+  "name": "서문시장 칼제비",
+  "zoneId": 5,
+  "categoryId": 1,
+  "tag": "국수·국밥",
+  "roadAddress": "대구 중구 큰장로 (서문시장 야시장)",
+  "lat": 35.87057,
+  "lng": 128.5847,
+  "derivedIndex": 165
+ },
+ {
+  "name": "큰장 잔치국수",
+  "zoneId": 5,
+  "categoryId": 1,
+  "tag": "국수·국밥",
+  "roadAddress": "대구 중구 큰장로 (서문시장 4지구)",
+  "lat": 35.87165,
+  "lng": 128.57937,
+  "derivedIndex": 166
+ },
+ {
+  "name": "서문시장 수제비",
+  "zoneId": 5,
+  "categoryId": 1,
+  "tag": "국수·국밥",
+  "roadAddress": "대구 중구 큰장로 (서문시장 야시장)",
+  "lat": 35.86824,
+  "lng": 128.58312,
+  "derivedIndex": 167
+ },
+ {
+  "name": "서문 호떡",
+  "zoneId": 5,
+  "categoryId": 1,
+  "tag": "분식",
+  "roadAddress": "대구 중구 큰장로26길 (서문시장 1지구)",
+  "lat": 35.87214,
+  "lng": 128.58136,
+  "derivedIndex": 168
+ },
+ {
+  "name": "서문시장 떡볶이",
+  "zoneId": 5,
+  "categoryId": 1,
+  "tag": "분식",
+  "roadAddress": "대구 중구 달성로 (서문시장 동산상가)",
+  "lat": 35.86804,
+  "lng": 128.58288,
+  "derivedIndex": 169
+ },
+ {
+  "name": "큰장 보리밥",
+  "zoneId": 5,
+  "categoryId": 1,
+  "tag": "한식",
+  "roadAddress": "대구 중구 큰장로 (서문시장 4지구)",
+  "lat": 35.87148,
+  "lng": 128.58092,
+  "derivedIndex": 170
+ },
+ {
+  "name": "서문시장 순대",
+  "zoneId": 5,
+  "categoryId": 1,
+  "tag": "분식",
+  "roadAddress": "대구 중구 큰장로 (서문시장 4지구)",
+  "lat": 35.87007,
+  "lng": 128.58188,
+  "derivedIndex": 171
+ },
+ {
+  "name": "동산상가 국밥",
+  "zoneId": 5,
+  "categoryId": 1,
+  "tag": "국수·국밥",
+  "roadAddress": "대구 중구 큰장로 (서문시장 4지구)",
+  "lat": 35.86868,
+  "lng": 128.58379,
+  "derivedIndex": 172
+ },
+ {
+  "name": "서문 야시장 꼬치",
+  "zoneId": 5,
+  "categoryId": 1,
+  "tag": "분식",
+  "roadAddress": "대구 중구 큰장로 (서문시장 야시장)",
+  "lat": 35.86956,
+  "lng": 128.58424,
+  "derivedIndex": 173
+ },
+ {
+  "name": "큰장 비빔국수",
+  "zoneId": 5,
+  "categoryId": 1,
+  "tag": "국수·국밥",
+  "roadAddress": "대구 중구 달성로 (서문시장 동산상가)",
+  "lat": 35.87011,
+  "lng": 128.581,
+  "derivedIndex": 174
+ },
+ {
+  "name": "서문시장 식혜 카페",
+  "zoneId": 5,
+  "categoryId": 2,
+  "tag": "카페",
+  "roadAddress": "대구 중구 큰장로 (서문시장 2지구)",
+  "lat": 35.86742,
+  "lng": 128.58099,
+  "derivedIndex": 175
+ },
+ {
+  "name": "큰장 전통찻집",
+  "zoneId": 5,
+  "categoryId": 2,
+  "tag": "카페",
+  "roadAddress": "대구 중구 큰장로 (서문시장 야시장)",
+  "lat": 35.87018,
+  "lng": 128.58039,
+  "derivedIndex": 176
+ },
+ {
+  "name": "서문시장 꽈배기",
+  "zoneId": 5,
+  "categoryId": 2,
+  "tag": "베이커리",
+  "roadAddress": "대구 중구 큰장로 (서문시장 4지구)",
+  "lat": 35.86828,
+  "lng": 128.58393,
+  "derivedIndex": 177
+ },
+ {
+  "name": "서문 약과 공방",
+  "zoneId": 5,
+  "categoryId": 2,
+  "tag": "디저트",
+  "roadAddress": "대구 중구 큰장로 (서문시장 4지구)",
+  "lat": 35.86913,
+  "lng": 128.58138,
+  "derivedIndex": 178
+ },
+ {
+  "name": "서문시장 포목점",
+  "zoneId": 5,
+  "categoryId": 3,
+  "tag": "의류·잡화",
+  "roadAddress": "대구 중구 큰장로 (서문시장 야시장)",
+  "lat": 35.86844,
+  "lng": 128.58355,
+  "derivedIndex": 179
+ },
+ {
+  "name": "큰장 한복집",
+  "zoneId": 5,
+  "categoryId": 3,
+  "tag": "의류·잡화",
+  "roadAddress": "대구 중구 큰장로 (서문시장 4지구)",
+  "lat": 35.87169,
+  "lng": 128.58074,
+  "derivedIndex": 180
+ },
+ {
+  "name": "서문시장 이불가게",
+  "zoneId": 5,
+  "categoryId": 3,
+  "tag": "의류·잡화",
+  "roadAddress": "대구 중구 큰장로 (서문시장 2지구)",
+  "lat": 35.86941,
+  "lng": 128.58527,
+  "derivedIndex": 181
+ },
+ {
+  "name": "2지구 원단상회",
+  "zoneId": 5,
+  "categoryId": 3,
+  "tag": "의류·잡화",
+  "roadAddress": "대구 중구 달성로 (서문시장 동산상가)",
+  "lat": 35.87145,
+  "lng": 128.58127,
+  "derivedIndex": 182
+ },
+ {
+  "name": "서문시장 그릇가게",
+  "zoneId": 5,
+  "categoryId": 3,
+  "tag": "의류·잡화",
+  "roadAddress": "대구 중구 달성로 (서문시장 동산상가)",
+  "lat": 35.86897,
+  "lng": 128.58557,
+  "derivedIndex": 183
+ },
+ {
+  "name": "큰장 반찬가게",
+  "zoneId": 5,
+  "categoryId": 3,
+  "tag": "반찬·식료품",
+  "roadAddress": "대구 중구 큰장로 (서문시장 2지구)",
+  "lat": 35.86921,
+  "lng": 128.57907,
+  "derivedIndex": 184
+ },
+ {
+  "name": "서문시장 참기름집",
+  "zoneId": 5,
+  "categoryId": 3,
+  "tag": "반찬·식료품",
+  "roadAddress": "대구 중구 큰장로 (서문시장 4지구)",
+  "lat": 35.87152,
+  "lng": 128.57807,
+  "derivedIndex": 185
+ },
+ {
+  "name": "서문 건어물",
+  "zoneId": 5,
+  "categoryId": 3,
+  "tag": "반찬·식료품",
+  "roadAddress": "대구 중구 큰장로 (서문시장 야시장)",
+  "lat": 35.86909,
+  "lng": 128.57842,
+  "derivedIndex": 186
+ },
+ {
+  "name": "서문시장 떡방앗간",
+  "zoneId": 5,
+  "categoryId": 3,
+  "tag": "반찬·식료품",
+  "roadAddress": "대구 중구 큰장로26길 (서문시장 1지구)",
+  "lat": 35.8668,
+  "lng": 128.5828,
+  "derivedIndex": 187
+ },
+ {
+  "name": "큰장 과일",
+  "zoneId": 5,
+  "categoryId": 3,
+  "tag": "반찬·식료품",
+  "roadAddress": "대구 중구 큰장로 (서문시장 2지구)",
+  "lat": 35.86984,
+  "lng": 128.58462,
+  "derivedIndex": 188
+ },
+ {
+  "name": "서문시장 인삼상회",
+  "zoneId": 5,
+  "categoryId": 3,
+  "tag": "반찬·식료품",
+  "roadAddress": "대구 중구 큰장로26길 (서문시장 1지구)",
+  "lat": 35.86946,
+  "lng": 128.58152,
+  "derivedIndex": 189
+ },
+ {
+  "name": "서문 양말도매",
+  "zoneId": 5,
+  "categoryId": 3,
+  "tag": "의류·잡화",
+  "roadAddress": "대구 중구 큰장로26길 (서문시장 1지구)",
+  "lat": 35.86861,
+  "lng": 128.58057,
+  "derivedIndex": 190
+ },
+ {
+  "name": "서문시장 신발가게",
+  "zoneId": 5,
+  "categoryId": 3,
+  "tag": "의류·잡화",
+  "roadAddress": "대구 중구 큰장로26길 (서문시장 1지구)",
+  "lat": 35.87116,
+  "lng": 128.58538,
+  "derivedIndex": 191
+ },
+ {
+  "name": "큰장 액세서리",
+  "zoneId": 5,
+  "categoryId": 3,
+  "tag": "의류·잡화",
+  "roadAddress": "대구 중구 큰장로 (서문시장 야시장)",
+  "lat": 35.86799,
+  "lng": 128.58437,
+  "derivedIndex": 192
+ },
+ {
+  "name": "서문시장 꽃집",
+  "zoneId": 5,
+  "categoryId": 3,
+  "tag": "꽃집",
+  "roadAddress": "대구 중구 달성로 (서문시장 동산상가)",
+  "lat": 35.86998,
+  "lng": 128.58324,
+  "derivedIndex": 193
+ },
+ {
+  "name": "동산상가 가방",
+  "zoneId": 5,
+  "categoryId": 3,
+  "tag": "의류·잡화",
+  "roadAddress": "대구 중구 큰장로26길 (서문시장 1지구)",
+  "lat": 35.86822,
+  "lng": 128.58104,
+  "derivedIndex": 194
+ },
+ {
+  "name": "서문시장 한복수선",
+  "zoneId": 5,
+  "categoryId": 4,
+  "tag": "수선·세탁",
+  "roadAddress": "대구 중구 달성로 (서문시장 동산상가)",
+  "lat": 35.86882,
+  "lng": 128.58408,
+  "derivedIndex": 195
+ },
+ {
+  "name": "큰장 미싱자수",
+  "zoneId": 5,
+  "categoryId": 4,
+  "tag": "수선·세탁",
+  "roadAddress": "대구 중구 큰장로26길 (서문시장 1지구)",
+  "lat": 35.8701,
+  "lng": 128.58034,
+  "derivedIndex": 196
+ },
+ {
+  "name": "서문시장 미용실",
+  "zoneId": 5,
+  "categoryId": 4,
+  "tag": "미용",
+  "roadAddress": "대구 중구 큰장로 (서문시장 야시장)",
+  "lat": 35.87224,
+  "lng": 128.57888,
+  "derivedIndex": 197
+ },
+ {
+  "name": "동산상가 구두수선",
+  "zoneId": 5,
+  "categoryId": 4,
+  "tag": "수선·세탁",
+  "roadAddress": "대구 중구 달성로 (서문시장 동산상가)",
+  "lat": 35.8718,
+  "lng": 128.58425,
+  "derivedIndex": 198
+ },
+ {
+  "name": "서문 도장집",
+  "zoneId": 5,
+  "categoryId": 4,
+  "tag": "사진·인쇄",
+  "roadAddress": "대구 중구 큰장로 (서문시장 2지구)",
+  "lat": 35.86929,
+  "lng": 128.58184,
+  "derivedIndex": 199
+ },
+ {
+  "name": "서문시장 어묵집",
+  "zoneId": 5,
+  "categoryId": 1,
+  "tag": "분식",
+  "roadAddress": "대구 중구 큰장로 (서문시장 야시장)",
+  "lat": 35.86853,
+  "lng": 128.58327,
+  "derivedIndex": 200
+ }
+]

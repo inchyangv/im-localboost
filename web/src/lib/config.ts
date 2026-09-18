@@ -15,6 +15,8 @@ export interface Merchant {
   categoryId: number;
   slotBaseline: number;
   keyIndex: number | null;
+  /** Display-only subcategory for the map filter (e.g. 분식, 베이커리). */
+  tag?: string;
   /** Display data for the partner map (demo data modelled on real Daegu places). */
   roadAddress?: string;
   lat?: number;
@@ -41,6 +43,8 @@ export interface Deployment {
 }
 
 export const CATEGORY_NAMES: Record<number, string> = { 1: "식당", 2: "카페", 3: "소매", 4: "서비스" };
+/** Partner-map dot colour per category; the map page legend uses the same values. */
+export const CATEGORY_COLORS: Record<number, string> = { 1: "#f97316", 2: "#a16207", 3: "#3b82f6", 4: "#8b5cf6" };
 
 export const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID ?? "31337");
 export const rpcUrl = process.env.NEXT_PUBLIC_RPC_URL ?? "http://127.0.0.1:8545";

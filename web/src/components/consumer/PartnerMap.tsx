@@ -5,20 +5,28 @@ import L from "leaflet";
 import { CircleMarker, MapContainer, Marker, Popup, TileLayer, Tooltip, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { rateLevel } from "@/components/ZoneMap";
-import { CATEGORY_NAMES, merchants, zoneName, zones, type Merchant } from "@/lib/config";
+import { CATEGORY_COLORS, CATEGORY_NAMES, zoneName, zones, type Merchant } from "@/lib/config";
 import { pct } from "@/lib/format";
 
 /** Daegu city centre; all demo zones sit within a few km of it. */
 const DAEGU: [number, number] = [35.862, 128.596];
 
-function markerIcon(bps: number): L.DivIcon {
+/** Small category dot; the selected store gets a pill with its name and the zone bonus rate. */
+function markerIcon(m: Merchant, bps: number, active: boolean): L.DivIcon {
+  const color = CATEGORY_COLORS[m.categoryId] ?? "#6b7280";
+  if (!active) {
+    return L.divIcon({
+      className: "",
+      html: `<div style="width:12px;height:12px;background:${color};border:2px solid #fff;border-radius:9999px;box-shadow:0 1px 3px rgba(0,0,0,.3);transform:translate(-50%,-50%)"></div>`,
+      iconSize: [0, 0],
+    });
+  }
   const lv = rateLevel(bps);
-  const bg = lv === "high" ? "#14b8a6" : lv === "mid" ? "#5eead4" : lv === "low" ? "#ccfbf1" : "#e5e7eb";
-  const fg = lv === "high" ? "#ffffff" : "#134e4a";
-  const label = bps > 0 ? pct(bps) : "0%";
+  const rate = bps > 0 ? pct(bps) : "0%";
+  const name = m.name.replace(/[&<>"]/g, "");
   return L.divIcon({
     className: "",
-    html: `<div style="background:${bg};color:${fg};border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.25);border-radius:9999px;padding:2px 8px;font:600 11px/16px system-ui,sans-serif;white-space:nowrap;transform:translate(-50%,-50%)">${label}</div>`,
+    html: `<div style="width:max-content;background:#111827;color:#fff;border:2px solid ${color};box-shadow:0 2px 6px rgba(0,0,0,.3);border-radius:9999px;padding:2px 9px;font:600 12px/18px system-ui,sans-serif;white-space:nowrap;transform:translate(-50%,-50%)">${name} <span style="color:${lv === "none" ? "#9ca3af" : "#5eead4"}">${rate}</span></div>`,
     iconSize: [0, 0],
   });
 }
@@ -33,17 +41,20 @@ function FitToMerchants({ points }: { points: [number, number][] }) {
 }
 
 export function PartnerMap({
+  items,
   rates,
   selected,
   onSelect,
   className,
 }: {
+  /** Merchants to draw (already filtered by the page). */
+  items: Merchant[];
   rates: Record<number, number>;
   selected: `0x${string}` | null;
   onSelect: (m: Merchant) => void;
   className?: string;
 }) {
-  const located = useMemo(() => merchants.filter((m) => typeof m.lat === "number" && typeof m.lng === "number"), []);
+  const located = useMemo(() => items.filter((m) => typeof m.lat === "number" && typeof m.lng === "number"), [items]);
   const points = useMemo(() => located.map((m) => [m.lat!, m.lng!] as [number, number]), [located]);
 
   return (
@@ -71,7 +82,7 @@ export function PartnerMap({
           <Marker
             key={m.address}
             position={[m.lat!, m.lng!]}
-            icon={markerIcon(rates[m.zoneId] ?? 0)}
+            icon={markerIcon(m, rates[m.zoneId] ?? 0, selected === m.address)}
             eventHandlers={{ click: () => onSelect(m) }}
             zIndexOffset={selected === m.address ? 1000 : 0}
           >
@@ -79,7 +90,7 @@ export function PartnerMap({
               <div style={{ minWidth: 180 }}>
                 <p style={{ margin: 0, fontWeight: 700, fontSize: 14 }}>{m.name}</p>
                 <p style={{ margin: "2px 0 0", fontSize: 12, color: "#6b7280" }}>
-                  {zoneName(m.zoneId)} · {CATEGORY_NAMES[m.categoryId] ?? m.categoryId}
+                  {zoneName(m.zoneId)} · {m.tag ?? CATEGORY_NAMES[m.categoryId] ?? m.categoryId}
                 </p>
                 {m.roadAddress && <p style={{ margin: "2px 0 0", fontSize: 12, color: "#6b7280" }}>{m.roadAddress}</p>}
                 <p style={{ margin: "6px 0 0", fontSize: 13 }}>
