@@ -1,15 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { PersonaGate } from "@/components/PersonaGate";
+import { CountUp } from "@/components/motion";
 import { useConsumerActor, usePersona } from "@/components/PersonaProvider";
+import { Landing } from "@/components/consumer/Landing";
 import { OnboardCard } from "@/components/consumer/OnboardCard";
 import { RecentList } from "@/components/consumer/RecentList";
 import { ResultCard } from "@/components/consumer/ResultCard";
 import { QrScanner } from "@/components/consumer/QrScanner";
 import { WalletCard } from "@/components/consumer/WalletCard";
 import { ZoneLegend, ZoneMap, rateLevel, useZoneRates } from "@/components/ZoneMap";
-import { AmountInput, Badge, Button, Card, CardHeader, Mono, Notice, PageHeader, cx } from "@/components/ui";
+import { AmountInput, Badge, Button, CATEGORY_ICONS, Card, CardHeader, Icon, IconTile, LiveDot, Mono, Notice, PageHeader, Skeleton, cx, inputSoftCls } from "@/components/ui";
 import { publicClient } from "@/lib/chain";
 import { CATEGORY_NAMES, FAUCET_URL, LOW_GAS_WEI, caps, chainId, chainLabel, merchants, zoneName, zones } from "@/lib/config";
 import { addresses, dalgubeolPayAbi, hourEpoch, readBoostState, registryAbi, tokenAbi, type BoostState } from "@/lib/contracts";
@@ -23,6 +24,8 @@ const QUOTE_DEBOUNCE_MS = 500;
 const ZERO_PERSON = "0x0000000000000000000000000000000000000000000000000000000000000000";
 const PAYMENTS_REFRESH_MS = 10_000;
 const QUICK_AMOUNTS = [10_000, 30_000, 50_000, 100_000];
+/** Show the name search once the list is too long to scan. */
+const SEARCH_THRESHOLD = 8;
 
 interface Quote {
   boost: bigint;
@@ -59,16 +62,22 @@ export default function ConsumerPage() {
   const [error, setError] = useState<{ name: string | null; message: string } | null>(null);
   const [recent, setRecent] = useState<PaymentRow[]>([]);
   const [scanning, setScanning] = useState(false);
+  const [query, setQuery] = useState("");
 
-  const visibleMerchants = useMemo(() => (zone ? merchants.filter((m) => m.zoneId === zone) : merchants), [zone]);
+  const zoneMerchants = useMemo(() => (zone ? merchants.filter((m) => m.zoneId === zone) : merchants), [zone]);
+  const visibleMerchants = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return zoneMerchants;
+    return zoneMerchants.filter((m) => `${m.name} ${zoneName(m.zoneId)} ${CATEGORY_NAMES[m.categoryId] ?? ""}`.toLowerCase().includes(q));
+  }, [zoneMerchants, query]);
   const selected = merchants.find((m) => m.address === merchant);
   const address = actor?.address ?? null;
   const isWallet = actor?.kind === "wallet";
   const epochLabel = kstHourLabel(hourEpoch(Math.floor(Date.now() / 1000)));
 
   useEffect(() => {
-    if (zone && selected && selected.zoneId !== zone && visibleMerchants[0]) setMerchant(visibleMerchants[0].address);
-  }, [zone, selected, visibleMerchants]);
+    if (zone && selected && selected.zoneId !== zone && zoneMerchants[0]) setMerchant(zoneMerchants[0].address);
+  }, [zone, selected, zoneMerchants]);
 
   const refreshBalances = useCallback(async () => {
     if (!address) return;
@@ -165,14 +174,7 @@ export default function ConsumerPage() {
   }
 
   if (!actor || !address) {
-    return (
-      <PersonaGate
-        roles={[]}
-        wallet
-        title="내 지갑으로 결제해 보세요"
-        desc="Kaia Wallet을 연결하면 은행에서 iMKRW를 받아 바로 결제할 수 있어요."
-      />
-    );
+    return <Landing />;
   }
 
   const creditMax = credit ?? 0n;
@@ -190,8 +192,12 @@ export default function ConsumerPage() {
         desc="지금 보너스율이 높은 상권에서 결제하면 크레딧을 더 받아요."
         right={
           <span className="flex items-center gap-2">
-            <Badge tone="gray">현재 시간대 {epochLabel}</Badge>
-            <Button type="button" variant="dark" size="sm" onClick={() => setScanning(true)}>
+            <span className="inline-flex h-10 items-center gap-2 rounded-full bg-white px-3.5 text-[13px] font-medium text-gray-700 shadow-card">
+              <LiveDot />
+              현재 시간대 {epochLabel}
+            </span>
+            <Button type="button" variant="dark" size="sm" className="h-10 rounded-full px-4" onClick={() => setScanning(true)}>
+              <Icon name="qr" className="h-4 w-4" />
               QR 스캔
             </Button>
           </span>
@@ -199,8 +205,8 @@ export default function ConsumerPage() {
       />
       {scanning && <QrScanner onClose={() => setScanning(false)} />}
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-        <div className="space-y-6">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-5 sm:gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+        <div className="space-y-5 sm:space-y-6">
           <WalletCard
             kind={actor.kind}
             label={actor.label}
@@ -218,17 +224,23 @@ export default function ConsumerPage() {
             }
           />
 
-          <Card>
-            <CardHeader title="지금 상권별 보너스율" desc="상권을 누르면 그 상권의 가게만 골라 볼 수 있어요." />
+          <Card className="reveal" style={{ ["--i" as string]: 2 }}>
+            <CardHeader
+              title="지금 상권별 보너스율"
+              desc="상권을 누르면 그 상권의 가게만 골라 볼 수 있어요."
+              right={
+                <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-gray-500">
+                  <LiveDot />
+                  10초마다 갱신
+                </span>
+              }
+            />
             <ZoneMap className="mt-4" rates={rates} selected={zone} onSelect={setZone} />
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-              <ZoneLegend />
-              <span className="text-[12px] text-gray-400">10초마다 갱신</span>
-            </div>
+            <ZoneLegend className="mt-4" />
           </Card>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-5 sm:space-y-6">
           {isWallet && !actor.chainOk && (
             <Notice tone="warn" title="지갑 네트워크가 앱과 달라요">
               <div className="mt-1 flex flex-wrap items-center gap-3">
@@ -254,7 +266,7 @@ export default function ConsumerPage() {
           )}
           {result && <ResultCard result={result} onClose={() => setResult(null)} />}
 
-          <Card>
+          <Card className="reveal" style={{ ["--i" as string]: 2 }}>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -263,7 +275,7 @@ export default function ConsumerPage() {
             >
               <CardHeader title="어디서 결제할까요?" />
 
-              <div className="mt-4 flex flex-wrap gap-1.5" role="group" aria-label="상권 필터">
+              <div className="scroll-none -mx-5 mt-4 flex gap-1.5 overflow-x-auto px-5 sm:mx-0 sm:flex-wrap sm:px-0" role="group" aria-label="상권 필터">
                 <ZoneChip active={zone === null} onClick={() => setZone(null)}>
                   전체
                 </ZoneChip>
@@ -275,7 +287,32 @@ export default function ConsumerPage() {
                 ))}
               </div>
 
-              <ul className="mt-3 divide-y divide-gray-100 overflow-hidden rounded-xl border border-gray-200" role="radiogroup" aria-label="가맹점">
+              {zoneMerchants.length > SEARCH_THRESHOLD && (
+                <div className="relative mt-3">
+                  <svg className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <circle cx="9" cy="9" r="5.5" stroke="currentColor" strokeWidth="1.6" />
+                    <path d="m13.5 13.5 3 3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                  </svg>
+                  <input
+                    type="search"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="가게 이름, 업종으로 찾기"
+                    aria-label="가맹점 검색"
+                    className={cx(inputSoftCls, "h-11 rounded-xl pl-10 pr-4 text-[15px]")}
+                  />
+                </div>
+              )}
+
+              <ul
+                className={cx(
+                  "scroll-thin -mx-2 mt-3 max-h-[396px] space-y-0.5 overflow-y-auto px-2 py-0.5",
+                  // Fade the last row out so a long list reads as scrollable rather than cut off.
+                  visibleMerchants.length > 6 && "pb-6 [mask-image:linear-gradient(to_bottom,#000_calc(100%-40px),transparent)]",
+                )}
+                role="radiogroup"
+                aria-label="가맹점"
+              >
                 {visibleMerchants.map((m) => {
                   const active = m.address === merchant;
                   return (
@@ -286,19 +323,11 @@ export default function ConsumerPage() {
                         aria-checked={active}
                         onClick={() => setMerchant(m.address)}
                         className={cx(
-                          "flex w-full items-center gap-3 px-4 py-3 text-left transition-colors",
-                          active ? "bg-brand-50/70" : "hover:bg-gray-50",
+                          "flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left transition-[background-color,box-shadow] duration-150",
+                          active ? "bg-brand-50 ring-1 ring-inset ring-brand-200" : "hover:bg-gray-50 active:bg-gray-100",
                         )}
                       >
-                        <span
-                          aria-hidden="true"
-                          className={cx(
-                            "grid h-[18px] w-[18px] shrink-0 place-items-center rounded-full border-2",
-                            active ? "border-brand-500" : "border-gray-300",
-                          )}
-                        >
-                          {active && <span className="h-2 w-2 rounded-full bg-brand-500" />}
-                        </span>
+                        <IconTile name={CATEGORY_ICONS[m.categoryId] ?? "store"} tone={active ? "solid" : "gray"} />
                         <span className="min-w-0 flex-1">
                           <span className="block truncate text-[15px] font-semibold text-gray-900">{m.name}</span>
                           <span className="block text-[12px] text-gray-500">
@@ -310,13 +339,14 @@ export default function ConsumerPage() {
                     </li>
                   );
                 })}
+                {visibleMerchants.length === 0 && <li className="px-3 py-6 text-center text-[13px] text-gray-500">찾는 가게가 없어요. 다른 이름으로 찾아보세요.</li>}
               </ul>
 
-              <div className="mt-6">
-                <label htmlFor="amount" className="text-[13px] font-medium text-gray-600">
-                  결제 금액
+              <div className="mt-6 border-t border-gray-100 pt-6">
+                <label htmlFor="amount" className="text-[15px] font-bold tracking-heading text-gray-900">
+                  얼마를 결제할까요?
                 </label>
-                <div className="mt-1.5">
+                <div className="mt-3">
                   <AmountInput id="amount" size="lg" value={amount} onChange={setAmount} ariaLabel="결제 금액 (원)" />
                 </div>
                 <div className="mt-2 flex flex-wrap gap-1.5">
@@ -326,7 +356,7 @@ export default function ConsumerPage() {
                       type="button"
                       onClick={() => setAmount(v)}
                       className={cx(
-                        "tnum rounded-full px-3 py-1 text-[12px] font-medium transition-colors",
+                        "tnum h-9 rounded-full px-3.5 text-[13px] font-semibold transition-[transform,background-color] duration-150 active:scale-95",
                         amount === v ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200",
                       )}
                     >
@@ -336,9 +366,10 @@ export default function ConsumerPage() {
                 </div>
               </div>
 
-              <div className="mt-5 rounded-xl border border-gray-200 p-4">
+              <div className="mt-5 rounded-2xl bg-gray-50 p-4">
                 <div className="flex items-center justify-between">
-                  <label htmlFor="useCredit" className="text-[14px] font-medium text-gray-800">
+                  <label htmlFor="useCredit" className="inline-flex items-center gap-2 text-[14px] font-semibold text-gray-800">
+                    <Icon name="spark" className="h-4 w-4 text-brand-600" />
                     보너스 크레딧 사용
                   </label>
                   <span className="tnum text-[12px] text-gray-500">보유 {won(creditMax)}</span>
@@ -364,15 +395,29 @@ export default function ConsumerPage() {
                 )}
               </div>
 
-              <div className="mt-5 rounded-2xl bg-gray-50 p-5">
-                <div className="flex items-baseline justify-between gap-3">
-                  <span className="text-[14px] text-gray-600">예상 보너스</span>
-                  <span className={cx("tnum text-[26px] font-bold tracking-tight", quote && quote.boost > 0n ? "text-brand-600" : "text-gray-400")}>
-                    {quote ? won(quote.boost) : quoteError ? "—" : "계산 중"}
+              <div
+                className={cx(
+                  "mt-3 rounded-2xl p-5 transition-colors duration-300",
+                  quote && quote.boost > 0n ? "bg-brand-50 ring-1 ring-inset ring-brand-100" : "bg-gray-50",
+                )}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <span className={cx("text-[14px] font-semibold", quote && quote.boost > 0n ? "text-brand-800" : "text-gray-600")}>예상 보너스</span>
+                  <span className={cx("num-display text-[28px]", quote && quote.boost > 0n ? "text-brand-600" : "text-gray-400")}>
+                    {quote ? (
+                      <>
+                        {quote.boost > 0n && "+"}
+                        <CountUp value={quote.boost} format={won} />
+                      </>
+                    ) : quoteError ? (
+                      "—"
+                    ) : (
+                      <Skeleton className="h-7 w-24" />
+                    )}
                   </span>
                 </div>
                 {quote && selected && (
-                  <p className="tnum mt-1 text-[12px] text-gray-500">
+                  <p className={cx("tnum mt-2 text-[12px] leading-relaxed", quote.boost > 0n ? "text-brand-800/70" : "text-gray-500")}>
                     {zoneName(selected.zoneId)} 현재 {pct(quote.state.currentRate)} · 건당 최대 {won(caps.perTxBoost)} · 오늘 남은 한도 {won(personRemaining)}
                   </p>
                 )}
@@ -437,7 +482,7 @@ function ZoneChip({ active, onClick, children }: { active: boolean; onClick: () 
       aria-pressed={active}
       onClick={onClick}
       className={cx(
-        "rounded-full border px-2.5 py-1 text-[12px] font-medium transition-colors",
+        "h-9 shrink-0 whitespace-nowrap rounded-full border px-3 text-[13px] font-medium transition-[transform,background-color,border-color] duration-150 active:scale-95",
         active ? "border-gray-900 bg-gray-900 text-white" : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50",
       )}
     >

@@ -5,7 +5,8 @@ import { PersonaGate } from "@/components/PersonaGate";
 import { useConsumerActor } from "@/components/PersonaProvider";
 import { RecentList } from "@/components/consumer/RecentList";
 import { WalletCard } from "@/components/consumer/WalletCard";
-import { Card, PageHeader, Stat } from "@/components/ui";
+import { CountUp } from "@/components/motion";
+import { Card, IconTile, PageHeader, Stat } from "@/components/ui";
 import { publicClient } from "@/lib/chain";
 import { addresses, dalgubeolPayAbi, registryAbi, tokenAbi } from "@/lib/contracts";
 import { payments as fetchPayments, type PaymentRow } from "@/lib/engine";
@@ -68,15 +69,26 @@ export default function HistoryPage() {
   return (
     <>
       <PageHeader title="내 결제 내역" desc="이 지갑으로 한 결제와 받은 보너스예요. 10초마다 갱신돼요." />
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-5 sm:gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
         <div className="space-y-6">
           <WalletCard kind={actor.kind} label={actor.label} address={address} balance={balance} credit={credit} registered={registered} />
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Card>
-              <Stat label="결제 건수" value={`${num(rows.length)}건`} sub="엔진이 읽은 최근 50건" />
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            <Card className="reveal" style={{ ["--i" as string]: 2 }}>
+              <Stat
+                icon={<IconTile name="list" tone="gray" size="sm" />}
+                label="결제 건수"
+                value={<CountUp value={rows.length} format={(v) => `${num(v)}건`} />}
+                sub="엔진이 읽은 최근 50건"
+              />
             </Card>
-            <Card>
-              <Stat label="총 결제 · 총 보너스" value={won(totalSpent)} tone="default" sub={`보너스 ${won(totalBoost)}`} />
+            <Card className="reveal" style={{ ["--i" as string]: 3 }}>
+              <Stat
+                icon={<IconTile name="spark" tone="brand" size="sm" />}
+                label="총 결제 · 총 보너스"
+                value={<CountUp value={totalSpent} format={won} />}
+                tone="default"
+                sub={`보너스 ${won(totalBoost)}`}
+              />
             </Card>
           </div>
         </div>

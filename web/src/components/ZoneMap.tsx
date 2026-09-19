@@ -28,7 +28,7 @@ export function rateLevel(bps: number): RateLevel {
 }
 
 const LEVEL_STYLE: Record<RateLevel, { fill: string; text: string; sub: string; label: string }> = {
-  none: { fill: "#f2f4f6", text: "#4e5968", sub: "#8b95a1", label: "0%" },
+  none: { fill: "#f2f4f6", text: "#8b95a1", sub: "#6b7684", label: "0%" },
   low: { fill: "#d3efe9", text: "#045f55", sub: "#00776a", label: "5% 미만" },
   mid: { fill: "#8fd9ca", text: "#045f55", sub: "#00776a", label: "5~10%" },
   high: { fill: "#00a18e", text: "#ffffff", sub: "rgba(255,255,255,0.85)", label: "10% 이상" },
@@ -84,49 +84,83 @@ export function ZoneMap({
   className?: string;
 }) {
   const hub = center(1);
+  const top = Math.max(0, ...zones.map((z) => rates[z.id] ?? 0));
   return (
-    <svg viewBox="0 0 388 320" className={cx("h-auto w-full", className)} role="img" aria-label="상권 약도">
-      {/* Sketch roads from the centre district to the others, drawn under the blocks. */}
-      {zones
-        .filter((z) => z.id !== 1 && LAYOUT[z.id])
-        .map((z) => {
-          const c = center(z.id);
-          return <line key={z.id} x1={hub.cx} y1={hub.cy} x2={c.cx} y2={c.cy} stroke="#e9edf0" strokeWidth="4" strokeLinecap="round" />;
+    <div className={cx("surface-map overflow-hidden rounded-2xl ring-1 ring-inset ring-gray-100", className)}>
+      <svg viewBox="0 0 388 324" className="h-auto w-full" role="img" aria-label="상권 약도">
+        <defs>
+          <filter id="zone-shadow" x="-20%" y="-20%" width="140%" height="150%">
+            <feDropShadow dx="0" dy="3" stdDeviation="4" floodColor="#0c1a1f" floodOpacity="0.12" />
+          </filter>
+        </defs>
+        {/* Sketch roads from the centre district to the others, drawn under the blocks. */}
+        {zones
+          .filter((z) => z.id !== 1 && LAYOUT[z.id])
+          .map((z) => {
+            const c = center(z.id);
+            return (
+              <g key={z.id}>
+                <line x1={hub.cx} y1={hub.cy} x2={c.cx} y2={c.cy} stroke="#ffffff" strokeWidth="11" strokeLinecap="round" />
+                <line x1={hub.cx} y1={hub.cy} x2={c.cx} y2={c.cy} stroke="#d1d6db" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="1 7" />
+              </g>
+            );
+          })}
+        {zones.map((z) => {
+          const l = LAYOUT[z.id];
+          if (!l) return null;
+          const bps = rates[z.id] ?? 0;
+          const lv = rateLevel(bps);
+          const s = LEVEL_STYLE[lv];
+          const active = selected === z.id;
+          const hot = bps > 0 && bps === top;
+          return (
+            <g
+              key={z.id}
+              onClick={() => onSelect(active ? null : z.id)}
+              className="group cursor-pointer outline-none"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onSelect(active ? null : z.id);
+                }
+              }}
+              aria-label={`${z.name} ${pct(bps)}`}
+              aria-pressed={active}
+            >
+              {active && <rect x={l.x - 5} y={l.y - 5} width={l.w + 10} height={l.h + 10} rx="23" fill="none" stroke="#191f28" strokeWidth="2" />}
+              <rect
+                x={l.x}
+                y={l.y}
+                width={l.w}
+                height={l.h}
+                rx="18"
+                fill={lv === "none" ? "#ffffff" : s.fill}
+                stroke={lv === "none" ? "#e5e8eb" : "none"}
+                filter="url(#zone-shadow)"
+                className="transition-opacity group-hover:opacity-90 group-focus-visible:opacity-90"
+              />
+              <text x={l.x + 16} y={l.y + 28} fontSize="13" fontWeight="600" fill={s.sub}>
+                {z.name}
+              </text>
+              <text x={l.x + 16} y={l.y + l.h - 16} fontSize="22" fontWeight="700" letterSpacing="-0.8" fill={s.text} className="tnum">
+                {pct(bps)}
+              </text>
+              {hot && (
+                <g aria-hidden="true">
+                  <circle cx={l.x + l.w - 18} cy={l.y + 22} r="4" fill={lv === "high" ? "#ffffff" : "#00a18e"} opacity="0.5">
+                    <animate attributeName="r" values="4;11" dur="1.8s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.5;0" dur="1.8s" repeatCount="indefinite" />
+                  </circle>
+                  <circle cx={l.x + l.w - 18} cy={l.y + 22} r="4" fill={lv === "high" ? "#ffffff" : "#00a18e"} />
+                </g>
+              )}
+            </g>
+          );
         })}
-      {zones.map((z) => {
-        const l = LAYOUT[z.id];
-        if (!l) return null;
-        const bps = rates[z.id] ?? 0;
-        const s = LEVEL_STYLE[rateLevel(bps)];
-        const active = selected === z.id;
-        return (
-          <g
-            key={z.id}
-            onClick={() => onSelect(active ? null : z.id)}
-            className="cursor-pointer"
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                onSelect(active ? null : z.id);
-              }
-            }}
-            aria-label={`${z.name} ${pct(bps)}`}
-            aria-pressed={active}
-          >
-            {active && <rect x={l.x - 4} y={l.y - 4} width={l.w + 8} height={l.h + 8} rx="20" fill="none" stroke="#191f28" strokeWidth="2" />}
-            <rect x={l.x} y={l.y} width={l.w} height={l.h} rx="16" fill={s.fill} className="transition-opacity hover:opacity-90" />
-            <text x={l.x + l.w / 2} y={l.y + l.h / 2 - 8} textAnchor="middle" fontSize="14" fontWeight="600" fill={s.text}>
-              {z.name}
-            </text>
-            <text x={l.x + l.w / 2} y={l.y + l.h / 2 + 16} textAnchor="middle" fontSize="17" fontWeight="700" fill={s.text} className="tnum">
-              {pct(bps)}
-            </text>
-          </g>
-        );
-      })}
-    </svg>
+      </svg>
+    </div>
   );
 }
 
@@ -136,7 +170,11 @@ export function ZoneLegend({ className }: { className?: string }) {
     <ul className={cx("flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-gray-500", className)} aria-label="보너스율 범례">
       {levels.map((lv) => (
         <li key={lv} className="flex items-center gap-1.5">
-          <span className="inline-block h-3 w-3 rounded-[4px]" style={{ background: LEVEL_STYLE[lv].fill }} aria-hidden="true" />
+          <span
+            className={cx("inline-block h-3 w-3 rounded-[4px]", lv === "none" && "ring-1 ring-inset ring-gray-300")}
+            style={{ background: lv === "none" ? "#ffffff" : LEVEL_STYLE[lv].fill }}
+            aria-hidden="true"
+          />
           {LEVEL_STYLE[lv].label}
         </li>
       ))}

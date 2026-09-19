@@ -8,7 +8,8 @@ import { useConsumerActor, usePersona } from "@/components/PersonaProvider";
 import { OnboardCard } from "@/components/consumer/OnboardCard";
 import { ResultCard } from "@/components/consumer/ResultCard";
 import { WalletCard } from "@/components/consumer/WalletCard";
-import { AmountInput, Badge, Button, Card, CardHeader, Mono, Notice, PageHeader, Spinner, cx } from "@/components/ui";
+import { CountUp } from "@/components/motion";
+import { AmountInput, Badge, Button, CATEGORY_ICONS, Card, CardHeader, Icon, IconTile, Mono, Notice, PageHeader, Skeleton, Spinner, cx } from "@/components/ui";
 import { publicClient } from "@/lib/chain";
 import { CATEGORY_NAMES, FAUCET_URL, LOW_GAS_WEI, caps, chainId, chainLabel, zoneName } from "@/lib/config";
 import { addresses, dalgubeolPayAbi, readBoostState, registryAbi, tokenAbi, type BoostState } from "@/lib/contracts";
@@ -168,7 +169,7 @@ function PayScreen() {
     <>
       <PageHeader title="QR 결제" desc="가맹점이 만든 결제 QR이에요. 금액을 확인하고 결제해 주세요." right={request!.ref ? <Badge tone="gray">참조 {request!.ref}</Badge> : null} />
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-5 sm:gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
         <div className="space-y-6">
           <WalletCard kind={actor.kind} label={actor.label} address={address} balance={balance} credit={credit} registered={isWallet ? registered : null} />
         </div>
@@ -198,7 +199,7 @@ function PayScreen() {
           )}
           {result && <ResultCard result={result} onClose={() => setResult(null)} />}
 
-          <Card>
+          <Card className="reveal" style={{ ["--i" as string]: 2 }}>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -206,20 +207,27 @@ function PayScreen() {
               }}
             >
               <CardHeader title="결제 내용" />
-              <div className="mt-4 rounded-xl border border-gray-200 px-4 py-3">
-                <p className="text-[15px] font-semibold text-gray-900">{merchantInfo!.name}</p>
-                <p className="text-[12px] text-gray-500">
-                  {zoneName(merchantInfo!.zoneId)} · {CATEGORY_NAMES[merchantInfo!.categoryId] ?? merchantInfo!.categoryId} · <Mono>{request!.merchant.slice(0, 6)}…{request!.merchant.slice(-4)}</Mono>
-                </p>
+              <div className="mt-4 flex items-center gap-3 rounded-2xl bg-brand-50 px-4 py-3.5 ring-1 ring-inset ring-brand-100">
+                <IconTile name={CATEGORY_ICONS[merchantInfo!.categoryId] ?? "store"} tone="solid" />
+                <div className="min-w-0">
+                  <p className="truncate text-[15px] font-semibold text-gray-900">{merchantInfo!.name}</p>
+                  <p className="text-[12px] text-gray-500">
+                    {zoneName(merchantInfo!.zoneId)} · {CATEGORY_NAMES[merchantInfo!.categoryId] ?? merchantInfo!.categoryId} ·{" "}
+                    <Mono className="bg-white/70">
+                      {request!.merchant.slice(0, 6)}…{request!.merchant.slice(-4)}
+                    </Mono>
+                  </p>
+                </div>
               </div>
-              <div className="mt-4">
-                <span className="text-[13px] font-medium text-gray-600">결제 금액</span>
-                <p className="tnum mt-1 text-[32px] font-bold tracking-tight text-gray-900">{won(amount)}</p>
+              <div className="mt-6 text-center">
+                <span className="text-[13px] font-medium text-gray-500">결제 금액</span>
+                <p className="num-display mt-2 text-[40px] text-gray-900">{won(amount)}</p>
               </div>
 
-              <div className="mt-5 rounded-xl border border-gray-200 p-4">
+              <div className="mt-6 rounded-2xl bg-gray-50 p-4">
                 <div className="flex items-center justify-between">
-                  <label htmlFor="useCredit" className="text-[14px] font-medium text-gray-800">
+                  <label htmlFor="useCredit" className="inline-flex items-center gap-2 text-[14px] font-semibold text-gray-800">
+                    <Icon name="spark" className="h-4 w-4 text-brand-600" />
                     보너스 크레딧 사용
                   </label>
                   <span className="tnum text-[12px] text-gray-500">보유 {won(creditMax)}</span>
@@ -250,15 +258,29 @@ function PayScreen() {
                 )}
               </div>
 
-              <div className="mt-5 rounded-2xl bg-gray-50 p-5">
-                <div className="flex items-baseline justify-between gap-3">
-                  <span className="text-[14px] text-gray-600">예상 보너스</span>
-                  <span className={cx("tnum text-[26px] font-bold tracking-tight", quote && quote.boost > 0n ? "text-brand-600" : "text-gray-400")}>
-                    {quote ? won(quote.boost) : quoteError ? "—" : "계산 중"}
+              <div
+                className={cx(
+                  "mt-3 rounded-2xl p-5 transition-colors duration-300",
+                  quote && quote.boost > 0n ? "bg-brand-50 ring-1 ring-inset ring-brand-100" : "bg-gray-50",
+                )}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <span className={cx("text-[14px] font-semibold", quote && quote.boost > 0n ? "text-brand-800" : "text-gray-600")}>예상 보너스</span>
+                  <span className={cx("num-display text-[28px]", quote && quote.boost > 0n ? "text-brand-600" : "text-gray-400")}>
+                    {quote ? (
+                      <>
+                        {quote.boost > 0n && "+"}
+                        <CountUp value={quote.boost} format={won} />
+                      </>
+                    ) : quoteError ? (
+                      "—"
+                    ) : (
+                      <Skeleton className="h-7 w-24" />
+                    )}
                   </span>
                 </div>
                 {quote && (
-                  <p className="tnum mt-1 text-[12px] text-gray-500">
+                  <p className={cx("tnum mt-2 text-[12px] leading-relaxed", quote.boost > 0n ? "text-brand-800/70" : "text-gray-500")}>
                     {zoneName(merchantInfo!.zoneId)} 현재 {pct(quote.state.currentRate)} · 건당 최대 {won(caps.perTxBoost)} · 오늘 남은 한도 {won(personRemaining)}
                   </p>
                 )}
@@ -304,8 +326,9 @@ function PayScreen() {
           </Card>
 
           <div className="text-center">
-            <Link href="/" className="text-[14px] font-medium text-gray-600 underline">
+            <Link href="/" className="inline-flex items-center gap-1.5 text-[14px] font-semibold text-gray-600 transition-colors hover:text-gray-900">
               소비자 화면으로
+              <Icon name="arrow" className="h-4 w-4" />
             </Link>
           </div>
         </div>

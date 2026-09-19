@@ -343,7 +343,7 @@ export function WalletButton() {
           )}
         >
           <AddressAvatar address={wallet.address} className="h-7 w-7" />
-          <span className="font-mono text-[12px] font-medium">{short(wallet.address, 4)}</span>
+          <span className="whitespace-nowrap font-mono text-[12px] font-medium">{short(wallet.address, 4)}</span>
           <ChevronDown className={cx("h-4 w-4 text-gray-500 transition-transform", open && "rotate-180")} />
         </button>
         {open && <AddressMenu onClose={() => setOpen(false)} />}

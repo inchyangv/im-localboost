@@ -1,12 +1,21 @@
 import type { ReactNode } from "react";
-import { Notice } from "@/components/ui";
+import { LogoMark } from "@/components/Logo";
+import { Notice, cx } from "@/components/ui";
 import { chainId, chainLabel, deployment } from "@/lib/config";
 
-/** Page container + footer shared by the consumer app and the admin tools. */
-export function Shell({ children, footerLinks }: { children: ReactNode; footerLinks: Array<{ href: string; label: string }> }) {
+/** Page container + footer shared by the consumer app and the admin tools. `bottomTabs` leaves room for the phone tab bar. */
+export function Shell({
+  children,
+  footerLinks,
+  bottomTabs = false,
+}: {
+  children: ReactNode;
+  footerLinks: Array<{ href: string; label: string }>;
+  bottomTabs?: boolean;
+}) {
   return (
     <>
-      <main className="mx-auto w-full max-w-[1120px] px-5 pb-20 pt-8">
+      <main className="mx-auto min-h-[calc(100vh-16rem)] w-full max-w-[1120px] px-4 pb-16 pt-7 sm:px-5 sm:pt-10">
         {deployment ? (
           children
         ) : (
@@ -16,15 +25,22 @@ export function Shell({ children, footerLinks }: { children: ReactNode; footerLi
           </Notice>
         )}
       </main>
-      <footer className="mx-auto w-full max-w-[1120px] px-5 pb-10 text-[12px] text-gray-500">
-        <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <span>달구벌페이 프로토타입 · {chainLabel(chainId)} (chainId {chainId}) · 하루 경계 KST</span>
-          {footerLinks.map((l) => (
-            <a key={l.href} href={l.href} className="underline underline-offset-2 hover:text-gray-700">
-              {l.label}
-            </a>
-          ))}
-        </p>
+      <footer className={cx("border-t border-gray-900/[0.06]", bottomTabs && "pb-20 sm:pb-0")}>
+        <div className="mx-auto flex w-full max-w-[1120px] flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-7 text-[12px] text-gray-500 sm:px-5">
+          <p className="flex items-center gap-2.5">
+            <LogoMark className="h-5 w-5 opacity-80 grayscale" />
+            <span>
+              달구벌페이 프로토타입 · {chainLabel(chainId)} (chainId {chainId}) · 하루 경계 KST
+            </span>
+          </p>
+          <p className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            {footerLinks.map((l) => (
+              <a key={l.href} href={l.href} className="font-medium text-gray-600 transition-colors hover:text-gray-900">
+                {l.label} →
+              </a>
+            ))}
+          </p>
+        </div>
       </footer>
     </>
   );

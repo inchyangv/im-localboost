@@ -2,29 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Design tokens. Neutral scale follows the Toss gray ramp; the accent is the iM Bank teal. */
+/* Design tokens. Neutral scale follows the Toss gray ramp; the accent is the iM Bank teal.
+   Colours are stored as RGB channels so Tailwind opacity modifiers (bg-brand-50/70) work; use rgb(var(--x)) in CSS. */
 :root {
-  --brand-50: #eaf7f4;
-  --brand-100: #d3efe9;
-  --brand-200: #a8e0d5;
-  --brand-300: #6fcdbb;
-  --brand-500: #00a18e;
-  --brand-600: #008c7b;
-  --brand-700: #00776a;
-  --brand-800: #045f55;
+  --brand-50: 234 247 244;
+  --brand-100: 211 239 233;
+  --brand-200: 168 224 213;
+  --brand-300: 111 205 187;
+  --brand-400: 47 181 161;
+  --brand-500: 0 161 142;
+  --brand-600: 0 140 123;
+  --brand-700: 0 119 106;
+  --brand-800: 4 95 85;
 
-  --gray-50: #f9fafb;
-  --gray-100: #f2f4f6;
-  --gray-200: #e5e8eb;
-  --gray-300: #d1d6db;
-  --gray-400: #b0b8c1;
-  --gray-500: #8b95a1;
-  --gray-600: #6b7684;
-  --gray-700: #4e5968;
-  --gray-800: #333d4b;
-  --gray-900: #191f28;
+  --gray-50: 249 250 251;
+  --gray-100: 242 244 246;
+  --gray-200: 229 232 235;
+  --gray-300: 209 214 219;
+  --gray-400: 176 184 193;
+  --gray-500: 139 149 161;
+  --gray-600: 107 118 132;
+  --gray-700: 78 89 104;
+  --gray-800: 51 61 75;
+  --gray-900: 25 31 40;
 
-  --bg: #f3f6f5;
+  /* Deep surfaces (balance card, admin bar): gray-900 pulled slightly toward the brand hue. */
+  --ink-700: 28 47 51;
+  --ink-800: 19 36 42;
+  --ink-900: 12 26 31;
+
+  --bg: 244 246 247;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 
 html {
@@ -43,15 +53,34 @@ body {
     "Segoe UI",
     Roboto,
     sans-serif;
-  background: var(--bg);
-  color: var(--gray-900);
+  /* One faint brand wash behind the header keeps the page from reading as a flat gray slab. */
+  background:
+    radial-gradient(1100px 380px at 50% -140px, rgba(0, 161, 142, 0.075), transparent 72%) no-repeat,
+    rgb(var(--bg));
+  color: rgb(var(--gray-900));
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: rgb(var(--brand-100));
+  color: rgb(var(--brand-800));
 }
 
 /* Amounts and counters line up when digits have equal width. */
 .tnum {
   font-variant-numeric: tabular-nums;
+}
+
+/* Display numerals: balances, KPIs, quoted bonus. */
+.num-display {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1;
 }
 
 /* Native number inputs without the spinner buttons. */
@@ -78,12 +107,142 @@ input[type="number"] {
   height: 6px;
 }
 .scroll-thin::-webkit-scrollbar-thumb {
-  background: var(--gray-300);
+  background: rgb(var(--gray-300));
   border-radius: 999px;
+}
+.scroll-none {
+  scrollbar-width: none;
+}
+.scroll-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------- Surfaces ---------- */
+
+/* Balance card: deep ink with a single soft brand light from the top-right corner. */
+.surface-ink {
+  background:
+    radial-gradient(420px 260px at 100% 0%, rgba(47, 181, 161, 0.3), transparent 70%),
+    radial-gradient(360px 240px at 0% 120%, rgba(0, 161, 142, 0.16), transparent 70%),
+    linear-gradient(160deg, rgb(var(--ink-800)), rgb(var(--ink-900)));
+  color: #fff;
+}
+
+/* Sketch-map backdrop: dotted paper so the zone blocks sit on something. */
+.surface-map {
+  background-color: rgb(var(--gray-50));
+  background-image: radial-gradient(rgba(25, 31, 40, 0.07) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+
+/* ---------- Motion ---------- */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes sheet-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Staggered entrance: set --i on siblings (0, 1, 2 …). */
+.reveal {
+  animation: fade-up 0.55s var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+.skeleton {
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgb(var(--gray-100)) 25%, rgb(var(--gray-200)) 37%, rgb(var(--gray-100)) 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+.surface-ink .skeleton {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.08) 25%, rgba(255, 255, 255, 0.18) 37%, rgba(255, 255, 255, 0.08) 63%);
+  background-size: 400% 100%;
+}
+
+/* Check / clock strokes on the result card draw themselves once. */
+.draw-stroke {
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: draw 0.5s 0.18s var(--ease-out) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .draw-stroke {
+    stroke-dashoffset: 0;
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }

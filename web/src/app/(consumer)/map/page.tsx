@@ -79,9 +79,9 @@ export default function MapPage() {
         right={<span className="text-[12px] text-gray-500">지도 © OpenStreetMap</span>}
       />
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
-        <Card className="p-2">
-          <div className="h-[460px] sm:h-[560px]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-5 sm:gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+        <Card padded={false} className="reveal p-2 lg:sticky lg:top-24 lg:self-start" style={{ ["--i" as string]: 1 }}>
+          <div className="h-[420px] overflow-hidden rounded-[18px] sm:h-[560px] lg:h-[calc(100vh-15rem)] lg:max-h-[860px] lg:min-h-[560px]">
             <PartnerMap items={list} rates={rates} selected={selected} onSelect={(m) => setSelected(m.address)} className="h-full w-full" />
           </div>
           <div className="flex flex-wrap gap-x-4 gap-y-1 px-3 pb-1 pt-2.5 text-[12px] text-gray-500">

@@ -52,40 +52,47 @@ export function ResultCard({ result, onClose }: { result: PayFlowResult; onClose
 
   const head =
     status === "paid"
-      ? { icon: <CheckCircle className="h-10 w-10 text-brand-600" />, title: `보너스 ${won(paid.boost)}이 적립됐어요`, bar: "bg-brand-500" }
+      ? { icon: <CheckCircle className="h-14 w-14 text-brand-600" />, title: "이 적립됐어요", amount: paid.boost, tone: "text-brand-600", wash: "from-brand-50" }
       : status === "pending"
-        ? { icon: <ClockCircle className="h-10 w-10 text-amber-600" />, title: `보너스 ${won(paid.boost)}이 보류됐어요`, bar: "bg-amber-500" }
-        : { icon: <MinusCircle className="h-10 w-10 text-gray-500" />, title: "보너스 없이 결제됐어요", bar: "bg-gray-400" };
+        ? { icon: <ClockCircle className="h-14 w-14 text-amber-600" />, title: "이 보류됐어요", amount: paid.boost, tone: "text-amber-600", wash: "from-amber-50" }
+        : { icon: <MinusCircle className="h-14 w-14 text-gray-500" />, title: "보너스 없이 결제됐어요", amount: null, tone: "text-gray-900", wash: "from-gray-100" };
 
   return (
-    <Card className="relative overflow-hidden" role="status" aria-live="polite">
-      <span className={cx("absolute inset-x-0 top-0 h-1", head.bar)} aria-hidden="true" />
+    <Card className="relative animate-sheet-up overflow-hidden" role="status" aria-live="polite">
+      <span className={cx("pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b to-transparent", head.wash)} aria-hidden="true" />
       <button
         type="button"
         onClick={onClose}
         aria-label="결과 닫기"
-        className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+        className="absolute right-4 top-4 z-10 grid h-8 w-8 place-items-center rounded-full text-gray-400 transition-colors hover:bg-gray-900/5 hover:text-gray-700"
       >
         <CloseIcon className="h-4 w-4" />
       </button>
-      <div className="flex items-start gap-4 pr-8">
-        {head.icon}
-        <div className="min-w-0">
-          <h2 className="text-[19px] font-bold leading-tight text-gray-900">{head.title}</h2>
-          <p className="mt-1 text-[14px] text-gray-500">
-            {merchantName}에 {won(paid.amount)} 결제
-            {paid.useCredit > 0n && ` · 크레딧 ${won(paid.useCredit)} 사용`}
-          </p>
-        </div>
+      <div className="relative flex flex-col items-center pb-1 pt-3 text-center">
+        <span className="animate-scale-in">{head.icon}</span>
+        <h2 className="mt-4 text-[22px] font-bold leading-snug tracking-heading text-gray-900">
+          {head.amount !== null ? (
+            <>
+              보너스 <span className={cx("tnum", head.tone)}>{won(head.amount)}</span>
+              {head.title}
+            </>
+          ) : (
+            head.title
+          )}
+        </h2>
+        <p className="mt-1.5 text-[14px] text-gray-500">
+          {merchantName}에 {won(paid.amount)} 결제
+          {paid.useCredit > 0n && ` · 크레딧 ${won(paid.useCredit)} 사용`}
+        </p>
       </div>
 
       {reason && (
-        <Notice tone={status === "pending" ? "warn" : "info"} className="mt-4">
+        <Notice tone={status === "pending" ? "warn" : "info"} className="relative mt-5">
           {reason}
         </Notice>
       )}
 
-      <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-[13px]">
+      <dl className="relative mt-5 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2.5 rounded-2xl bg-gray-50 p-4 text-[13px]">
         <dt className="text-gray-500">위험 판정</dt>
         <dd className="flex flex-wrap items-center gap-2">
           <TierBadge tier={paid.tier} />
