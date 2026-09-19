@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { PersonaGate } from "@/components/PersonaGate";
 import { usePersona } from "@/components/PersonaProvider";
+import { OpsGasCard } from "@/components/bank/OpsGasCard";
 import { SettlementDesk } from "@/components/bank/SettlementDesk";
 import { PendingTable, RiskLogTable } from "@/components/city/RiskAndPending";
 import { Badge, Card, CardHeader, PageHeader } from "@/components/ui";
@@ -26,12 +27,14 @@ export default function BankPage() {
         <SettlementDesk bank={actor} onChanged={bump} />
         <PendingTable actor={actor} isBank={isBank} onChanged={bump} refreshKey={refreshKey} />
         <RiskLogTable />
+        <OpsGasCard />
         <Card>
           <CardHeader title="지갑 온보딩 정책" desc="소비자 앱의 '은행 등록하고 시작 자금 받기'가 호출하는 엔진 /onboard의 규칙이에요." />
           <ul className="mt-3 list-disc space-y-1 pl-5 text-[13px] text-gray-700">
             <li>지갑당 personId를 한 번 연결해요(개인 상한은 지갑이 아니라 personId 기준).</li>
             <li>iMKRW 100,000원을 KST 하루 1회 발행해요(실서비스에서는 원화 입금에 대응).</li>
             <li>지갑의 KAIA가 0.1 미만이면 수수료용 0.2 KAIA를 함께 보내요.</li>
+            <li>은행 계정의 KAIA가 부족하면 가스 지급만 건너뛰고, 소비자에게 faucet을 안내해요.</li>
           </ul>
         </Card>
       </div>

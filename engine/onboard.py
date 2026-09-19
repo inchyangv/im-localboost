@@ -16,6 +16,10 @@ from engine import chain, db
 from engine.config import get_settings
 
 ZERO_PERSON = b"\x00" * 32
+# Native coin the bank keeps back for its own setPerson/mint fees before it gives gas away.
+BANK_GAS_RESERVE_WEI = 2 * 10**16
+# Public faucets per chain. The faucet is captcha protected, so an operator refills by hand.
+FAUCET_URLS = {1001: "https://faucet.kaia.io"}
 _lock = threading.Lock()
 
 
@@ -56,6 +60,12 @@ def _send_native(wallet: str, value_wei: int, nonce: int) -> str:
     return chain.submit_native(wallet, int(value_wei), get_settings().bank_key, nonce)
 
 
+def _address_of(private_key: str) -> str:
+    from eth_account import Account
+
+    return Account.from_key(private_key).address
+
+
 def _next_nonce() -> int:
     return chain.next_nonce(get_settings().bank_key)
 
@@ -80,6 +90,24 @@ def status(conn: sqlite3.Connection, wallet: str, now: int) -> dict[str, Any]:
     }
 
 
+def funds() -> dict[str, Any]:
+    """Native gas held by the accounts the engine signs with, so an operator sees when to refill."""
+    s = get_settings()
+    accounts = []
+    for role, key in (("bank", s.bank_key), ("oracle", s.oracle_key)):
+        address = _address_of(key)
+        accounts.append({"role": role, "address": address, "gasWei": str(_native_balance(address))})
+    bank_wei = int(accounts[0]["gasWei"])
+    spendable = max(0, bank_wei - BANK_GAS_RESERVE_WEI)
+    return {
+        "accounts": accounts,
+        "gasPerOnboardWei": str(s.onboard_gas_wei),
+        "onboardsLeft": spendable // s.onboard_gas_wei if s.onboard_gas_wei > 0 else None,
+        "low": s.onboard_gas_wei > 0 and bank_wei < s.onboard_gas_wei + BANK_GAS_RESERVE_WEI,
+        "faucetUrl": FAUCET_URLS.get(s.chain_id),
+    }
+
+
 def onboard(conn: sqlite3.Connection, wallet: str, now: int) -> dict[str, Any]:
     """Registers the wallet when needed, mints the daily starter amount once per KST day and tops
     up native gas when the wallet holds less than half of the top-up amount."""
@@ -90,6 +118,11 @@ def onboard(conn: sqlite3.Connection, wallet: str, now: int) -> dict[str, Any]:
         registered_before = existing != ZERO_PERSON
         prior = db.onboard_get(conn, wallet, day)
         need_gas = s.onboard_gas_wei > 0 and _native_balance(wallet) < s.onboard_gas_wei // 2
+        # A drained bank still registers and mints; only the gas gift is dropped and the web
+        # points the wallet to the faucet instead.
+        gas_skipped = need_gas and _native_balance(_address_of(s.bank_key)) < s.onboard_gas_wei + BANK_GAS_RESERVE_WEI
+        if gas_skipped:
+            need_gas = False
 
         # Queue every needed transaction back to back (explicit nonces) and wait once, so the
         # wallet is ready in one block on Hardhat and a few seconds on Kairos.
@@ -136,5 +169,6 @@ def onboard(conn: sqlite3.Connection, wallet: str, now: int) -> dict[str, Any]:
         "mintAmount": s.onboard_imkrw,
         "gasSentWei": str(gas_sent),
         "gasTx": gas_tx,
+        "gasSkipped": gas_skipped,
         "balance": _token_balance(wallet),
     }

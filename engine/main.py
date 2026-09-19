@@ -187,6 +187,16 @@ async def onboard_status(wallet: str) -> dict[str, Any]:
         raise HTTPException(status_code=502, detail=f"onboard status failed: {exc}")
 
 
+@app.get("/onboard/funds")
+async def onboard_funds() -> dict[str, Any]:
+    """Gas balances of the bank and oracle accounts plus the faucet to refill them from."""
+    try:
+        return await asyncio.to_thread(onboarding.funds)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("onboard funds failed: %s", exc)
+        raise HTTPException(status_code=502, detail=f"onboard funds failed: {exc}")
+
+
 @app.post("/onboard")
 async def onboard(req: OnboardRequest) -> dict[str, Any]:
     """Bank-side onboarding for a browser wallet: setPerson (once), starter iMKRW (once per KST day)

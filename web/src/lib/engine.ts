@@ -68,7 +68,17 @@ export interface OnboardResponse {
   mintAmount: number;
   gasSentWei: string;
   gasTx: string | null;
+  /** True when the bank itself was short of KAIA and left the gas gift out; the wallet needs the faucet. */
+  gasSkipped?: boolean;
   balance: number;
+}
+
+export interface OnboardFunds {
+  accounts: Array<{ role: "bank" | "oracle"; address: string; gasWei: string }>;
+  gasPerOnboardWei: string;
+  onboardsLeft: number | null;
+  low: boolean;
+  faucetUrl: string | null;
 }
 
 export interface OnboardStatus {
@@ -151,3 +161,5 @@ export const transfers = (params: { from?: string; to?: string; limit?: number }
 /** Bank-side onboarding for a browser wallet: personId link, starter iMKRW, gas top-up (three txs, allow time). */
 export const onboard = (wallet: string) => call<OnboardResponse>("/onboard", json({ wallet }), 180_000);
 export const onboardStatus = (wallet: string) => call<OnboardStatus>(`/onboard/status?wallet=${encodeURIComponent(wallet)}`);
+/** Gas held by the engine's bank and oracle accounts; the operator refills them from the faucet by hand. */
+export const onboardFunds = () => call<OnboardFunds>("/onboard/funds");

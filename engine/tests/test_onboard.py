@@ -11,7 +11,12 @@ WALLET = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
 def fake_chain(monkeypatch: pytest.MonkeyPatch):
     from engine import onboard
 
-    state = {"person": {}, "token": {}, "native": {WALLET.lower(): 0}, "txs": []}
+    from engine.tests.conftest import BANK_KEY, ORACLE_KEY
+
+    bank = onboard._address_of(BANK_KEY).lower()
+    oracle = onboard._address_of(ORACLE_KEY).lower()
+    state = {"person": {}, "token": {}, "native": {WALLET.lower(): 0, bank: 10**18, oracle: 3 * 10**17}, "txs": []}
+    state["bank"] = bank
 
     def person_of(wallet):
         return bytes.fromhex(state["person"].get(wallet.lower(), "00" * 32))
@@ -97,3 +102,25 @@ def test_onboard_status(app_client, fake_settings, fake_chain):
 def test_onboard_rejects_bad_address(app_client):
     assert app_client.post("/onboard", json={"wallet": "0x123"}).status_code == 422
     assert app_client.get("/onboard/status", params={"wallet": "nope"}).status_code == 422
+
+
+def test_drained_bank_skips_gas_but_still_registers_and_mints(app_client, fake_settings, fake_chain):
+    fake_chain["native"][fake_chain["bank"]] = fake_settings.onboard_gas_wei  # below top-up + reserve
+    r = app_client.post("/onboard", json={"wallet": WALLET})
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["gasSkipped"] is True
+    assert body["gasTx"] is None and body["gasSentWei"] == "0"
+    assert body["minted"] == fake_settings.onboard_imkrw
+    assert [t[0] for t in fake_chain["txs"]] == ["setPerson", "mint"]
+
+
+def test_onboard_funds(app_client, fake_settings, fake_chain):
+    r = app_client.get("/onboard/funds")
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert [a["role"] for a in body["accounts"]] == ["bank", "oracle"]
+    assert body["accounts"][0]["gasWei"] == str(10**18)
+    assert body["gasPerOnboardWei"] == str(fake_settings.onboard_gas_wei)
+    assert body["onboardsLeft"] == (10**18 - 2 * 10**16) // fake_settings.onboard_gas_wei
+    assert body["low"] is False

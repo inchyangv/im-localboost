@@ -127,6 +127,11 @@ export function OnboardCard({
             <span className="tnum">현재 잔액 {won(result.balance)}</span>
           </Notice>
         )}
+        {result?.gasSkipped && (
+          <Notice tone="warn" className="mt-4" title="수수료용 KAIA는 직접 받아 주세요">
+            은행의 KAIA가 부족해서 이번에는 가스를 보내지 못했어요. 아래 Kaia faucet에 내 주소를 붙여 넣으면 바로 받을 수 있어요.
+          </Notice>
+        )}
         {error && (
           <Notice tone="error" className="mt-4" title="은행 처리에 실패했어요">
             {error}
