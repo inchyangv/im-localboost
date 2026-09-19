@@ -13,10 +13,11 @@ import { ZoneLegend, ZoneMap, rateLevel, useZoneRates } from "@/components/ZoneM
 import { AmountInput, Badge, Button, CATEGORY_ICONS, Card, CardHeader, Icon, IconTile, LiveDot, Mono, Notice, PageHeader, Skeleton, cx, inputSoftCls } from "@/components/ui";
 import { publicClient } from "@/lib/chain";
 import { CATEGORY_NAMES, FAUCET_URL, LOW_GAS_WEI, caps, chainId, chainLabel, merchants, zoneName, zones } from "@/lib/config";
-import { addresses, dalgubeolPayAbi, hourEpoch, readBoostState, registryAbi, tokenAbi, type BoostState } from "@/lib/contracts";
+import { addresses, dalgubeolPayAbi, readBoostState, registryAbi, tokenAbi, type BoostState } from "@/lib/contracts";
 import { payments as fetchPayments, type PaymentRow } from "@/lib/engine";
 import { parseChainError } from "@/lib/errors";
-import { kstHourLabel, pct, won } from "@/lib/format";
+import { pct, won } from "@/lib/format";
+import { useHourLabel } from "@/lib/useHourLabel";
 import { runPayFlow, type PayFlowResult } from "@/lib/pay";
 import { zeroBoostReason } from "@/lib/reasons";
 
@@ -73,7 +74,7 @@ export default function ConsumerPage() {
   const selected = merchants.find((m) => m.address === merchant);
   const address = actor?.address ?? null;
   const isWallet = actor?.kind === "wallet";
-  const epochLabel = kstHourLabel(hourEpoch(Math.floor(Date.now() / 1000)));
+  const epochLabel = useHourLabel();
 
   useEffect(() => {
     if (zone && selected && selected.zoneId !== zone && zoneMerchants[0]) setMerchant(zoneMerchants[0].address);

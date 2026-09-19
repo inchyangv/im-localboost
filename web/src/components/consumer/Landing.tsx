@@ -9,8 +9,8 @@ import { WalletGlyph, WalletPicker } from "@/components/WalletButton";
 import { useZoneRates } from "@/components/ZoneMap";
 import { Button, Icon, IconTile, LiveDot, Skeleton, cx, type IconName } from "@/components/ui";
 import { caps, chainId, chainLabel, merchants, zones } from "@/lib/config";
-import { hourEpoch } from "@/lib/contracts";
-import { kstHourLabel, num, pct, won } from "@/lib/format";
+import { num, pct, won } from "@/lib/format";
+import { useHourLabel } from "@/lib/useHourLabel";
 
 /** Amount used for the worked example in the hero. Whole won, like every amount in the app. */
 const EXAMPLE_AMOUNT = 30_000n;
@@ -43,7 +43,7 @@ export function Landing() {
   const ranked = [...zones].sort((a, b) => (rates[b.id] ?? 0) - (rates[a.id] ?? 0));
   const topBps = ranked.length > 0 ? (rates[ranked[0].id] ?? 0) : 0;
   const scale = Math.max(1, topBps);
-  const epochLabel = kstHourLabel(hourEpoch(Math.floor(Date.now() / 1000)));
+  const epochLabel = useHourLabel();
   const boost = exampleBoost(topBps);
 
   return (

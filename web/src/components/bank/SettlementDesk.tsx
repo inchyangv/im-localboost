@@ -90,7 +90,7 @@ export function SettlementDesk({ bank, onChanged }: { bank: PrivateKeyAccount | 
       )}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <div>
+        <div className="min-w-0">
           <p className="text-[13px] font-medium text-gray-600">정산 요청 (가맹점 → 은행)</p>
           {!ledger || ledger.requests.length === 0 ? (
             <p className="mt-2 text-[13px] text-gray-500">요청이 없어요.</p>
@@ -119,7 +119,7 @@ export function SettlementDesk({ bank, onChanged }: { bank: PrivateKeyAccount | 
             </Table>
           )}
         </div>
-        <div>
+        <div className="min-w-0">
           <p className="text-[13px] font-medium text-gray-600">원화 지급 완료 (은행 → 소각)</p>
           {!ledger || ledger.payouts.length === 0 ? (
             <p className="mt-2 text-[13px] text-gray-500">처리 기록이 없어요.</p>
