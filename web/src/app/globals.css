@@ -59,6 +59,9 @@ body {
     rgb(var(--bg));
   color: rgb(var(--gray-900));
   letter-spacing: -0.01em;
+  /* Korean wraps between words, not between syllables; long hashes and URLs may still break. */
+  word-break: keep-all;
+  overflow-wrap: break-word;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -128,6 +131,22 @@ input[type="number"] {
   color: #fff;
 }
 
+/* Landing hero: the same ink, lit harder. The dot grid fades out toward the edges through a mask. */
+.surface-hero {
+  background:
+    radial-gradient(720px 420px at 88% 8%, rgba(47, 181, 161, 0.34), transparent 68%),
+    radial-gradient(560px 380px at 8% 108%, rgba(0, 161, 142, 0.22), transparent 70%),
+    radial-gradient(900px 500px at 50% 120%, rgba(47, 181, 161, 0.1), transparent 70%),
+    linear-gradient(165deg, rgb(var(--ink-800)), rgb(var(--ink-900)) 62%);
+  color: #fff;
+}
+.hero-grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(ellipse 75% 70% at 70% 35%, #000 10%, transparent 75%);
+  mask-image: radial-gradient(ellipse 75% 70% at 70% 35%, #000 10%, transparent 75%);
+}
+
 /* Sketch-map backdrop: dotted paper so the zone blocks sit on something. */
 .surface-map {
   background-color: rgb(var(--gray-50));
@@ -193,6 +212,22 @@ input[type="number"] {
     opacity: 0;
   }
 }
+@keyframes float-y {
+  from {
+    transform: translateY(-6px);
+  }
+  to {
+    transform: translateY(6px);
+  }
+}
+@keyframes shine {
+  from {
+    transform: translateX(-120%) skewX(-18deg);
+  }
+  to {
+    transform: translateX(260%) skewX(-18deg);
+  }
+}
 @keyframes draw {
   to {
     stroke-dashoffset: 0;
@@ -203,6 +238,39 @@ input[type="number"] {
 .reveal {
   animation: fade-up 0.55s var(--ease-out) both;
   animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+/* Scroll-triggered entrance (see Reveal in motion.tsx): hidden until the element enters the viewport. */
+.reveal-wait {
+  opacity: 0;
+  transform: translateY(16px);
+}
+.reveal-go {
+  animation: fade-up 0.7s var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 90ms);
+}
+
+.float-slow {
+  animation: float-y 5.5s ease-in-out infinite alternate;
+  animation-delay: calc(var(--i, 0) * -1.7s);
+}
+
+/* One light sweep across the primary call to action on hover. */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+  transform: translateX(-120%) skewX(-18deg);
+  pointer-events: none;
+}
+.btn-shine:hover:not(:disabled)::after {
+  animation: shine 0.9s var(--ease-out);
 }
 
 .skeleton {
@@ -235,6 +303,10 @@ input[type="number"] {
   }
   .draw-stroke {
     stroke-dashoffset: 0;
+  }
+  .reveal-wait {
+    opacity: 1;
+    transform: none;
   }
 }
 

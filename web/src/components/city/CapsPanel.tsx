@@ -72,7 +72,7 @@ export function CapsPanel({ actor, isCity }: { actor: PrivateKeyAccount | null; 
   const dirty = current && form && FIELDS.some((f) => current[f.key] !== form[f.key]);
 
   return (
-    <Card id="caps" className="scroll-mt-32">
+    <Card id="caps" className="scroll-mt-44 lg:scroll-mt-32">
       <CardHeader
         title="상한 제안·적용"
         desc="대구시가 제안하면 타임락이 시작되고, 지연 시간이 지나면 누구나 적용할 수 있어요. 컨트랙트가 모든 상한을 강제해요."

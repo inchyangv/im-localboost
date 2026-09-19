@@ -6,7 +6,7 @@ import { num, pct, won } from "@/lib/format";
 
 export function ZoneCards({ cards, epoch }: { cards: ZoneCard[]; epoch: number | null }) {
   return (
-    <section id="zones" className="scroll-mt-32">
+    <section id="zones" className="scroll-mt-44 lg:scroll-mt-32">
       <div className="mb-3 flex items-baseline justify-between">
         <h2 className="text-[17px] font-bold text-gray-900">상권 현황</h2>
         <span className="text-[12px] text-gray-500">{epoch !== null ? `epoch ${epoch} · 10초 갱신` : "읽는 중"}</span>

@@ -107,12 +107,12 @@ export function BottomTabs() {
 export function TopBar() {
   return (
     <header className="sticky top-0 z-30 border-b border-gray-900/[0.06] bg-white/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 w-full max-w-[1120px] items-center gap-6 px-5">
+      <div className="mx-auto flex h-16 w-full max-w-[1120px] items-center gap-3 px-4 sm:gap-6 sm:px-5">
         <Link href="/" className="rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2" aria-label="달구벌페이 홈">
           <Logo />
         </Link>
         <NavTabs items={CONSUMER_NAV} className="hidden sm:flex" />
-        <div className="ml-auto flex items-center gap-2 sm:gap-3">
+        <div className="ml-auto flex items-center gap-1.5 sm:gap-3">
           <EngineDot className="hidden lg:inline-flex" />
           <WalletButton />
         </div>

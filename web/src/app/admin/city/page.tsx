@@ -24,7 +24,7 @@ const SECTIONS = [
 
 function SectionNav() {
   return (
-    <nav className="sticky top-16 z-20 -mx-5 mb-6 border-b border-gray-200/70 bg-page/90 px-5 py-2 backdrop-blur" aria-label="화면 내 이동">
+    <nav className="sticky top-[118px] z-20 -mx-4 mb-6 border-b border-gray-200/70 bg-page/90 px-4 py-2 backdrop-blur sm:-mx-5 sm:px-5 lg:top-16" aria-label="화면 내 이동">
       <ul className="scroll-thin flex gap-1 overflow-x-auto">
         {SECTIONS.map((s) => (
           <li key={s.id}>
@@ -86,7 +86,7 @@ export default function CityPage() {
 
       <div className="space-y-6">
         <ZoneCards cards={cards} epoch={epoch} />
-        <div id="budget" className="grid scroll-mt-32 gap-6 lg:grid-cols-2 lg:items-start">
+        <div id="budget" className="grid scroll-mt-44 gap-6 lg:scroll-mt-32 lg:grid-cols-2 lg:items-start">
           <BudgetForm city={isCity ? actor : null} onDone={bump} />
           <RatesPanel enabled={isCity} onPublished={bump} />
         </div>

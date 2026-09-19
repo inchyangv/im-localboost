@@ -95,7 +95,7 @@ export function SimPanel() {
   }, []);
 
   return (
-    <Card id="sim" className="scroll-mt-32">
+    <Card id="sim" className="scroll-mt-44 lg:scroll-mt-32">
       <CardHeader
         title="시뮬레이션 결과"
         desc="다항 로짓 소비자 모형으로 다섯 시나리오를 비교했어요. 수치는 나온 그대로예요."

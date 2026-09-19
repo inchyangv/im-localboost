@@ -36,7 +36,7 @@ export function DemoPanel({ onChanged }: { onChanged: () => void }) {
   }
 
   return (
-    <Card id="demo" className="scroll-mt-32 border border-dashed border-gray-300 shadow-none">
+    <Card id="demo" className="scroll-mt-44 lg:scroll-mt-32 border border-dashed border-gray-300 shadow-none">
       <CardHeader
         title={
           <>

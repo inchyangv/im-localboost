@@ -98,21 +98,21 @@ export function WalletPicker({ onClose }: { onClose: () => void }) {
   // Portal: the sticky header uses backdrop-filter, which would otherwise become the containing block of this fixed overlay.
   if (typeof document === "undefined") return null;
   return createPortal(
-    <div role="dialog" aria-modal="true" aria-label="지갑 연결" className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-4 sm:items-center" onClick={onClose}>
-      <div className="w-full max-w-sm rounded-3xl bg-white p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
+    <div role="dialog" aria-modal="true" aria-label="지갑 연결" className="fixed inset-0 z-50 flex animate-fade-in items-end justify-center bg-ink-900/60 p-3 backdrop-blur-sm sm:items-center sm:p-4" onClick={onClose}>
+      <div className="w-full max-w-[400px] animate-sheet-up rounded-[28px] bg-white p-6 shadow-pop" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between">
-          <h2 className="text-[17px] font-bold text-gray-900">지갑 연결</h2>
-          <button type="button" onClick={onClose} aria-label="닫기" className="rounded-full p-2 text-gray-500 hover:bg-gray-100">
+          <h2 className="text-[20px] font-bold tracking-heading text-gray-900">지갑 연결</h2>
+          <button type="button" onClick={onClose} aria-label="닫기" className="-mr-2 rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700">
             <CloseIcon className="h-5 w-5" />
           </button>
         </div>
-        <p className="mt-1 text-[13px] text-gray-500">
+        <p className="mt-1.5 text-[13px] leading-relaxed text-gray-500">
           {chainLabel(chainId)}
           {isTestnet(chainId) ? " 테스트넷" : ""}에서 결제해요. 서명은 지갑 안에서만 이루어지고 이 사이트는 개인키를 보관하지 않아요.
         </p>
 
         {wallet.options.length > 0 ? (
-          <ul className="mt-4 space-y-2">
+          <ul className="mt-5 space-y-2">
             {wallet.options.map((opt) => {
               const busy = choosing === opt.id && wallet.connecting;
               return (
@@ -122,31 +122,38 @@ export function WalletPicker({ onClose }: { onClose: () => void }) {
                     disabled={wallet.connecting}
                     onClick={() => pick(opt)}
                     className={cx(
-                      "flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-colors",
-                      busy ? "border-brand-300 bg-brand-50" : "border-gray-200 hover:border-gray-300 hover:bg-gray-50",
-                      "disabled:opacity-60",
+                      "group flex w-full items-center gap-3.5 rounded-2xl px-4 py-3.5 text-left ring-1 ring-inset transition-[transform,background-color,box-shadow] duration-150 active:scale-[0.98]",
+                      busy ? "bg-brand-50 ring-brand-200" : "bg-gray-50 ring-transparent hover:bg-white hover:shadow-card hover:ring-gray-200",
+                      "disabled:opacity-60 disabled:active:scale-100",
                     )}
                   >
-                    <WalletIcon icon={opt.icon} name={opt.name} className="h-9 w-9" />
+                    <WalletIcon icon={opt.icon} name={opt.name} className="h-10 w-10 rounded-xl" />
                     <span className="min-w-0 flex-1">
                       <span className="block text-[15px] font-semibold text-gray-900">{opt.name}</span>
                       <span className="block text-[12px] text-gray-500">{opt.id.startsWith("legacy:") ? "브라우저에 설치됨" : opt.id}</span>
                     </span>
-                    {busy ? <Spinner className="h-4 w-4 text-brand-600" /> : <span className="text-[12px] font-medium text-brand-600">연결</span>}
+                    {busy ? (
+                      <Spinner className="h-4 w-4 text-brand-600" />
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-[13px] font-semibold text-brand-600 transition-transform duration-150 group-hover:translate-x-0.5">
+                        연결
+                        <ChevronDown className="h-3.5 w-3.5 -rotate-90" />
+                      </span>
+                    )}
                   </button>
                 </li>
               );
             })}
           </ul>
         ) : (
-          <div className="mt-4 rounded-2xl border border-dashed border-gray-300 p-4 text-[13px] text-gray-600">
-            <p className="font-medium text-gray-800">설치된 지갑을 찾지 못했어요.</p>
+          <div className="mt-5 rounded-2xl bg-gray-50 p-4 text-[13px] leading-relaxed text-gray-600">
+            <p className="font-semibold text-gray-900">설치된 지갑을 찾지 못했어요.</p>
             <p className="mt-1">지갑 확장 프로그램을 설치한 뒤 이 페이지를 새로고침해 주세요.</p>
             <div className="mt-3 flex flex-wrap gap-2">
-              <a href={KAIA_WALLET_URL} target="_blank" rel="noreferrer" className="rounded-full bg-gray-900 px-3 py-1.5 text-[12px] font-medium text-white">
+              <a href={KAIA_WALLET_URL} target="_blank" rel="noreferrer" className="rounded-full bg-gray-900 px-3.5 py-2 text-[12px] font-semibold text-white transition-colors hover:bg-gray-800">
                 Kaia Wallet 설치
               </a>
-              <a href={METAMASK_URL} target="_blank" rel="noreferrer" className="rounded-full bg-gray-100 px-3 py-1.5 text-[12px] font-medium text-gray-800">
+              <a href={METAMASK_URL} target="_blank" rel="noreferrer" className="rounded-full bg-white px-3.5 py-2 text-[12px] font-semibold text-gray-800 shadow-card transition-colors hover:bg-gray-50">
                 MetaMask 설치
               </a>
             </div>
@@ -329,7 +336,9 @@ export function WalletButton() {
   const active = mode === "wallet";
   return (
     <>
-      <ChainPill />
+      <span className="max-[380px]:hidden">
+        <ChainPill />
+      </span>
       <div ref={ref} className="relative">
         <button
           type="button"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
 const DURATION_MS = 700;
 
@@ -44,4 +44,53 @@ export function CountUp({ value, format }: { value: bigint | number; format: (v:
   }, [target]);
 
   return <>{format(shown)}</>;
+}
+
+/**
+ * Fades its children up the first time they scroll into view. `index` staggers siblings. Without
+ * IntersectionObserver (or with reduced motion) the content is simply visible.
+ */
+export function Reveal({
+  children,
+  index = 0,
+  className,
+  as: Tag = "div",
+}: {
+  children: ReactNode;
+  index?: number;
+  className?: string;
+  as?: "div" | "li" | "section";
+}) {
+  const ref = useRef<HTMLElement | null>(null);
+  const [seen, setSeen] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined" || prefersReducedMotion()) {
+      setSeen(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setSeen(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "0px 0px -8% 0px", threshold: 0.12 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <Tag
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ref={ref as any}
+      className={[seen ? "reveal-go" : "reveal-wait", className].filter(Boolean).join(" ")}
+      style={{ ["--i" as string]: index } as CSSProperties}
+    >
+      {children}
+    </Tag>
+  );
 }

@@ -27,7 +27,8 @@ export function Card({
   tone?: keyof typeof CARD_TONES;
 }) {
   return (
-    <section className={cx("rounded-3xl", CARD_TONES[tone], padded && "p-5 sm:p-6", className)} {...rest}>
+    // min-w-0: as a grid item the card may shrink below its content's min-content width (wide tables scroll inside it).
+    <section className={cx("min-w-0 rounded-3xl", CARD_TONES[tone], padded && "p-5 sm:p-6", className)} {...rest}>
       {children}
     </section>
   );
@@ -52,7 +53,7 @@ export function CardHeader({
         <h2 className={cx("font-bold tracking-heading text-gray-900", size === "lg" ? "text-[22px] leading-tight" : "text-[17px] leading-snug")}>{title}</h2>
         {desc && <p className="mt-1 text-[13px] leading-relaxed text-gray-500">{desc}</p>}
       </div>
-      {right && <div className="flex shrink-0 items-center gap-2 text-[13px] text-gray-500">{right}</div>}
+      {right && <div className="flex min-w-0 max-w-full flex-wrap items-center gap-2 text-[13px] text-gray-500 sm:shrink-0">{right}</div>}
     </div>
   );
 }
@@ -104,7 +105,7 @@ export function Button({ variant = "primary", size = "md", full, loading, classN
         "disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100",
         BUTTON_VARIANTS[variant],
         BUTTON_SIZES[size],
-        variant === "primary" && size === "lg" && "shadow-cta",
+        variant === "primary" && size === "lg" && "btn-shine shadow-cta",
         full && "w-full",
         className,
       )}
