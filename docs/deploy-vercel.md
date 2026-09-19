@@ -35,7 +35,7 @@ make deploy-web   ENGINE_URL=https://engine-production-1edd.up.railway.app ENV_F
 ## 검증 (2026-09-18, Vercel + Railway + Kairos)
 
 - `/`, `/city`, `/merchant` 모두 200. 번들 청크에 엔진 URL·탐색기 URL·chainId 1001·DalgubeolPay 주소가 포함됨
-- SPEC 11절 1~5단계를 브라우저에서 통과. 스크린샷 `docs/demo/prod-step1.png` ~ `prod-step5.png`
+- SPEC 11절 1~5단계를 브라우저에서 통과. 당시 스크린샷 `prod-step1~5.png`는 재설계 뒤 `docs/demo/*.png`로 교체
   1. 북성로 500,000원 예치 → 율 게시 → 북성로 10.0%
   2. 소비자 1 → 북성로 한식당 10,000원: 보너스 1,000원, 크레딧 1,000원, tier 0
   3. 같은 가게 재결제: 성공, 보너스 0원, 사유 "오늘 이미 보너스를 받은 가게"
@@ -48,4 +48,4 @@ make deploy-web   ENGINE_URL=https://engine-production-1edd.up.railway.app ENV_F
 - 커밋 `4c49052` (feat(web): redesign UI with a Toss/iM Bank-inspired design system)를 같은 절차(`make deploy-web ENGINE_URL=https://engine-production-1edd.up.railway.app ENV_FILE=.env.kairos`)로 올렸다. 배포 `dpl_EEAKuzQ5gHnF7CvWzs5tUa4boMQe`, 별칭 https://im-localboost-web.vercel.app
 - 엔진·컨트랙트는 바꾸지 않았으므로 Railway와 Kairos는 그대로다
 - 확인: `/`, `/merchant`, `/city` 200. 소비자 페이지 청크에 새 UI 문구와 엔진 URL 포함. 브라우저에서 상단 "엔진 연결됨 | Kaia Kairos", 상권 카드가 온체인 값(북성로 10.0%, 예산 499,000원)을 표시. Pretendard는 jsDelivr CDN에서 로드되며 실패 시 시스템 한글 글꼴로 대체된다
-- 데모 스크린샷 `docs/demo/prod-step*.png`는 재설계 이전 UI다. 단계와 기대 결과는 README 표와 같다
+- 현재 UI 스크린샷은 `docs/demo/*.png`(2026-09-19, 프로덕션 데이터)다. 재설계 이전의 `prod-step*.png`는 지웠다. 단계와 기대 결과는 README 표와 같다
